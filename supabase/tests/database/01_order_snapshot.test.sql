@@ -2,14 +2,13 @@ BEGIN;
 -- Setup pgTAP extension if not exists
 CREATE EXTENSION IF NOT EXISTS pgtap;
 
--- We plan for multiple assertions. The exact count can be managed by no_plan() or plan(n).
-SELECT plan(13);
+SELECT * FROM no_plan();
 
 -- Test 1: create_order_snapshot success & idempotency retry
 SELECT diag('Testing create_order_snapshot idempotency');
 
 -- Setup test data inside the transaction
-INSERT INTO users (id, email) VALUES ('11111111-1111-1111-1111-111111111111', 'test@fitmirror.com') ON CONFLICT DO NOTHING;
+INSERT INTO auth.users (id, email) VALUES ('11111111-1111-1111-1111-111111111111', 'test@fitmirror.com') ON CONFLICT DO NOTHING;
 INSERT INTO stores (id, name, slug) VALUES ('22222222-2222-2222-2222-222222222222', 'Test Store', 'test-store') ON CONFLICT DO NOTHING;
 
 -- Product & Variant for inventory test
@@ -35,27 +34,51 @@ DECLARE
 BEGIN
     SELECT create_order_snapshot(
         '11111111-1111-1111-1111-111111111111', -- user_id
-        '22222222-2222-2222-2222-222222222222', -- store_id
-        100000, -- subtotal_amount
-        0, -- discount_amount
-        0, -- shipping_cost
-        18000, -- tax_amount
-        118000, -- total_amount
-        '{}'::JSONB, -- shipping_address
-        '{}'::JSONB, -- billing_address
-        'online', -- payment_method
         NULL, -- coupon_id
-        v_idem_key, -- idempotency_key
-        ARRAY[
-            '{ "product_id": "p_test_1", "variant_id": "v_test_1", "quantity": 1, "unit_price": 100000, "gross_amount": 100000, "discount_amount": 0, "taxable_amount": 100000, "tax_amount": 18000, "total_amount": 118000 }'
-        ]::JSONB[] -- items
+        NULL, -- shipping_method_id
+        '{
+            "subtotalPaise": 100000,
+            "discountPaise": 0,
+            "shippingPaise": 0,
+            "taxPaise": 18000,
+            "totalPaise": 118000,
+            "lines": [
+                {
+                    "productId": "p_test_1",
+                    "variantId": "v_test_1",
+                    "quantity": 1,
+                    "unitPricePaise": 100000,
+                    "discountAmountPaise": 0,
+                    "taxableAmountPaise": 100000,
+                    "taxAmountPaise": 18000,
+                    "totalAmountPaise": 118000
+                }
+            ]
+        }'::JSONB
     ) INTO v_order_id;
     
     -- Idempotency Test: exact same payload should yield SAME order ID and not decrement stock again
     SELECT create_order_snapshot(
-        '11111111-1111-1111-1111-111111111111', '22222222-2222-2222-2222-222222222222',
-        100000, 0, 0, 18000, 118000, '{}'::JSONB, '{}'::JSONB, 'online', NULL, 
-        v_idem_key, ARRAY['{ "product_id": "p_test_1", "variant_id": "v_test_1", "quantity": 1, "unit_price": 100000, "gross_amount": 100000, "discount_amount": 0, "taxable_amount": 100000, "tax_amount": 18000, "total_amount": 118000 }']::JSONB[]
+        '11111111-1111-1111-1111-111111111111', NULL, NULL, 
+        '{
+            "subtotalPaise": 100000,
+            "discountPaise": 0,
+            "shippingPaise": 0,
+            "taxPaise": 18000,
+            "totalPaise": 118000,
+            "lines": [
+                {
+                    "productId": "p_test_1",
+                    "variantId": "v_test_1",
+                    "quantity": 1,
+                    "unitPricePaise": 100000,
+                    "discountAmountPaise": 0,
+                    "taxableAmountPaise": 100000,
+                    "taxAmountPaise": 18000,
+                    "totalAmountPaise": 118000
+                }
+            ]
+        }'::JSONB
     ) INTO v_order_id_retry;
 
     PERFORM is(v_order_id_retry, v_order_id, 'Idempotency key retry returns identical authoritative order UUID');
@@ -72,9 +95,26 @@ DECLARE
     v_idem_key UUID := '44444444-4444-4444-4444-444444444444';
 BEGIN
     SELECT create_order_snapshot(
-        '11111111-1111-1111-1111-111111111111', '22222222-2222-2222-2222-222222222222',
-        100000, 0, 0, 18000, 118000, '{}'::JSONB, '{}'::JSONB, 'online', NULL, 
-        v_idem_key, ARRAY['{ "product_id": "p_test_1", "variant_id": "v_test_1", "quantity": 1, "unit_price": 100000, "gross_amount": 100000, "discount_amount": 0, "taxable_amount": 100000, "tax_amount": 18000, "total_amount": 118000 }']::JSONB[]
+        '11111111-1111-1111-1111-111111111111', NULL, NULL, 
+        '{
+            "subtotalPaise": 100000,
+            "discountPaise": 0,
+            "shippingPaise": 0,
+            "taxPaise": 18000,
+            "totalPaise": 118000,
+            "lines": [
+                {
+                    "productId": "p_test_1",
+                    "variantId": "v_test_1",
+                    "quantity": 1,
+                    "unitPricePaise": 100000,
+                    "discountAmountPaise": 0,
+                    "taxableAmountPaise": 100000,
+                    "taxAmountPaise": 18000,
+                    "totalAmountPaise": 118000
+                }
+            ]
+        }'::JSONB
     ) INTO v_order_id;
     
     -- Mutate product catalog price
@@ -96,9 +136,26 @@ BEGIN
     BEGIN
         SELECT create_order_snapshot(
             '00000000-0000-0000-0000-000000000000', -- Non-existent user
-            '22222222-2222-2222-2222-222222222222',
-            100000, 0, 0, 18000, 118000, '{}'::JSONB, '{}'::JSONB, 'online', 'c_test_1', 
-            v_idem_key, ARRAY['{ "product_id": "p_test_1", "variant_id": "v_test_1", "quantity": 1, "unit_price": 100000, "gross_amount": 100000, "discount_amount": 0, "taxable_amount": 100000, "tax_amount": 18000, "total_amount": 118000 }']::JSONB[]
+            'c_test_1', NULL, 
+            '{
+                "subtotalPaise": 100000,
+                "discountPaise": 0,
+                "shippingPaise": 0,
+                "taxPaise": 18000,
+                "totalPaise": 118000,
+                "lines": [
+                    {
+                        "productId": "p_test_1",
+                        "variantId": "v_test_1",
+                        "quantity": 1,
+                        "unitPricePaise": 100000,
+                        "discountAmountPaise": 0,
+                        "taxableAmountPaise": 100000,
+                        "taxAmountPaise": 18000,
+                        "totalAmountPaise": 118000
+                    }
+                ]
+            }'::JSONB
         ) INTO v_order_id;
         
         -- Should not reach here
@@ -119,9 +176,26 @@ DECLARE
     v_order_id_1 UUID;
 BEGIN
     SELECT create_order_snapshot(
-        '11111111-1111-1111-1111-111111111111', '22222222-2222-2222-2222-222222222222',
-        100000, 0, 0, 18000, 118000, '{}'::JSONB, '{}'::JSONB, 'online', 'c_test_1', 
-        '66666666-6666-6666-6666-666666666666', ARRAY['{ "product_id": "p_test_1", "variant_id": "v_test_1", "quantity": 1, "unit_price": 100000, "gross_amount": 100000, "discount_amount": 0, "taxable_amount": 100000, "tax_amount": 18000, "total_amount": 118000 }']::JSONB[]
+        '11111111-1111-1111-1111-111111111111', 'c_test_1', NULL, 
+        '{
+            "subtotalPaise": 100000,
+            "discountPaise": 0,
+            "shippingPaise": 0,
+            "taxPaise": 18000,
+            "totalPaise": 118000,
+            "lines": [
+                {
+                    "productId": "p_test_1",
+                    "variantId": "v_test_1",
+                    "quantity": 1,
+                    "unitPricePaise": 100000,
+                    "discountAmountPaise": 0,
+                    "taxableAmountPaise": 100000,
+                    "taxAmountPaise": 18000,
+                    "totalAmountPaise": 118000
+                }
+            ]
+        }'::JSONB
     ) INTO v_order_id_1;
     
     PERFORM is((SELECT current_uses FROM coupons WHERE id = 'c_test_1'), 1, 'Coupon usage incremented exactly to 1');
@@ -129,9 +203,26 @@ BEGIN
     -- Concurrency Simulation: Attempt to use the same coupon again which has max_uses = 1
     BEGIN
         SELECT create_order_snapshot(
-            '11111111-1111-1111-1111-111111111111', '22222222-2222-2222-2222-222222222222',
-            100000, 0, 0, 18000, 118000, '{}'::JSONB, '{}'::JSONB, 'online', 'c_test_1', 
-            '77777777-7777-7777-7777-777777777777', ARRAY['{ "product_id": "p_test_1", "variant_id": "v_test_1", "quantity": 1, "unit_price": 100000, "gross_amount": 100000, "discount_amount": 0, "taxable_amount": 100000, "tax_amount": 18000, "total_amount": 118000 }']::JSONB[]
+            '11111111-1111-1111-1111-111111111111', 'c_test_1', NULL, 
+            '{
+                "subtotalPaise": 100000,
+                "discountPaise": 0,
+                "shippingPaise": 0,
+                "taxPaise": 18000,
+                "totalPaise": 118000,
+                "lines": [
+                    {
+                        "productId": "p_test_1",
+                        "variantId": "v_test_1",
+                        "quantity": 1,
+                        "unitPricePaise": 100000,
+                        "discountAmountPaise": 0,
+                        "taxableAmountPaise": 100000,
+                        "taxAmountPaise": 18000,
+                        "totalAmountPaise": 118000
+                    }
+                ]
+            }'::JSONB
         );
         -- Should not reach here
         PERFORM fail('Coupon should have rejected second concurrent redemption');
@@ -157,6 +248,31 @@ BEGIN
     -- Invalid transition rule: placed -> shipped (we should enforce strict valid transitions in the function, but for now we just test the RPC signature and basic constraint)
     -- Our RPC `transition_order_status` requires knowing the exact current state.
     PERFORM is(transition_order_status(v_order_id, 'placed', 'confirmed'), true, 'Allowed transition placed -> confirmed');
+END $$;
+
+-- Test 6: Mathematical constraints (negative value rejection)
+SELECT diag('Testing Mathematical Constraints');
+DO $$
+BEGIN
+    BEGIN
+        SELECT create_order_snapshot(
+            '11111111-1111-1111-1111-111111111111', NULL, NULL, 
+            '{
+                "subtotalPaise": 100000,
+                "discountPaise": 0,
+                "shippingPaise": 0,
+                "taxPaise": 18000,
+                "totalPaise": -118000,
+                "lines": []
+            }'::JSONB
+        );
+        -- Should not reach here
+        PERFORM fail('Should reject negative total amounts');
+    EXCEPTION WHEN check_violation THEN
+        PERFORM pass('Database successfully rejected negative total amount via CHECK constraint');
+    WHEN OTHERS THEN
+        PERFORM fail('Expected check_violation but got ' || SQLERRM);
+    END;
 END $$;
 
 SELECT * FROM finish();

@@ -172,4 +172,17 @@ describe('PricingDomain - calculateOrderTotals Determinism', () => {
         }
         expect(() => calculateOrderTotals(input)).toThrow(/Missing pricing facts/)
     })
+
+    it('should explicitly reject accidental number conversion at runtime', () => {
+        const input: PricingInput = {
+            items: [{ productId: 'p1', quantity: 1 }],
+            productFacts: new Map<string, ProductFact>([
+                // Intentionally passing a number by bypassing TS
+                ['p1', { id: 'p1', pricePaise: 100000 as unknown as bigint, salePricePaise: null, taxRuleId: 't1', taxRateBps: 1800 }]
+            ]),
+            couponFact: null,
+            shippingFact: null
+        }
+        expect(() => calculateOrderTotals(input)).toThrow(/Boundary Violation.*must be bigint/)
+    })
 })

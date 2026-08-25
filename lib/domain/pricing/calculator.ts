@@ -9,6 +9,19 @@ export function calculateOrderTotals(input: PricingInput): OrderCalculation {
         throw new Error("Cannot calculate an empty order");
     }
 
+    // 0. Boundary Validation: Reject `number` for monetary values
+    for (const fact of input.productFacts.values()) {
+        if (typeof fact.pricePaise !== 'bigint' || (fact.salePricePaise !== null && typeof fact.salePricePaise !== 'bigint')) {
+            throw new Error(`Boundary Violation: Product ${fact.id} monetary facts must be bigint, received ${typeof fact.pricePaise}`);
+        }
+    }
+    if (input.couponFact && input.couponFact.discountAmountPaise !== null && typeof input.couponFact.discountAmountPaise !== 'bigint') {
+        throw new Error("Boundary Violation: Coupon discountAmountPaise must be bigint");
+    }
+    if (input.shippingFact && typeof input.shippingFact.costPaise !== 'bigint') {
+        throw new Error("Boundary Violation: Shipping costPaise must be bigint");
+    }
+
     // 1. Calculate Gross Amounts
     let subtotalPaise: MoneyPaise = Money.ZERO;
     const grossLines = input.items.map(item => {
