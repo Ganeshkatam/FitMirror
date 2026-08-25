@@ -109,7 +109,7 @@ export async function POST(req: Request) {
             else if (searchTerms.includes('gym') || searchTerms.includes('active')) query = query.or('category.ilike.%active%,description.ilike.%gym%')
 
             const { data } = await query.limit(4)
-            products = (data || []) as Product[]
+            products = (data || []) as unknown as Product[]
 
             // Fallback to popular if no specific match
             if (products.length === 0) {
@@ -118,7 +118,7 @@ export async function POST(req: Request) {
                     .select('id, name, price, category, product_media(*), description')
                     .eq('is_active', true)
                     .limit(4)
-                products = (allProducts || []) as Product[]
+                products = (allProducts || []) as unknown as Product[]
             }
 
             productContext = products.map(p =>

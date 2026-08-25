@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { createClient } from '@/lib/supabase/server'
+import { razorpay } from '@/lib/razorpay'
 
 export async function POST(req: NextRequest) {
     try {
@@ -9,8 +10,13 @@ export async function POST(req: NextRequest) {
             razorpay_order_id,
             razorpay_payment_id,
             razorpay_signature,
-            order_metadata // Passed from frontend to help us sync with our DB order if needed
+            db_order_ids // Currently passed from checkout as an array [orderId]
         } = body
+
+        if (!db_order_ids || db_order_ids.length === 0) {
+            return NextResponse.json({ error: 'Missing local order ID' }, { status: 400 })
+        }
+        const dbOrderId = db_order_ids[0]
 
         // 1. Verify Signature
         const bodyStr = razorpay_order_id + "|" + razorpay_payment_id
@@ -23,95 +29,93 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Invalid Payment Signature' }, { status: 400 })
         }
 
-        // 2. Lookup related order via Payments table
-        const supabase = await createClient()
+        // 2. Fetch authoritative provider payment details
+        const rzpPayment = await razorpay.payments.fetch(razorpay_payment_id)
+        if (!rzpPayment) {
+            return NextResponse.json({ error: 'Payment not found in provider' }, { status: 404 })
+        }
 
-        // Find the payment record associated with this Razorpay Order ID
-        const { data: paymentRecord, error: payFetchError } = await supabase
-            .from('payments')
-            .select('order_id, id, related_orders, status')
-            .eq('gateway_order_id', razorpay_order_id)
+        // 3. Fetch local authoritative order
+        const supabase = await createClient()
+        const { data: order, error: orderError } = await supabase
+            .from('orders')
+            .select('id, total_amount, currency, status, user_id')
+            .eq('id', dbOrderId)
             .single()
 
-        if (payFetchError || !paymentRecord) {
-            console.error("Payment Record not found for order", razorpay_order_id)
-        } else {
-            // Idempotency Check
-            if (paymentRecord.status === 'success') {
-                return NextResponse.json({ status: 'success', message: 'Payment already processed', paymentId: razorpay_payment_id })
-            }
+        if (orderError || !order) {
+            return NextResponse.json({ error: 'Local order not found' }, { status: 404 })
+        }
 
-            // Update Payment Status
-            await supabase
-                .from('payments')
-                .update({
-                    status: 'success',
-                    gateway_payment_id: razorpay_payment_id
-                })
-                .eq('id', paymentRecord.id)
+        // 4. Invariant Validation (C10, C11)
+        if (rzpPayment.order_id !== razorpay_order_id) {
+            return NextResponse.json({ error: 'Provider order ID mismatch' }, { status: 400 })
+        }
+        if (rzpPayment.currency !== 'INR' || order.currency !== 'INR') {
+            return NextResponse.json({ error: 'Currency violation' }, { status: 400 })
+        }
+        // Strict integer paise comparison
+        if (rzpPayment.amount !== Number(order.total_amount)) {
+            return NextResponse.json({ error: 'Amount mismatch violation' }, { status: 400 })
+        }
 
-            // Determine impacted orders
-            let orderIdsToUpdate: string[] = []
-            if (paymentRecord.related_orders && paymentRecord.related_orders.length > 0) {
-                orderIdsToUpdate = paymentRecord.related_orders
-            } else if (paymentRecord.order_id) {
-                orderIdsToUpdate = [paymentRecord.order_id]
-            }
+        // 5. Check payment status
+        if (rzpPayment.status !== 'captured' && rzpPayment.status !== 'authorized') {
+            return NextResponse.json({ error: `Payment not captured: ${rzpPayment.status}` }, { status: 400 })
+        }
 
-            if (orderIdsToUpdate.length > 0) {
-                // Update Order Status
-                await supabase
-                    .from('orders')
-                    .update({ status: 'placed', is_paid: true }) // Added is_paid
-                    .in('id', orderIdsToUpdate)
+        // 6. Idempotent State Transition (C12, C13)
+        if (order.status === 'placed' || order.status === 'confirmed') {
+            // Already processed
+            return NextResponse.json({ status: 'success', paymentId: razorpay_payment_id })
+        }
 
-                // Deduct Stock & Track Purchase
-                const { data: orderDetails } = await supabase
-                    .from('orders')
-                    .select('user_id, order_items(product_id, size, quantity, products(category, color, price))')
-                    .in('id', orderIdsToUpdate)
+        // Attempt transition using PostgreSQL atomic function
+        const { data: transitioned, error: transitionError } = await supabase.rpc('transition_order_status', {
+            p_order_id: dbOrderId,
+            p_expected_state: 'pending_payment',
+            p_next_state: 'placed'
+        })
 
-                if (orderDetails && orderDetails.length > 0) {
-                    const { PersonalizationService } = await import('@/lib/service/personalization')
+        if (transitionError) {
+            console.error("State transition error:", transitionError)
+            return NextResponse.json({ error: 'Failed to transition order state' }, { status: 500 })
+        }
 
-                    for (const order of orderDetails) {
-                        const itemsToTrack: any[] = []
+        if (!transitioned) {
+            // Did not transition, probably already transitioned concurrently
+            return NextResponse.json({ status: 'success', message: 'Order state already advanced', paymentId: razorpay_payment_id })
+        }
 
-                        if (order.order_items) {
-                            for (const item of order.order_items) {
-                                // 1. Deduct Stock
-                                const { error } = await supabase.rpc('decrement_stock', {
-                                    p_product_id: item.product_id,
-                                    p_size: item.size,
-                                    p_quantity: item.quantity
-                                })
-                                if (error) console.error(`Failed to decrement stock for ${item.product_id}:`, error)
+        // Update payment specific facts
+        await supabase
+            .from('orders')
+            .update({
+                is_paid: true,
+                payment_status: 'captured' // DB enum matches
+            })
+            .eq('id', dbOrderId)
 
-                                // 2. Prepare tracking data
-                                if (item.products) {
-                                    // @ts-ignore
-                                    itemsToTrack.push({
-                                        productId: item.product_id,
-                                        // @ts-ignore
-                                        category: item.products.category,
-                                        // @ts-ignore
-                                        color: item.products.color,
-                                        // @ts-ignore
-                                        price: item.products.price
-                                    })
-                                }
-                            }
-                        }
+        // Note: Inventory was already atomically decremented during `create_order_snapshot`
+        // We do not decrement stock here to prevent double-deduction.
 
-                        // 3. Track Purchase for Personalization
-                        if (order.user_id && itemsToTrack.length > 0) {
-                            await PersonalizationService.trackPurchase(order.user_id, itemsToTrack).catch(err =>
-                                console.error('Failed to track purchase', err)
-                            )
-                        }
-                    }
-                }
-            }
+        // Track purchase for personalization
+        const { data: orderItems } = await supabase
+            .from('order_items')
+            .select('product_id, products(category, color, price)')
+            .eq('order_id', dbOrderId)
+
+        if (orderItems && orderItems.length > 0) {
+            const { PersonalizationService } = await import('@/lib/service/personalization')
+            const itemsToTrack = orderItems.map((item: any) => ({
+                productId: item.product_id,
+                category: item.products?.category,
+                color: item.products?.color,
+                price: item.products?.price
+            }))
+            await PersonalizationService.trackPurchase(order.user_id, itemsToTrack).catch(err =>
+                console.error('Failed to track purchase', err)
+            )
         }
 
         return NextResponse.json({ status: 'success', paymentId: razorpay_payment_id })

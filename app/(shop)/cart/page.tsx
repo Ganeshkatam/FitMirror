@@ -21,12 +21,13 @@ export default function CartPage() {
     const items = useCart((state) => state.items)
     const removeItem = useCart((state) => state.removeItem)
     const updateQuantity = useCart((state) => state.updateQuantity)
-    const getTotal = useCart((state) => state.getTotal)
     const coupon = useCart((state) => state.coupon)
 
     const [mounted, setMounted] = React.useState(false)
+    const [quote, setQuote] = React.useState<any>(null)
+    const [loadingQuote, setLoadingQuote] = React.useState(false)
 
-    // Preferences State (must be before early returns)
+    // Fetch user preferences for cart behavior
     const [confirmPref, setConfirmPref] = React.useState(false)
     const [itemToRemove, setItemToRemove] = React.useState<{ productId: string, size: string } | null>(null)
 
@@ -47,6 +48,41 @@ export default function CartPage() {
         }
         fetchPrefs()
     }, [])
+
+    React.useEffect(() => {
+        if (!mounted || items.length === 0) return
+
+        const fetchQuote = async () => {
+            setLoadingQuote(true)
+            try {
+                const orderItems = items.map(item => ({
+                    productId: item.productId,
+                    size: item.size,
+                    quantity: item.quantity,
+                    price: item.price
+                }))
+
+                const res = await fetch('/api/checkout/quote', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        items: orderItems,
+                        couponCode: coupon?.code
+                    })
+                })
+                
+                if (!res.ok) throw new Error("Failed to calculate quote")
+                const data = await res.json()
+                setQuote(data)
+            } catch (e: any) {
+                console.error("Quote error", e)
+            } finally {
+                setLoadingQuote(false)
+            }
+        }
+
+        fetchQuote()
+    }, [items, coupon, mounted])
 
     // Handler functions (can be defined before early returns)
     const handleRemoveClick = (productId: string, size: string) => {
@@ -223,16 +259,16 @@ export default function CartPage() {
 
                             <div className="flex justify-between text-sm md:text-base">
                                 <span className="text-muted-foreground">Subtotal ({itemCount})</span>
-                                <span className="font-medium">₹{items.reduce((acc, i) => acc + (i.price * i.quantity), 0).toLocaleString('en-IN')}</span>
+                                <span className="font-medium">₹{quote ? (Number(quote.subtotalPaise) / 100).toLocaleString('en-IN') : '...'}</span>
                             </div>
 
                             {/* Discount Display */}
-                            {coupon && (
+                            {quote && Number(quote.discountPaise) > 0 && (
                                 <div className="flex justify-between text-sm md:text-base text-green-600">
                                     <span className="flex items-center gap-1.5">
                                         <Tag className="h-3.5 w-3.5" /> Discount
                                     </span>
-                                    <span className="font-medium">-₹{coupon.discountAmount.toLocaleString('en-IN')}</span>
+                                    <span className="font-medium">-₹{(Number(quote.discountPaise) / 100).toLocaleString('en-IN')}</span>
                                 </div>
                             )}
 
@@ -248,7 +284,7 @@ export default function CartPage() {
                             <div className="border-t pt-2.5 md:pt-4">
                                 <div className="flex justify-between text-base md:text-lg font-bold">
                                     <span>Total</span>
-                                    <span>₹{getTotal().toLocaleString('en-IN')}</span>
+                                    <span>₹{quote ? (Number(quote.totalPaise) / 100).toLocaleString('en-IN') : '...'}</span>
                                 </div>
                                 <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5">Inclusive of all taxes</p>
                             </div>

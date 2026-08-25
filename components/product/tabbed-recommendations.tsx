@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import { ProductImage } from '@/lib/service/media'
 import { ProductCard } from '@/components/product/product-card'
 import { cn } from '@/lib/utils'
 import { Sparkles } from 'lucide-react'
@@ -93,7 +94,7 @@ export function TabbedRecommendations({
                         key={product.id}
                         product={{
                             ...product,
-                            images: product.images || (product.image_url ? [product.image_url] : undefined),
+                            images: product.images || (product.image_url ? [{ src: product.image_url, id: 'fallback', position: 1, mediaType: 'image' }] : undefined),
                         }}
                         showQuickAdd
                     />

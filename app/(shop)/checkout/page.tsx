@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { validateCoupon } from '@/lib/actions/coupons'
-import { getUserLoyaltyInfo, redeemPoints } from '@/lib/actions/loyalty'
 import Script from 'next/script'
 import Link from 'next/link'
 
@@ -22,61 +21,76 @@ declare global {
 }
 
 export default function CheckoutPage() {
-    const { items, getTotal, syncCart, loading } = useCart()
+    const { items, syncCart, loading } = useCart()
     const router = useRouter()
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [mounted, setMounted] = useState(false)
 
-    // Checkout State
     const [selectedAddress, setSelectedAddress] = useState<any>(null)
     const [shippingMethod, setShippingMethod] = useState<ShippingMethod>('standard')
     const [paymentMethod, setPaymentMethod] = useState<'online' | 'cod'>('online')
 
-    // Coupon State
     const [couponCode, setCouponCode] = useState('')
-    const [discount, setDiscount] = useState(0)
     const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null)
     const [validatingCoupon, setValidatingCoupon] = useState(false)
 
-    // Loyalty Points State
-    const [loyaltyInfo, setLoyaltyInfo] = useState<{
-        points: number
-        max_discount: number
-        can_redeem: boolean
-    } | null>(null)
-    const [loyaltyDiscount, setLoyaltyDiscount] = useState(0)
-    const [redeemingPoints, setRedeemingPoints] = useState(false)
-
-    // Costs
-    const subtotal = getTotal()
-    const expressCost = 150 // Could be dynamic based on weight/zone
-    const shippingCost = shippingMethod === 'express' ? expressCost : 0
-    // Tax Calculation (GST 18% on specific items or total - simplified here)
-    // In production, this should come from the server calculation
-    const taxRate = 0.18
-    const tax = Math.round((subtotal - discount - loyaltyDiscount) * taxRate)
-    const total = Math.max(0, subtotal - discount - loyaltyDiscount + shippingCost + tax)
+    const [idempotencyKey, setIdempotencyKey] = useState('')
+    const [quote, setQuote] = useState<any>(null)
+    const [loadingQuote, setLoadingQuote] = useState(false)
 
     useEffect(() => {
         setMounted(true)
+        setIdempotencyKey(window.crypto.randomUUID())
         syncCart()
-        getUserLoyaltyInfo().then(info => {
-            if (info) setLoyaltyInfo(info)
-        })
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    useEffect(() => {
+        if (!mounted || items.length === 0) return
+
+        const fetchQuote = async () => {
+            setLoadingQuote(true)
+            try {
+                const orderItems = items.map(item => ({
+                    productId: item.productId,
+                    size: item.size,
+                    quantity: item.quantity,
+                    price: item.price
+                }))
+
+                const res = await fetch('/api/checkout/quote', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        items: orderItems,
+                        shippingMethod,
+                        couponCode: appliedCoupon
+                    })
+                })
+                
+                if (!res.ok) throw new Error("Failed to calculate quote")
+                const data = await res.json()
+                setQuote(data)
+            } catch (e: any) {
+                console.error("Quote error", e)
+                toast.error("Failed to update pricing")
+            } finally {
+                setLoadingQuote(false)
+            }
+        }
+
+        fetchQuote()
+    }, [items, shippingMethod, appliedCoupon, mounted])
 
     const handleApplyCoupon = async () => {
         if (!couponCode) return
         setValidatingCoupon(true)
         try {
-            const res = await validateCoupon(couponCode, subtotal, items)
+            const res = await validateCoupon(couponCode, 0, items) // local subtotal unused on server now
             if (res.valid) {
-                setDiscount(res.discountAmount || 0)
                 setAppliedCoupon(res.coupon.code)
-                toast.success(`Coupon applied! Saved ₹${res.discountAmount}`)
+                toast.success(`Coupon applied!`)
             } else {
-                setDiscount(0)
                 setAppliedCoupon(null)
                 toast.error(res.message || "Invalid Coupon")
             }
@@ -87,40 +101,18 @@ export default function CheckoutPage() {
         }
     }
 
-    const handleRedeemPoints = async () => {
-        if (!loyaltyInfo || !loyaltyInfo.can_redeem) return
-        setRedeemingPoints(true)
-        try {
-            const pointsToRedeem = Math.min(loyaltyInfo.points, Math.floor((subtotal - discount) * 10))
-            const result = await redeemPoints(pointsToRedeem)
-            if (result.success) {
-                setLoyaltyDiscount(result.discount || 0)
-                setLoyaltyInfo(prev => prev ? {
-                    ...prev,
-                    points: result.remaining_points || 0,
-                    max_discount: Math.floor((result.remaining_points || 0) / 10),
-                    can_redeem: (result.remaining_points || 0) >= 100
-                } : null)
-                toast.success(`Redeemed ${result.points_used} points for ₹${result.discount} discount!`)
-            } else {
-                toast.error(result.message || 'Failed to redeem')
-            }
-        } catch (e) {
-            toast.error('Failed to redeem points')
-        } finally {
-            setRedeemingPoints(false)
-        }
-    }
-
     const handlePayment = async () => {
         if (!selectedAddress) {
             toast.error("Please select a delivery address")
             return
         }
+        if (!quote) {
+            toast.error("Pricing not ready")
+            return
+        }
 
         setIsSubmitting(true)
         try {
-            // 1. Create Order via API
             const orderItems = items.map(item => ({
                 product_id: item.productId,
                 size: item.size,
@@ -132,35 +124,30 @@ export default function CheckoutPage() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    amount: total,
                     items: orderItems,
                     address: selectedAddress,
                     shippingMethod,
                     paymentMethod,
-                    shippingCost,
-                    tax,
-                    couponCode: appliedCoupon
+                    couponCode: appliedCoupon,
+                    idempotencyKey
                 })
             })
             const orderData = await res.json()
             if (orderData.error) throw new Error(orderData.error)
 
-            // 1b. Handle COD Success
-            if (paymentMethod === 'cod' && orderData.success) {
-                router.push(`/order-confirmation?orders=${orderData.db_order_ids.join(',')}&status=success`)
+            if (paymentMethod === 'cod' && orderData.status === 'success') {
+                router.push(`/order-confirmation?orders=${orderData.orderData.db_order_ids.join(',')}&status=success`)
                 return
             }
 
-            // 2. Open Razorpay (Only for Online)
             const options = {
                 key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-                amount: orderData.amount,
-                currency: orderData.currency,
+                amount: orderData.orderData.amount,
+                currency: orderData.orderData.currency,
                 name: "FitMirror Store",
-                description: `Order #${orderData.db_order_ids[0].slice(0, 8)}`,
-                order_id: orderData.id,
+                description: `Order #${orderData.orderData.db_order_ids[0].slice(0, 8)}`,
+                order_id: orderData.orderData.id,
                 handler: async function (response: any) {
-                    // 3. Verify
                     const verifyRes = await fetch('/api/payment/verify', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -168,14 +155,13 @@ export default function CheckoutPage() {
                             razorpay_payment_id: response.razorpay_payment_id,
                             razorpay_order_id: response.razorpay_order_id,
                             razorpay_signature: response.razorpay_signature,
-                            db_order_ids: orderData.db_order_ids
+                            db_order_ids: orderData.orderData.db_order_ids
                         })
                     })
 
                     const verifyData = await verifyRes.json()
                     if (verifyData.status === 'success') {
-                        // Success - Redirect
-                        router.push(`/order-confirmation?orders=${orderData.db_order_ids.join(',')}&status=success`)
+                        router.push(`/order-confirmation?orders=${orderData.orderData.db_order_ids.join(',')}&status=success`)
                     } else {
                         toast.error("Payment verification failed")
                         setIsSubmitting(false)
@@ -221,6 +207,13 @@ export default function CheckoutPage() {
         )
     }
 
+    // Convert server quote to display values
+    const displaySubtotal = quote ? Number(quote.subtotalPaise) / 100 : 0;
+    const displayDiscount = quote ? Number(quote.discountPaise) / 100 : 0;
+    const displayShipping = quote ? Number(quote.shippingPaise) / 100 : 0;
+    const displayTax = quote ? Number(quote.taxPaise) / 100 : 0;
+    const displayTotal = quote ? Number(quote.totalPaise) / 100 : 0;
+
     return (
         <div className="min-h-screen bg-gray-50/50 pb-20">
             <Script src="https://checkout.razorpay.com/v1/checkout.js" />
@@ -237,7 +230,6 @@ export default function CheckoutPage() {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                    {/* LEFT COLUMN - STEPS */}
                     <div className="lg:col-span-8 space-y-6">
                         <CheckoutAddress
                             onSelect={setSelectedAddress}
@@ -247,10 +239,9 @@ export default function CheckoutPage() {
                         <ShippingOptions
                             value={shippingMethod}
                             onChange={setShippingMethod}
-                            expressCost={expressCost}
+                            expressCost={150} // Display purposes only
                         />
 
-                        {/* Payment Method - Static for now as only Razorpay is supported */}
                         <div className="p-4 border rounded-xl bg-white shadow-sm">
                             <h3 className="font-semibold mb-4 flex items-center gap-2">
                                 <div className="bg-primary/10 p-1.5 rounded-full">
@@ -259,7 +250,6 @@ export default function CheckoutPage() {
                                 Payment Method
                             </h3>
                             <div className="space-y-3">
-                                {/* Online Payment Option */}
                                 <div
                                     className={`relative flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-all ${paymentMethod === 'online' ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'bg-white hover:border-gray-300'}`}
                                     onClick={() => setPaymentMethod('online')}
@@ -278,7 +268,6 @@ export default function CheckoutPage() {
                                     </div>
                                 </div>
 
-                                {/* COD Option */}
                                 <div
                                     className={`relative flex items-center gap-3 p-4 border rounded-lg cursor-pointer transition-all ${paymentMethod === 'cod' ? 'border-primary bg-primary/5 ring-1 ring-primary' : 'bg-white hover:border-gray-300'}`}
                                     onClick={() => setPaymentMethod('cod')}
@@ -298,25 +287,30 @@ export default function CheckoutPage() {
                                 </div>
                             </div>
 
-                            <Button onClick={handlePayment} disabled={isSubmitting || !selectedAddress} className="w-full mt-4 h-11 text-base">
-                                {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : (paymentMethod === 'cod' ? `Place Order • ₹${total}` : `Pay Now • ₹${total}`)}
+                            <Button onClick={handlePayment} disabled={isSubmitting || !selectedAddress || loadingQuote || !quote} className="w-full mt-4 h-11 text-base">
+                                {isSubmitting || loadingQuote ? <Loader2 className="h-5 w-5 animate-spin" /> : (paymentMethod === 'cod' ? `Place Order • ₹${displayTotal}` : `Pay Now • ₹${displayTotal}`)}
                             </Button>
                         </div>
                     </div>
 
-                    {/* RIGHT COLUMN - SUMMARY */}
                     <div className="lg:col-span-4">
-                        <CheckoutSummary
-                            items={items}
-                            subtotal={subtotal}
-                            discount={discount}
-                            loyaltyDiscount={loyaltyDiscount}
-                            shipping={shippingCost}
-                            tax={tax}
-                            total={total}
-                        />
+                        {quote ? (
+                            <CheckoutSummary
+                                items={items}
+                                subtotal={displaySubtotal}
+                                discount={displayDiscount}
+                                loyaltyDiscount={0}
+                                shipping={displayShipping}
+                                tax={displayTax}
+                                total={displayTotal}
+                            />
+                        ) : (
+                            <div className="p-4 bg-white border rounded-xl shadow-sm h-48 flex items-center justify-center text-muted-foreground">
+                                <Loader2 className="h-6 w-6 animate-spin mr-2" />
+                                Calculating secure quote...
+                            </div>
+                        )}
 
-                        {/* Coupon Input Mobile/Desktop unified in Summary or below */}
                         <div className="mt-4 p-4 bg-white border rounded-xl shadow-sm">
                             <div className="flex gap-2">
                                 <input
@@ -329,7 +323,6 @@ export default function CheckoutPage() {
                                 {appliedCoupon ? (
                                     <Button variant="outline" size="sm" onClick={() => {
                                         setAppliedCoupon(null)
-                                        setDiscount(0)
                                         setCouponCode('')
                                         toast.info("Coupon removed")
                                     }}>Remove</Button>
@@ -343,35 +336,6 @@ export default function CheckoutPage() {
                                     </Button>
                                 )}
                             </div>
-
-                            {loyaltyInfo && loyaltyInfo.points > 0 && (
-                                <div className="mt-4 pt-4 border-t">
-                                    <div className="flex items-center justify-between mb-2">
-                                        <span className="text-sm font-medium flex items-center gap-1.5">
-                                            <div className="w-4 h-4 rounded-full bg-yellow-100 flex items-center justify-center">
-                                                <div className="w-1.5 h-1.5 bg-yellow-600 rounded-full"></div>
-                                            </div>
-                                            FitMirror Points
-                                        </span>
-                                        <span className="text-xs text-muted-foreground">{loyaltyInfo.points} pts</span>
-                                    </div>
-                                    {loyaltyDiscount > 0 ? (
-                                        <p className="text-xs text-green-600 font-medium">Applied -₹{loyaltyDiscount}</p>
-                                    ) : loyaltyInfo.can_redeem ? (
-                                        <Button
-                                            variant="secondary"
-                                            size="sm"
-                                            className="w-full text-xs h-8 bg-yellow-50 text-yellow-700 hover:bg-yellow-100 border-yellow-200 border"
-                                            onClick={handleRedeemPoints}
-                                            disabled={redeemingPoints}
-                                        >
-                                            {redeemingPoints ? <Loader2 className="h-3 w-3 animate-spin mr-1" /> : 'Redeem Points'}
-                                        </Button>
-                                    ) : (
-                                        <p className="text-[10px] text-muted-foreground">Min 100 points required to redeem</p>
-                                    )}
-                                </div>
-                            )}
                         </div>
                     </div>
                 </div>
@@ -379,4 +343,3 @@ export default function CheckoutPage() {
         </div>
     )
 }
-

@@ -1,3 +1,4 @@
+import { ProductImage } from '@/lib/service/media';
 'use client'
 
 import React, { useState } from 'react'
@@ -46,7 +47,7 @@ export function LuxuryProductCard({ product, priority = false, className }: Luxu
     const title = product.name || product.title || 'Untitled Product'
     const price = product.price || 0
     const imageUrl = product.images?.[0]?.src || product.image || '/placeholder.png'
-    const hoverImageUrl = (typeof product.images?.[1] === 'string' ? product.images?.[1]?.src : (product.images?.[1] as any)?.src) || null
+    const hoverImageUrl = product.images?.[1]?.src || null
     const isOutOfStock = (typeof product.stock === 'number' && product.stock <= 0) || (product.is_in_stock === false)
 
     const handleQuickAdd = (e: React.MouseEvent) => {

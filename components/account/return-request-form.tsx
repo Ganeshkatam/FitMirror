@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { ProductImage } from '@/lib/service/media'
 import { Trash2, Plus, Upload, Check } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -71,7 +72,7 @@ export function ReturnRequestForm({ order }: { order: Order }) {
         reason: string,
         condition: string,
         comment: string,
-        images?: ProductImage[]
+        images?: string[]
     }>>({})
     const [returnType, setReturnType] = useState<'return' | 'exchange'>('return')
     const [refundMethod, setRefundMethod] = useState<'wallet' | 'original'>('wallet')
@@ -150,7 +151,7 @@ export function ReturnRequestForm({ order }: { order: Order }) {
                     toast.error(`Please add comments for 'Other' reason`)
                     return
                 }
-                if ((data.reason.includes('Defect') || data.reason.includes('Wrong')) && data.images.length === 0) {
+                if ((data.reason.includes('Defect') || data.reason.includes('Wrong')) && (!data.images || data.images.length === 0)) {
                     // Optional but recommended, maybe strict warning?
                     // User plan said: "Evidence: Photo upload required for specific reasons"
                     toast.error(`Please upload photos for damaged/wrong items`)
@@ -285,12 +286,12 @@ export function ReturnRequestForm({ order }: { order: Order }) {
                                     <div className="space-y-2">
                                         <Label>Photos (Optional)</Label>
                                         <div className="flex flex-wrap gap-2">
-                                            {itemData[item.id]?.images.map((img, idx) => (
+                                            {itemData[item.id]?.images?.map((img, idx) => (
                                                 <div key={idx} className="relative w-20 h-20 rounded border overflow-hidden group">
                                                     <Image src={img} alt="evidence" fill className="object-cover" />
                                                     <button
                                                         onClick={() => {
-                                                            const newImages = itemData[item.id].images.filter((_, i) => i !== idx)
+                                                            const newImages = itemData[item.id]?.images?.filter((_, i) => i !== idx) || []
                                                             updateItem(item.id, 'images', newImages)
                                                         }}
                                                         className="absolute top-0 right-0 bg-red-500 text-white p-1 opacity-0 group-hover:opacity-100 transition-opacity"

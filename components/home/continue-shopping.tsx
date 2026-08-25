@@ -1,3 +1,4 @@
+import { ProductImage } from '@/lib/service/media';
 'use client'
 
 import Link from 'next/link'

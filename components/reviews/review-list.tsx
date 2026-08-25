@@ -1,3 +1,4 @@
+import { ProductImage } from '@/lib/service/media';
 'use client'
 
 import { Star, CheckCircle2, ThumbsUp } from 'lucide-react'
@@ -25,7 +26,7 @@ interface Review {
         avatar_url: string | null
     }
     verified_purchase: boolean
-    images?: ProductImage[]
+    images?: string[]
     fit_rating?: string
     size_purchased?: string
     seller_reply?: string | null
