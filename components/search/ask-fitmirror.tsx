@@ -268,7 +268,7 @@ export function AskFitMirror({
                                                 >
                                                     <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
                                                         <Image
-                                                            src={product.image || (typeof product.images?.[0] === 'string' ? (typeof product.images?.[0] === 'string' ? product.images[0] : (product.images?.[0] as any)?.src) : (product.images?.[0] as any)?.src) || '/placeholder.jpg'}
+                                                            src={product.image || product.images?.[0]?.src || '/placeholder.jpg'}
                                                             alt={product.name}
                                                             className="object-cover transition-transform group-hover:scale-105"
                                                             fill

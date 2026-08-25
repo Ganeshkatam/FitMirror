@@ -12,7 +12,7 @@ interface Product {
     id: string
     name: string
     price: number
-    images?: any[]
+    images?: ProductImage[]
     brand?: string
     category?: string
 }
@@ -50,7 +50,7 @@ export function ContinueShopping({ items }: ContinueShoppingProps) {
                             <Card className="overflow-hidden border-0 shadow-sm hover:shadow-md transition-shadow bg-white dark:bg-zinc-900">
                                 <div className="aspect-[3/4] relative bg-gray-100 dark:bg-zinc-800">
                                     <Image
-                                        src={(typeof product.images?.[0] === 'string' ? (typeof product.images?.[0] === 'string' ? product.images[0] : (product.images?.[0] as any)?.src) : (product.images?.[0] as any)?.src) || '/placeholder.jpg'}
+                                        src={product.images?.[0]?.src || '/placeholder.jpg'}
                                         alt={product.name}
                                         fill
                                         className="object-cover transition-transform group-hover:scale-105"

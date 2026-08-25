@@ -9,7 +9,7 @@ interface Product {
     id: string
     name: string
     price: number
-    images?: any[]
+    images?: ProductImage[]
     image_url?: string | null
     category?: string | null
     brand?: string | null

@@ -98,7 +98,7 @@ export async function POST(req: Request) {
 
             let query = supabase
                 .from('products')
-                .select('id, name, price, category, image_url, description')
+                .select('id, name, price, category, product_media(*), description')
                 .eq('is_active', true)
 
             // Basic keyword matching
@@ -115,7 +115,7 @@ export async function POST(req: Request) {
             if (products.length === 0) {
                 const { data: allProducts } = await supabase
                     .from('products')
-                    .select('id, name, price, category, image_url, description')
+                    .select('id, name, price, category, product_media(*), description')
                     .eq('is_active', true)
                     .limit(4)
                 products = (allProducts || []) as Product[]

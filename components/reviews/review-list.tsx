@@ -25,7 +25,7 @@ interface Review {
         avatar_url: string | null
     }
     verified_purchase: boolean
-    images?: any[]
+    images?: ProductImage[]
     fit_rating?: string
     size_purchased?: string
     seller_reply?: string | null

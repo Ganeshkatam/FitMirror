@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
                 product:products (
                     name,
                     price,
-                    image_url,
+                    product_media(*),
                     product_media(*),
                     slug
                 )

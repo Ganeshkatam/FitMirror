@@ -14,7 +14,7 @@ interface Product {
     id: string
     name: string
     price: number
-    images?: any[]
+    images?: ProductImage[]
     category: string
     color?: string
     brand?: string
@@ -162,7 +162,7 @@ function ProductCard({
     isWishlisted: boolean
     onToggleWishlist: () => void
 }) {
-    const image = (typeof product.images?.[0] === 'string' ? (typeof product.images?.[0] === 'string' ? product.images[0] : (product.images?.[0] as any)?.src) : (product.images?.[0] as any)?.src) || '/placeholder.jpg'
+    const image = product.images?.[0]?.src || '/placeholder.jpg'
 
     return (
         <Card className="group overflow-hidden hover:shadow-lg transition-all">

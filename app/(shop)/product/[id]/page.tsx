@@ -35,7 +35,7 @@ export async function generateMetadata(
     }
 
     const previousImages = (await parent).openGraph?.images || []
-    const imageUrl = (typeof product.images?.[0] === 'string' ? (typeof product.images?.[0] === 'string' ? product.images[0] : (product.images?.[0] as any)?.src) : (product.images?.[0] as any)?.src) || product.image || '/og-default.jpg'
+    const imageUrl = product.images?.[0]?.src || product.image || '/og-default.jpg'
 
     return {
         title: `${product.name} | FitMirror`,

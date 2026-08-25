@@ -126,7 +126,7 @@ export function GlobalSearch() {
                         category: item.category,
                         price: item.price,
                         original_price: item.original_price,
-                        image: (typeof item.images?.[0] === 'string' ? (typeof item.images?.[0] === 'string' ? item.images[0] : (item.images?.[0] as any)?.src) : (item.images?.[0] as any)?.src) || item.image || null,
+                        image: item.images?.[0]?.src || item.image || null,
                         discount: item.discount
                     }))
                     setResults(mapped)

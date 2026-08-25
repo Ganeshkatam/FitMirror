@@ -143,7 +143,7 @@ export default async function HomePage() {
                 <TrendingStrip products={trendingProducts.map(p => ({
                     id: p.id,
                     name: p.name || 'Product',
-                    image: (p.images && p.images.length > 0 ? (typeof p.images?.[0] === 'string' ? p.images[0] : (p.images?.[0] as any)?.src) : '/placeholder.jpg'),
+                    image: (p.images && p.images.length > 0 ? p.images?.[0]?.src : '/placeholder.jpg'),
                     price: p.price,
                     badge: 'hot' as const
                 }))} />

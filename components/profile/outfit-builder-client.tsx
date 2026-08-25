@@ -45,7 +45,7 @@ export function OutfitBuilderClient({ wardrobe, recommendations }: { wardrobe: a
                         <div className="w-48 h-56 border-2 border-dashed rounded-xl flex items-center justify-center bg-gray-50 relative group">
                             {outfit.top ? (
                                 <div className="relative w-full h-full p-2 cursor-pointer" onClick={() => handleSelect(null, 'top')}>
-                                    <Image src={outfit.top.image || (typeof outfit.top.images?.[0] === 'string' ? (typeof outfit.top.images?.[0] === 'string' ? outfit.top.images[0] : (outfit.top.images?.[0] as any)?.src) : (outfit.top.images?.[0] as any)?.src)} alt="Top" fill className="object-contain" />
+                                    <Image src={outfit.top.image || outfit.top.images?.[0]?.src} alt="Top" fill className="object-contain" />
                                     <div className="absolute top-1 right-1 bg-white rounded-full p-1 shadow opacity-0 group-hover:opacity-100 transition"><RotateCcw className="h-3 w-3" /></div>
                                 </div>
                             ) : (
@@ -57,7 +57,7 @@ export function OutfitBuilderClient({ wardrobe, recommendations }: { wardrobe: a
                         <div className="w-48 h-64 border-2 border-dashed rounded-xl flex items-center justify-center bg-gray-50 relative group">
                             {outfit.bottom ? (
                                 <div className="relative w-full h-full p-2 cursor-pointer" onClick={() => handleSelect(null, 'bottom')}>
-                                    <Image src={outfit.bottom.image || (typeof outfit.bottom.images?.[0] === 'string' ? (typeof outfit.bottom.images?.[0] === 'string' ? outfit.bottom.images[0] : (outfit.bottom.images?.[0] as any)?.src) : (outfit.bottom.images?.[0] as any)?.src)} alt="Bottom" fill className="object-contain" />
+                                    <Image src={outfit.bottom.image || outfit.bottom.images?.[0]?.src} alt="Bottom" fill className="object-contain" />
                                 </div>
                             ) : (
                                 <span className="text-gray-400 text-sm">Select Bottom</span>
@@ -68,7 +68,7 @@ export function OutfitBuilderClient({ wardrobe, recommendations }: { wardrobe: a
                         <div className="w-48 h-32 border-2 border-dashed rounded-xl flex items-center justify-center bg-gray-50 relative group">
                             {outfit.shoes ? (
                                 <div className="relative w-full h-full p-2 cursor-pointer" onClick={() => handleSelect(null, 'shoes')}>
-                                    <Image src={outfit.shoes.image || (typeof outfit.shoes.images?.[0] === 'string' ? (typeof outfit.shoes.images?.[0] === 'string' ? outfit.shoes.images[0] : (outfit.shoes.images?.[0] as any)?.src) : (outfit.shoes.images?.[0] as any)?.src)} alt="Shoes" fill className="object-contain" />
+                                    <Image src={outfit.shoes.image || outfit.shoes.images?.[0]?.src} alt="Shoes" fill className="object-contain" />
                                 </div>
                             ) : (
                                 <span className="text-gray-400 text-sm">Select Shoes</span>
@@ -100,7 +100,7 @@ export function OutfitBuilderClient({ wardrobe, recommendations }: { wardrobe: a
                                         }).map(item => (
                                             <div key={item.id} className="cursor-pointer group" onClick={() => handleSelect(item, type as any)}>
                                                 <div className="aspect-[3/4] relative rounded-lg overflow-hidden bg-gray-100 mb-2 border-2 border-transparent hover:border-indigo-500 transition-all">
-                                                    <Image src={item.image || (typeof item.images?.[0] === 'string' ? (typeof item.images?.[0] === 'string' ? item.images[0] : (item.images?.[0] as any)?.src) : (item.images?.[0] as any)?.src) || '/placeholder.jpg'} alt={item.name} fill className="object-cover" />
+                                                    <Image src={item.image || item.images?.[0]?.src || '/placeholder.jpg'} alt={item.name} fill className="object-cover" />
                                                 </div>
                                                 <p className="text-xs font-medium truncate">{item.name}</p>
                                             </div>

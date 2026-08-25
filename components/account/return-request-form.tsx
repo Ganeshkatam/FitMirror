@@ -23,7 +23,7 @@ interface OrderItem {
     product: {
         id: string
         name: string
-        images?: any[]
+        images?: ProductImage[]
     }
 }
 
@@ -71,7 +71,7 @@ export function ReturnRequestForm({ order }: { order: Order }) {
         reason: string,
         condition: string,
         comment: string,
-        images?: any[]
+        images?: ProductImage[]
     }>>({})
     const [returnType, setReturnType] = useState<'return' | 'exchange'>('return')
     const [refundMethod, setRefundMethod] = useState<'wallet' | 'original'>('wallet')
@@ -203,8 +203,8 @@ export function ReturnRequestForm({ order }: { order: Order }) {
                                     id={`item-${item.id}`}
                                 />
                                 <div className="relative h-16 w-12 bg-gray-100 rounded border flex-shrink-0">
-                                    {(typeof item.product.images?.[0] === 'string' ? (typeof item.product.images?.[0] === 'string' ? item.product.images[0] : (item.product.images?.[0] as any)?.src) : (item.product.images?.[0] as any)?.src) && (
-                                        <Image src={(typeof item.product.images?.[0] === 'string' ? item.product.images[0] : (item.product.images?.[0] as any)?.src)} alt={item.product.name} fill className="object-cover" />
+                                    {item.product.images?.[0]?.src && (
+                                        <Image src={item.product.images?.[0]?.src} alt={item.product.name} fill className="object-cover" />
                                     )}
                                 </div>
                                 <div className="flex-1">

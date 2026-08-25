@@ -43,7 +43,7 @@ async function searchProducts(params: z.infer<typeof searchProductsSchema>) {
 
     let queryBuilder = supabase
         .from('products')
-        .select('id, name, price, category, image_url, tryon_supported')
+        .select('id, name, price, category, product_media(*), tryon_supported')
         .eq('is_active', true)
         .limit(10);
 
