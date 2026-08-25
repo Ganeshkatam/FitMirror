@@ -112,31 +112,6 @@ export async function getTryOnSessionTimeline(sessionId: string) {
     return data
 }
 
-/**
- * Get recent try-on activity (for admin dashboard)
- */
-export async function getRecentTryOnActivity(limit = 50) {
-    const supabase = await createClient()
-
-    const { data, error } = await supabase
-        .from('tryon_audit_logs')
-        .select(`
-            *,
-            tryon_sessions:session_id (
-                user_id,
-                created_at
-            )
-        `)
-        .order('recorded_at', { ascending: false })
-        .limit(limit)
-
-    if (error) {
-        console.error('Failed to fetch recent activity:', error)
-        return []
-    }
-
-    return data
-}
 
 /**
  * Get daily try-on usage stats

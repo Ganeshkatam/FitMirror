@@ -150,7 +150,6 @@ export default async function ProfilePage() {
                             </div>
                             <h1 className="text-3xl md:text-5xl font-bold font-serif tracking-tight mb-2 flex items-center gap-3 justify-center md:justify-start">
                                 {profile?.display_name || 'Fashionista'}
-                                {profile?.role === 'admin' && <ShieldCheck className="h-6 w-6 text-indigo-400" />}
                             </h1>
                             <div className="flex flex-wrap justify-center md:justify-start gap-3 items-center text-sm text-gray-300">
                                 <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/10">

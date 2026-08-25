@@ -25,8 +25,7 @@ export function usePageTracking() {
         if (pathname === lastPathRef.current) return
         lastPathRef.current = pathname
 
-        // Skip admin routes (don't pollute analytics with admin views)
-        if (pathname.startsWith('/platform-admin') || pathname.startsWith('/chairman')) return
+
 
         trackPageView(pathname, sessionIdRef.current)
     }, [pathname])

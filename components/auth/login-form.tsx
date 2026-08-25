@@ -87,38 +87,10 @@ export function LoginForm() {
         defaultValues: { email: '' },
     })
 
-    // Post-login handler with role-based redirect
+    // Post-login handler
     async function handlePostLogin(user: any) {
-        const supabase = createClient()
-
-        // Always fetch profile to determine role
-        const { data: profile } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', user.id)
-            .single()
-
-        const userRole = profile?.role || 'customer'
-
-        // Role-based redirect
-        switch (userRole) {
-            case 'admin':
-                toast.success('Welcome back, Admin!')
-                router.push('/platform-admin')
-                break
-
-            case 'seller':
-                // Even if role is seller, redirect to shop or show error since seller portal is gone
-                toast.success('Welcome back!')
-                router.push('/shop')
-                break
-
-            default:
-                // Customer
-                toast.success('Welcome back!')
-                router.push('/shop')
-        }
-
+        toast.success('Welcome back!')
+        router.push('/shop')
         router.refresh()
     }
 

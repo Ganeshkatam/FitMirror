@@ -44,14 +44,9 @@ export function AIStylistWidget() {
     const pathname = usePathname()
     const cartItems = useCart(state => state.items)
 
-    // Hide on admin and chairman routes
+    // AI Stylist is globally visible on all storefront routes
     useEffect(() => {
-        if (pathname?.startsWith('/platform-admin') || pathname?.startsWith('/chairman')) {
-            setIsVisible(false)
-            setIsOpen(false)
-        } else {
-            setIsVisible(true)
-        }
+        setIsVisible(true)
     }, [pathname])
 
     // Scroll to bottom on new message

@@ -34,7 +34,6 @@ export async function SiteHeader() {
     let headerOrderCount = 0
     let headerWishlistCount = 0
     let profileData: any = null
-    let isAdmin = false
 
     if (currentUser) {
         const [profileRes, ordersRes, wishlistRes] = await Promise.all([

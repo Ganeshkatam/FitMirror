@@ -43,15 +43,7 @@ const customerActions = [
     { label: 'Dark Mode', prompt: 'Switch to dark mode', icon: Zap },
 ]
 
-const adminActions = [
-    { label: 'Create Coupon', prompt: 'Create a 20% discount coupon called FLASH20', icon: Tag },
-    { label: 'Revenue', prompt: 'Show me admin analytics', icon: TrendingUp },
-    { label: 'Ban User', prompt: 'Ban user spammer@example.com', icon: AlertTriangle },
-    { label: 'New Campaign', prompt: 'Go to marketing campaigns', icon: Sparkles },
-    { label: 'All Orders', prompt: 'Open orders dashboard', icon: Package },
-    { label: 'Inventory', prompt: 'Go to inventory management', icon: ShoppingCart },
-    { label: 'Site Settings', prompt: 'Go to settings', icon: Zap },
-]
+
 
 // Context for global access
 interface GenieContextType {
@@ -402,7 +394,7 @@ function GlobalGenie({ open, onOpenChange, pendingMessage, onPendingMessageConsu
                             <div className="w-full space-y-2">
                                 <p className="text-[10px] uppercase tracking-wider text-gray-400 font-bold px-1">Try asking</p>
                                 <div className="flex flex-wrap gap-2">
-                                    {(pathname?.startsWith('/platform-admin') ? adminActions : customerActions).map((action, i) => (
+                                    {customerActions.map((action, i) => (
                                         <button
                                             key={i}
                                             onClick={() => {

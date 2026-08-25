@@ -42,7 +42,7 @@ const phoneOtpSchema = z.object({
     phone: z.string().regex(/^\+?[1-9]\d{9,14}$/, 'Please enter a valid phone number.'),
 })
 
-export function SignupForm({ role }: { role?: 'seller' | 'customer' }) {
+export function SignupForm() {
     const router = useRouter()
 
     // State
@@ -86,7 +86,6 @@ export function SignupForm({ role }: { role?: 'seller' | 'customer' }) {
                 password: values.password,
                 options: {
                     emailRedirectTo: `${location.origin}/auth/callback`,
-                    data: role ? { role: role } : undefined
                 },
             })
 
@@ -123,7 +122,6 @@ export function SignupForm({ role }: { role?: 'seller' | 'customer' }) {
                 email: email,
                 options: {
                     emailRedirectTo: `${location.origin}/auth/callback`,
-                    data: role ? { role: role } : undefined
                 },
             })
 
@@ -184,9 +182,6 @@ export function SignupForm({ role }: { role?: 'seller' | 'customer' }) {
             const { data, error } = await supabase.auth.signUp({
                 phone: values.phone,
                 password: values.password,
-                options: {
-                    data: role ? { role: role } : undefined
-                },
             })
 
             if (error) {
@@ -220,9 +215,6 @@ export function SignupForm({ role }: { role?: 'seller' | 'customer' }) {
         try {
             const { error } = await supabase.auth.signInWithOtp({
                 phone: phone,
-                options: {
-                    data: role ? { role: role } : undefined
-                },
             })
 
             if (error) {
