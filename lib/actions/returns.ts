@@ -34,7 +34,7 @@ export async function createReturnRequest(input: ReturnRequestInput) {
         .from('orders')
         .select(`
             *,
-            items:order_items(*, product:products(seller_id, store_id))
+            items:order_items(*)
         `)
         .eq('id', input.order_id)
         .eq('user_id', user.id)
@@ -72,7 +72,7 @@ export async function createReturnRequest(input: ReturnRequestInput) {
         .insert({
             order_id: input.order_id,
             user_id: user.id,
-            store_id: order.items[0]?.product?.store_id, // Assuming single store order for now
+            seller_id: order.items[0]?.seller_id, // Assuming single seller order for now
             return_number: `RET-${Date.now()}`,
             status: 'requested',
             type: input.type,

@@ -20,27 +20,28 @@ export default async function StorePage({ params }: Props) {
     const { data: { user } } = await supabase.auth.getUser()
 
     // 1. Fetch Store Details
-    const { data: store, error: storeError } = await supabase
-        .from('stores')
+    const { data: seller, error: sellerError } = await supabase
+        .from('sellers')
         .select('*')
         .eq('id', id)
-        .eq('status', 'active') // Only show active stores
+        .eq('status', 'active') // Only show active sellers
         .single()
 
-    if (!store || storeError) {
+    if (!seller || sellerError) {
         notFound()
     }
 
     // 2. Fetch Store Products
-    const { data: products } = await supabase
-        .from('products')
+    const { data: offers } = await supabase
+        .from('product_offers')
         .select(`
-            *,
-            product_inventory (size, stock)
+            product_id,
+            products (*, product_inventory (size, stock))
         `)
-        .eq('store_id', id)
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
+        .eq('seller_id', id)
+        .eq('status', 'active')
+
+    const products = offers?.map(o => o.products).filter(p => p?.is_active) || []
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -50,13 +51,13 @@ export default async function StorePage({ params }: Props) {
                 <div
                     className="h-48 md:h-64 w-full bg-gray-200 dark:bg-gray-700 relative overflow-hidden"
                     style={{
-                        backgroundImage: store.cover_image ? `url(${store.cover_image})` : undefined,
+                        backgroundImage: seller.cover_image ? `url(${seller.cover_image})` : undefined,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
-                        backgroundColor: !store.cover_image ? (store.brand_color || '#000000') : undefined
+                        backgroundColor: !seller.cover_image ? (seller.brand_color || '#000000') : undefined
                     }}
                 >
-                    {!store.cover_image && (
+                    {!seller.cover_image && (
                         <div className="absolute inset-0 flex items-center justify-center opacity-10">
                             <Store className="h-24 w-24 text-white" />
                         </div>
@@ -68,19 +69,19 @@ export default async function StorePage({ params }: Props) {
                     <div className="relative -mt-16 flex flex-col md:flex-row items-center md:items-end gap-6 text-center md:text-left">
                         {/* Logo */}
                         <div className="relative w-32 h-32 rounded-2xl overflow-hidden border-4 border-white dark:border-gray-800 shadow-xl bg-white">
-                            {store.logo || store.logo_url ? (
+                            {seller.logo || seller.logo_url ? (
                                 <Image
-                                    src={store.logo || store.logo_url}
-                                    alt={store.name}
+                                    src={seller.logo || seller.logo_url}
+                                    alt={seller.name}
                                     fill
                                     className="object-cover"
                                 />
                             ) : (
                                 <div
                                     className="w-full h-full flex items-center justify-center text-white text-4xl font-bold"
-                                    style={{ backgroundColor: store.brand_color || '#000' }}
+                                    style={{ backgroundColor: seller.brand_color || '#000' }}
                                 >
-                                    {store.name.charAt(0)}
+                                    {seller.name?.charAt(0) || 'S'}
                                 </div>
                             )}
                         </div>
@@ -88,10 +89,10 @@ export default async function StorePage({ params }: Props) {
                         {/* Store Info */}
                         <div className="flex-1 space-y-2 mb-2">
                             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">
-                                {store.name}
+                                {seller.name}
                             </h1>
                             <p className="max-w-2xl text-gray-600 dark:text-gray-300 leading-relaxed text-sm md:text-base">
-                                {store.bio || store.description || `Welcome to ${store.name}. Discover our latest collection.`}
+                                {seller.bio || seller.description || `Welcome to ${seller.name}. Discover our latest collection.`}
                             </p>
 
                             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 text-sm text-gray-500 delay-100 pt-2">
@@ -99,10 +100,10 @@ export default async function StorePage({ params }: Props) {
                                     <MapPin className="h-4 w-4" />
                                     India
                                 </span>
-                                {store.created_at && (
+                                {seller.created_at && (
                                     <span className="flex items-center gap-1">
                                         <Calendar className="h-4 w-4" />
-                                        Since {new Date(store.created_at).getFullYear()}
+                                        Since {new Date(seller.created_at).getFullYear()}
                                     </span>
                                 )}
                             </div>
@@ -110,12 +111,12 @@ export default async function StorePage({ params }: Props) {
 
                         {/* Actions */}
                         <div className="flex gap-3 mb-2">
-                            <ChatWidget storeId={store.id} userId={user?.id} />
+                            <ChatWidget sellerId={seller.id} userId={user?.id} />
                             <button
                                 className="px-6 py-2 rounded-full font-medium text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
-                                style={{ backgroundColor: store.brand_color || '#000000' }}
+                                style={{ backgroundColor: seller.brand_color || '#000000' }}
                             >
-                                Follow Store
+                                Follow Seller
                             </button>
                         </div>
                     </div>

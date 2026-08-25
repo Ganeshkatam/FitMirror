@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 interface TryOnApplyRequest {
     product_id: string
     avatar_id?: string
-    store_id?: string // Client might send, or we fetch
+    seller_id?: string // Client might send, or we fetch
 }
 
 export async function POST(req: Request) {
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
             const { error: logError } = await supabase
                 .from('tryon_events')
                 .insert({
-                    store_id: garment.store_id || '00000000-0000-0000-0000-000000000000', // Fallback or fetched
+                    seller_id: garment.seller_id || null, // Fallback or fetched
                     product_id: product_id,
                     garment_layer: garment.layer_index
                 })

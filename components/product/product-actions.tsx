@@ -25,7 +25,7 @@ interface ProductActionsProps {
     price: number
     sizes: string[]
     category: string
-    storeId: string
+    offerId?: string
     initialInventory: InventoryItem[]
 }
 
@@ -36,7 +36,7 @@ export function ProductActions({
     price,
     sizes,
     category,
-    storeId,
+    offerId,
     initialInventory,
 }: ProductActionsProps) {
     const router = useRouter()
@@ -120,7 +120,7 @@ export function ProductActions({
                 productImage,
                 price,
                 size: selectedSize,
-                storeId,
+                offerId: offerId || 'pending',
                 variantId: itemInventory?.variant_id || undefined
             })
             // Simulate network delay for better UX feeling
@@ -145,7 +145,7 @@ export function ProductActions({
                 productImage,
                 price,
                 size: selectedSize,
-                storeId,
+                offerId: offerId || 'pending',
                 variantId: itemInventory?.variant_id || undefined
             })
             router.push('/checkout')

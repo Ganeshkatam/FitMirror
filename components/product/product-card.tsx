@@ -1,5 +1,5 @@
-import { ProductImage } from '@/lib/service/media';
 'use client'
+import { ProductImage } from '@/lib/service/media';
 
 import { useQuickView } from '@/lib/store/use-quick-view'
 import { Eye, Heart, Star, ShoppingBag } from 'lucide-react'
@@ -28,7 +28,6 @@ export interface Product {
     stock?: number
     is_in_stock?: boolean | null
     trending_score?: number | null
-    store_id?: string | null
     category?: string | null
     brand?: string | null
     avg_rating?: number | null
@@ -100,7 +99,8 @@ export function ProductCard({ product, priority = false, className, showTryOn = 
         openQuickView(product as any)
         trackEvent({
             eventType: 'quick_view',
-            storeId: product.store_id || 'platform',
+            offerId: activeOffer?.id,
+            sellerId: activeOffer?.seller_id,
             productId: product.id
         })
     }
@@ -121,12 +121,12 @@ export function ProductCard({ product, priority = false, className, showTryOn = 
             productImage: imageUrl,
             price,
             size: 'M', // Default — user can change in cart
-            storeId: product.store_id || '',
         })
         toast.success('Added to bag!')
         trackEvent({
             eventType: 'add_to_cart',
-            storeId: product.store_id || 'platform',
+            offerId: activeOffer?.id,
+            sellerId: activeOffer?.seller_id,
             productId: product.id,
             metadata: { source: 'quick_add' }
         })

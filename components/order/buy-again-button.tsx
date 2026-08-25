@@ -10,13 +10,13 @@ import { useRouter } from 'next/navigation'
 interface BuyAgainButtonProps {
     orderItems: {
         product_id: string
+        offer_id?: string
         quantity: number
         size: string
         products: {
             name: string
             image: string | null
             price: number
-            store_id?: string
         } | null
     }[]
     className?: string
@@ -41,7 +41,7 @@ export function BuyAgainButton({ orderItems, className }: BuyAgainButtonProps) {
                         productImage: item.products.image || '',
                         price: item.products.price,
                         size: item.size,
-                        storeId: item.products.store_id || ''
+                        offerId: item.offer_id || 'pending'
                     })
                     addedCount++
                 }

@@ -18,7 +18,7 @@ export interface AssistantContext {
         has_avatar?: boolean
         location?: string
     }
-    store_id?: string
+    seller_id?: string
     supabase?: any
 }
 

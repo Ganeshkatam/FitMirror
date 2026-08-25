@@ -47,7 +47,7 @@ export async function placeOrder(formData: FormData) {
         price: item.product.price,
         size: item.size,
         quantity: item.quantity,
-        storeId: item.product.store_id,
+        offerId: item.offer_id,
         variantId: item.variant_id // Added variantId
     }))
 
@@ -68,49 +68,32 @@ export async function placeOrder(formData: FormData) {
     }
 
     // 3.1 Construct Calculation Payload for RPC
-    // We map the intent data that the RPC requires
-    const calculationPayload = {
-        subtotalPaise: cartSummary.subtotal * 100, // assuming cartSummary is in INR
-        discountPaise: cartSummary.discount * 100,
-        taxPaise: cartSummary.tax * 100,
-        shippingPaise: cartSummary.shipping * 100,
-        totalPaise: cartSummary.total * 100,
-        lines: cartItems.map((item: any) => ({
-            productId: item.productId,
-            offerId: item.offerId,
-            variantId: item.variantId,
-            quantity: item.quantity,
-            unitPricePaise: item.price * 100,
-            taxRuleId: null, // to be updated later if needed
-            taxRateBps: 0,
-            discountAmountPaise: 0,
-            taxableAmountPaise: item.price * 100,
-            taxAmountPaise: 0,
-            totalAmountPaise: (item.price * item.quantity) * 100
-        }))
-    }
+    // We pass ONLY the intent data that the RPC requires
+    const linesPayload = cartItems.map((item: any) => ({
+        productId: item.productId,
+        offerId: item.offerId,
+        variantId: item.variantId,
+        quantity: item.quantity
+    }))
 
     const idempotencyKey = session.id
 
-    // 4. Create Order via RPC (Handles stock lock, invariants, and snapshotting)
+    // 4. Create Order via RPC (Handles stock lock, pricing, invariants, and snapshotting)
     const { data: orderId, error } = await supabase.rpc('create_order_snapshot', {
         p_idempotency_key: idempotencyKey,
         p_user_id: user.id,
         p_coupon_id: null, // Future: Handle coupon application
         p_shipping_method_id: null,
-        p_calculation: calculationPayload
+        p_address_id: null,
+        p_shipping_address: addressData,
+        p_payment_method: 'cod',
+        p_lines: linesPayload
     })
 
     if (error) {
         console.error("Checkout Failed - RPC Error:", error)
         throw new Error("Checkout failed during processing. " + error.message)
     }
-
-    // 5. Update Order with Address (since the RPC doesn't handle shipping details yet)
-    await supabase.from('orders').update({
-        shipping_address: addressData,
-        payment_method: 'cod' // Assuming COD for now
-    }).eq('id', orderId)
 
     // 6. Clear Cart
     await supabase.from('cart_items').delete().eq('cart_id', cart.id)

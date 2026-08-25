@@ -92,7 +92,8 @@ export function ProductDetailsClient({
     React.useEffect(() => {
         trackEvent({
             eventType: 'view_item',
-            storeId: product.store?.id || product.store_id || 'fitmirror-main',
+            offerId: activeOffer?.id,
+            sellerId: activeOffer?.seller_id,
             productId: product.id,
             metadata: {
                 category: product.category,
@@ -214,7 +215,6 @@ export function ProductDetailsClient({
             productImage: product.images?.[0]?.src || product.image,
             price: currentPrice,
             size: selectedSize,
-            storeId: product.store?.id || product.store_id || '',
             variantId: itemInventory?.variant_id || undefined,
             color: selectedColor || undefined
         })
@@ -259,7 +259,6 @@ export function ProductDetailsClient({
             productImage: product.images?.[0]?.src || product.image,
             price: currentPrice,
             size: selectedSize,
-            storeId: product.store?.id || product.store_id || '',
             variantId: itemInventory?.variant_id || undefined,
             color: selectedColor || undefined
         })

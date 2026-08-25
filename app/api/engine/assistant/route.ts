@@ -4,14 +4,14 @@ import { resolveAssistantAction } from '@/lib/assistant/assistant-engine'
 interface AssistantRequest {
     message: string
     page?: string
-    store_id?: string
+    seller_id?: string
     user_context?: any
 }
 
 export async function POST(req: Request) {
     try {
         const body = await req.json() as AssistantRequest
-        const { message, page, store_id, user_context } = body
+        const { message, page, seller_id, user_context } = body
 
         if (!message) {
             return NextResponse.json({ error: 'Message required' }, { status: 400 })
@@ -20,7 +20,7 @@ export async function POST(req: Request) {
         // Logic is pure function -> Easy to test
         const response = resolveAssistantAction(message, {
             page,
-            store_id,
+            seller_id,
             user_context
         })
 

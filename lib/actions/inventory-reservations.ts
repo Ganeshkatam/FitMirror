@@ -143,18 +143,18 @@ export async function cleanupExpiredReservations() {
 /**
  * Get all active reservations for a store
  */
-export async function getStoreReservations(storeId: string) {
+export async function getSellerReservations(sellerId: string) {
     const supabase = await createClient()
 
-    // Get product IDs for this store
-    const { data: products } = await supabase
-        .from('products')
+    // Get offer IDs for this seller
+    const { data: offers } = await supabase
+        .from('product_offers')
         .select('id')
-        .eq('store_id', storeId)
+        .eq('seller_id', sellerId)
 
-    if (!products?.length) return []
+    if (!offers?.length) return []
 
-    const productIds = products.map(p => p.id)
+    const offerIds = offers.map(o => o.id)
 
     const { data, error } = await supabase
         .from('inventory_reservations')
@@ -162,7 +162,7 @@ export async function getStoreReservations(storeId: string) {
             *,
             products:product_id (name, image)
         `)
-        .in('product_id', productIds)
+        .in('offer_id', offerIds)
         .gt('expires_at', new Date().toISOString())
         .order('created_at', { ascending: false })
 

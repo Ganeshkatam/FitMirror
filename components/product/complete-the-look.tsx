@@ -17,6 +17,7 @@ interface RelatedProduct {
     imageUrl: string
     category: string
     relationType: string
+    offerId?: string
 }
 
 interface CompleteTheLookProps {
@@ -76,7 +77,7 @@ export function CompleteTheLook({ productId, className = '' }: CompleteTheLookPr
             productImage: product.imageUrl || '',
             price: product.price,
             size: 'M', // Default size
-            storeId: '' // Will be fetched on server
+            offerId: product.offerId || 'pending'
         })
     }
 

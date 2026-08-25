@@ -1,5 +1,5 @@
-import { ProductImage } from '@/lib/service/media';
 'use client'
+import { ProductImage } from '@/lib/service/media';
 
 import React, { useState } from 'react'
 // import { useRouter } from 'next/navigation' // Removed unused
@@ -22,7 +22,7 @@ interface Product {
     image?: string
     stock?: number
     is_in_stock?: boolean | null
-    store_id?: string | null
+    product_offers?: any[]
     category?: string
     slug?: string
 }
@@ -49,6 +49,7 @@ export function LuxuryProductCard({ product, priority = false, className }: Luxu
     const imageUrl = product.images?.[0]?.src || product.image || '/placeholder.png'
     const hoverImageUrl = product.images?.[1]?.src || null
     const isOutOfStock = (typeof product.stock === 'number' && product.stock <= 0) || (product.is_in_stock === false)
+    const activeOffer = product.product_offers?.find((o: any) => o.status === 'active') || null
 
     const handleQuickAdd = (e: React.MouseEvent) => {
         e.preventDefault()
@@ -65,7 +66,7 @@ export function LuxuryProductCard({ product, priority = false, className }: Luxu
                 productImage: imageUrl,
                 price: price,
                 size: size,
-                storeId: product.store_id || 'platform' // Fallback
+                offerId: activeOffer?.id || 'pending'
             })
             toast.success(`Added ${size} to cart`)
             setShowSizeSelector(false)

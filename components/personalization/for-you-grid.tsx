@@ -1,5 +1,5 @@
-import { ProductImage } from '@/lib/service/media';
 'use client'
+import { ProductImage } from '@/lib/service/media';
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'

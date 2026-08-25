@@ -9,11 +9,11 @@ import { startConversation } from '@/app/actions/chat'
 import { toast } from "sonner"
 
 interface ChatWidgetProps {
-    storeId: string
+    sellerId: string
     userId?: string
 }
 
-export function ChatWidget({ storeId, userId }: ChatWidgetProps) {
+export function ChatWidget({ sellerId, userId }: ChatWidgetProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [conversationId, setConversationId] = useState<string | null>(null)
     const [loading, setLoading] = useState(false)
@@ -31,7 +31,7 @@ export function ChatWidget({ storeId, userId }: ChatWidgetProps) {
 
         setLoading(true)
         try {
-            const id = await startConversation(storeId)
+            const id = await startConversation(sellerId)
             setConversationId(id)
             setIsOpen(true)
         } catch (error) {

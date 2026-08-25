@@ -16,7 +16,6 @@ interface AddToCartButtonProps {
     selectedSize: string | null
     disabled?: boolean
     offerId: string
-    storeId?: string
 }
 
 export function AddToCartButton({
@@ -27,7 +26,6 @@ export function AddToCartButton({
     selectedSize,
     disabled = false,
     offerId,
-    storeId = '',
 }: AddToCartButtonProps) {
     const [loading, setLoading] = React.useState(false)
     const addItem = useCart((state) => state.addItem)
@@ -66,7 +64,6 @@ export function AddToCartButton({
             productImage,
             price,
             size: selectedSize,
-            storeId,
         })
 
         toast.success('Added to cart!', {

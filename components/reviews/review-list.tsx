@@ -1,6 +1,6 @@
-import { ProductImage } from '@/lib/service/media';
 'use client'
 
+import { ProductImage } from '@/lib/service/media';
 import { Star, CheckCircle2, ThumbsUp } from 'lucide-react'
 import { ReviewForm } from './review-form'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'

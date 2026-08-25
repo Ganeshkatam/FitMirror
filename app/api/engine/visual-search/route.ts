@@ -88,7 +88,7 @@ IMPORTANT: Return ONLY the JSON object, nothing else.`
         const { data: searchResults, error } = await supabase.rpc('universal_search', {
             search_query: analysis.query || '',
             filter_category: analysis.category || null,
-            filter_store_id: null,
+            filter_seller_id: null,
             min_price: 0,
             max_price: 100000,
             page_number: 1,

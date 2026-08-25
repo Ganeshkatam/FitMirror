@@ -13,27 +13,7 @@ export default async function DealsPage() {
     // 1. Fetch Deals
     const deals = await StorefrontService.getDeals()
 
-    // 2. Fetch Coupons (fetch global coupons, or for specific store if needed, here just getting global ones)
-    // Note: getCoupons expects storeId, but we might want global coupons?
-    // Let's modify getCoupons to be flexible or fetch from a 'default' store or null
-    // The existing method: getCoupons(storeId). If storeId is undefined it returns empty array.
-    // I'll try fetching for a known store or mock specific ones from DB with null store_id?
-    // For now, I'll pass a common storeId if I knew one, or we need to update Service to support null storeId fetch.
-    // StorefrontService.getCoupons() checks: if (!storeId) return []
-    // I will use a different strategy or update StorefrontService later. For now, let's skip coupons fetch if we don't have a store ID context.
-    // Or better, fetch top coupons regardless of store?
-
-    // Workaround: We'll see if `deals` have store_ids and fetch coupons for the first store found?
-    // Or just fetch coupons via direct supabase call in component (bad practice).
-    // Let's assume we can enable global coupons fetch in getCoupons if storeId is 'global' or 'all'?
-    // I'll leave coupons empty for now and fix Service if needed, or if I edited getCoupons in previous steps? No.
-    // Wait, getCoupons calls .or(store_id.eq.${storeId},store_id.is.null). 
-    // If I pass a dummy UUID it might return global coupons (store_id is null). 
-    // But `storeId` is required in the TS signature.
-    // I'll leave it empty for this iteration or pass a dummy valid UUID if I knew one.
-    // Actually, I can fix `getCoupons` to allow optional storeId.
-
-    // 2. Fetch Global Coupons
+    // 2. Fetch Global Coupons (seller_id is optional; omitting it returns platform-wide coupons)
     const coupons = await StorefrontService.getCoupons()
 
     // Group deals by category for better display? Or just a big grid?

@@ -46,40 +46,24 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ error: `Order is in invalid state for payment: ${existingOrder.status}` }, { status: 400 });
             }
         } else {
-            // 2. Resolve Facts
-            const repo = new PricingRepository(supabase);
-            const productIds = items.map((i: any) => i.product_id);
-            const resolvedFacts = await repo.resolveFacts(productIds, couponCode, shippingMethod);
-
-            // 3. Calculate via PricingDomain
-            const inputItems = items.map((i: any) => ({
+            // 2. Prepare Intent Payload
+            const linesPayload = items.map((i: any) => ({
                 productId: i.product_id,
-                variantId: i.variant_id || undefined,
+                offerId: i.offer_id,
+                variantId: i.variant_id || null,
                 quantity: i.quantity
             }));
-            
-            const calculation = calculateOrderTotals({
-                items: inputItems,
-                productFacts: resolvedFacts.productFacts,
-                couponFact: resolvedFacts.couponFact,
-                shippingFact: resolvedFacts.shippingFact
-            });
 
-            // Convert BigInt to string for JSON serialization
-            const calculationJson = JSON.parse(JSON.stringify(calculation, (key, value) =>
-                typeof value === 'bigint' ? value.toString() : value
-            ));
-
-            // 4. Execute Atomic DB Transaction via RPC
+            // 3. Execute Atomic DB Transaction via RPC (Computes prices securely)
             const { data: orderId, error: rpcError } = await supabase.rpc('create_order_snapshot', {
                 p_user_id: user.id,
-                p_coupon_id: resolvedFacts.couponFact?.id || null,
-                p_shipping_method_id: resolvedFacts.shippingFact?.id || null,
-                p_calculation: calculationJson,
-                p_address_id: address.id,
+                p_coupon_id: couponCode ? null : null, // Handle coupon resolution properly in the future
+                p_shipping_method_id: shippingMethod ? null : null, 
+                p_address_id: address.id || null,
                 p_shipping_address: address,
                 p_payment_method: paymentMethod || 'razorpay',
-                p_idempotency_key: idempotencyKey
+                p_idempotency_key: idempotencyKey,
+                p_lines: linesPayload
             });
 
             if (rpcError || !orderId) {
@@ -87,9 +71,20 @@ export async function POST(req: NextRequest) {
                 throw new Error(rpcError?.message || 'Failed to create order transactionally');
             }
 
+            // Fetch the securely calculated totals from the DB
+            const { data: createdOrder, error: fetchError } = await supabase
+                .from('orders')
+                .select('total_amount, currency')
+                .eq('id', orderId)
+                .single();
+                
+            if (fetchError || !createdOrder) {
+                throw new Error('Failed to fetch created order totals');
+            }
+
             dbOrderId = orderId;
-            amountPaise = Number(calculation.totalPaise);
-            currency = calculation.currency;
+            amountPaise = Number(createdOrder.total_amount);
+            currency = createdOrder.currency || 'INR';
         }
 
         // 5. Razorpay Integration

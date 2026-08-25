@@ -34,11 +34,12 @@ interface OrderItem {
     size: string
     quantity: number
     price: number
+    offer_id?: string
+    seller_id?: string
     products: {
         name: string
         image: string | null
         price: number
-        store_id?: string
     }
 }
 
@@ -153,7 +154,7 @@ export default function OrderTrackingPage({ params }: { params: Promise<{ id: st
             setLoading(true)
             const { data, error } = await supabase
                 .from('orders')
-                .select('*, addresses(*), order_items(*, products(name, image_url, price, store_id))')
+                .select('*, addresses(*), order_items(*, products(name, image_url, price))')
                 .eq('id', id)
                 .single()
 
@@ -180,17 +181,18 @@ export default function OrderTrackingPage({ params }: { params: Promise<{ id: st
                     postal_code: '',
                     phone: ''
                 },
-                order_items: data.order_items.map((item: { id: string; product_id: string; size: string; quantity: number; price: number; products: { name: string; image: string | null; price: number; store_id?: string } | null }) => ({
+                order_items: data.order_items.map((item: { id: string; product_id: string; offer_id?: string; seller_id?: string; size: string; quantity: number; price: number; products: { name: string; image: string | null; price: number } | null }) => ({
                     id: item.id,
                     product_id: item.product_id,
+                    offer_id: item.offer_id,
+                    seller_id: item.seller_id,
                     size: item.size,
                     quantity: item.quantity,
                     price: item.price,
                     products: {
                         name: item.products?.name || 'Unknown Product',
                         image: item.products?.image || null,
-                        price: item.products?.price || 0,
-                        store_id: item.products?.store_id
+                        price: item.products?.price || 0
                     }
                 }))
             }

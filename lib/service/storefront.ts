@@ -317,14 +317,6 @@ export class StorefrontService {
                     ),
                     product_inventory(size, color, stock)
                 ),
-                store:stores(
-                    name, 
-                    id, 
-                    logo_url,
-                    seller:sellers(
-                        seller_profiles(business_name, support_email, business_address)
-                    )
-                ),
                 product_media(*)
             `)
                 .eq('id', id)
@@ -400,7 +392,7 @@ export class StorefrontService {
         )()
     }
 
-    static async getCoupons(storeId?: string) {
+    static async getCoupons(sellerId?: string) {
         return unstable_cache(
             async () => {
                 try {
@@ -411,12 +403,12 @@ export class StorefrontService {
                         .eq('is_active', true)
                         .gt('expires_at', new Date().toISOString())
 
-                    if (storeId) {
-                        // Specific store + Global
-                        query = query.or(`store_id.eq.${storeId},store_id.is.null`)
+                    if (sellerId) {
+                        // Specific seller + Global
+                        query = query.or(`seller_id.eq.${sellerId},seller_id.is.null`)
                     } else {
                         // Global only
-                        query = query.is('store_id', null)
+                        query = query.is('seller_id', null)
                     }
 
                     const { data } = await query.limit(5)
@@ -426,7 +418,7 @@ export class StorefrontService {
                     return []
                 }
             },
-            [`coupons-${storeId}`],
+            [`coupons-${sellerId}`],
             { revalidate: 600, tags: ['coupons'] }
         )()
     }

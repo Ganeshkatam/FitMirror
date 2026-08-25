@@ -3,7 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 
-export async function startConversation(storeId: string) {
+export async function startConversation(sellerId: string) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -14,7 +14,7 @@ export async function startConversation(storeId: string) {
         .from('conversations')
         .select('id')
         .eq('customer_id', user.id)
-        .eq('store_id', storeId)
+        .eq('seller_id', sellerId)
         .single()
 
     if (existing) return existing.id
@@ -24,7 +24,7 @@ export async function startConversation(storeId: string) {
         .from('conversations')
         .insert({
             customer_id: user.id,
-            store_id: storeId
+            seller_id: sellerId
         })
         .select('id')
         .single()
@@ -33,7 +33,7 @@ export async function startConversation(storeId: string) {
     return newConv.id
 }
 
-export async function sendMessage(conversationId: string, content: string, isFromStore: boolean = false) {
+export async function sendMessage(conversationId: string, content: string, isFromSeller: boolean = false) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -44,7 +44,7 @@ export async function sendMessage(conversationId: string, content: string, isFro
         .insert({
             conversation_id: conversationId,
             sender_id: user.id,
-            is_from_store: isFromStore,
+            is_from_seller: isFromSeller,
             content
         })
 

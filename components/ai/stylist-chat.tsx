@@ -46,7 +46,6 @@ export function StylistChat() {
         // Track Interaction
         trackEvent({
             eventType: 'ai_chat',
-            storeId: 'platform',
             metadata: { query: input }
         })
 

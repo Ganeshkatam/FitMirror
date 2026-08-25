@@ -91,16 +91,23 @@ export async function validateCoupon(code: string, cartTotal: number, cartItems:
     // 3. Calculate Applicable Total (Store Filter)
     let applicableTotal = 0
 
-    if (coupon.store_id) {
-        // Only apply to items from this store
-        const storeItems = cartItems.filter((i: any) =>
-            (i.storeId === coupon.store_id) || (i.product?.store_id === coupon.store_id)
-        )
-        if (storeItems.length === 0 && cartItems.length > 0) {
+    if (coupon.seller_id) {
+        // Only apply to items from this seller
+        // Fetch seller_id for the offers in the cart
+        const offerIds = cartItems.map((i: any) => i.offerId).filter(Boolean)
+        let sellerItems = []
+        if (offerIds.length > 0) {
+            const { data: offers } = await supabase.from('product_offers').select('id, seller_id').in('id', offerIds)
+            const offerToSeller = new Map((offers || []).map(o => [o.id, o.seller_id]))
+            
+            sellerItems = cartItems.filter((i: any) => offerToSeller.get(i.offerId) === coupon.seller_id)
+        }
+
+        if (sellerItems.length === 0 && cartItems.length > 0) {
             return { valid: false, message: 'This coupon is not valid for items in your cart' }
         }
-        applicableTotal = storeItems.length > 0
-            ? storeItems.reduce((sum: number, i: any) => sum + (i.price * i.quantity), 0)
+        applicableTotal = sellerItems.length > 0
+            ? sellerItems.reduce((sum: number, i: any) => sum + (i.price * i.quantity), 0)
             : cartTotal
     } else {
         // Platform coupon applies to everything

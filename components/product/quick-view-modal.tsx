@@ -39,6 +39,7 @@ export function QuickViewModal() {
     }, [product])
 
     if (!product) return null
+    const activeOffer = product.product_offers?.find((o: any) => o.status === 'active') || null
 
     // Helper to get sizes
     const sizeOrder = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '28', '30', '32', '34', '36', '38', '40']
@@ -96,7 +97,7 @@ export function QuickViewModal() {
                                     sizes={sizes}
                                     initialInventory={inventory}
                                     category={product.category}
-                                    storeId={product.store_id || ''}
+                                    offerId={activeOffer?.id}
                                 />
                             </div>
                         </div>

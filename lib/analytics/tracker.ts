@@ -4,12 +4,13 @@ export type AnalyticsEventType = 'view_item' | 'add_to_cart' | 'purchase' | 'try
 
 interface TrackEventParams {
     eventType: AnalyticsEventType
-    storeId: string
+    offerId?: string
+    sellerId?: string
     productId?: string
     metadata?: Record<string, any>
 }
 
-export async function trackEvent({ eventType, storeId, productId, metadata }: TrackEventParams) {
+export async function trackEvent({ eventType, offerId, sellerId, productId, metadata }: TrackEventParams) {
     try {
         const supabase = createClient()
         const { data: { session } } = await supabase.auth.getSession()
@@ -20,7 +21,8 @@ export async function trackEvent({ eventType, storeId, productId, metadata }: Tr
             .from('analytics_events')
             .insert({
                 event_type: eventType,
-                store_id: storeId,
+                offer_id: offerId,
+                seller_id: sellerId,
                 product_id: productId,
                 user_id: userId,
                 metadata: metadata || {}

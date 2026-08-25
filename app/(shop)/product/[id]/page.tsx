@@ -122,7 +122,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     const [relatedProducts, reviews, coupons, siblingVariants] = await Promise.all([
         StorefrontService.getRelatedProducts(product.category, product.id, product.gender),
         StorefrontService.getProductReviews(product.id),
-        StorefrontService.getCoupons(product.store_id || product.store?.id),
+        StorefrontService.getCoupons(product.product_offers?.find((o: any) => o.status === 'active')?.seller_id),
         StorefrontService.getProductColorVariants(product.name, product.id)
     ])
 

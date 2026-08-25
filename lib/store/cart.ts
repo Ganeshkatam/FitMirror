@@ -15,7 +15,6 @@ interface DbCartItem {
         image: string | null
         image_url: string | null
         price: number
-        store_id: string
     }
     variant?: {
         color: string | null
@@ -56,7 +55,6 @@ const mapDbCartToClient = (dbCart: DbCart | null): CartItem[] => {
         price: item.product.price,
         size: item.size,
         quantity: item.quantity,
-        storeId: item.product.store_id,
         variantId: item.variant_id || undefined,
         color: item.variant?.color || undefined
     }))

@@ -5,7 +5,7 @@ import { detectIntent } from '@/lib/search/intent'
 interface SearchRequest {
     query: string
     filters?: any
-    store_id?: string
+    seller_id?: string
     sort?: string
 }
 
