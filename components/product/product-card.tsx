@@ -22,6 +22,7 @@ export interface Product {
     price: number
     original_price?: number | null
     mrp?: number | null
+    product_offers?: any[]
     images?: ProductImage[]
     image?: string
     stock?: number
@@ -52,12 +53,15 @@ export function ProductCard({ product, priority = false, className, showTryOn = 
 
     // Data Normalization
     const title = product.name || product.title || 'Untitled Product'
-    const price = product.price || 0
     const category = product.category || 'Uncategorized'
     const brand = product.brand || null
 
     // Pricing
-    const originalPrice = product.original_price || product.mrp || null
+    const activeOffer = product.product_offers?.find((o: any) => o.status === 'active') || null
+    const price = activeOffer ? (activeOffer.sale_price_paise || activeOffer.price_paise) : (product.price || 0)
+    const originalPrice = activeOffer 
+        ? (activeOffer.sale_price_paise ? activeOffer.price_paise : null) 
+        : (product.original_price || product.mrp || null)
     const discount = originalPrice && originalPrice > price ? Math.round((1 - price / originalPrice) * 100) : 0
 
     // Image Logic
@@ -112,6 +116,7 @@ export function ProductCard({ product, priority = false, className, showTryOn = 
         e.stopPropagation()
         useCart.getState().addItem({
             productId: product.id,
+            offerId: activeOffer?.id || 'pending',
             productName: title,
             productImage: imageUrl,
             price,

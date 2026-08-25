@@ -9,6 +9,30 @@ const getPublicClient = () => createClient(
 )
 
 export class StorefrontService {
+    // --- Helpers ---
+    static async populateOffersForProducts(products: any[]) {
+        if (!products || products.length === 0) return products;
+        const productIds = products.map(p => p.id || p.product_id).filter(Boolean);
+        if (productIds.length === 0) return products;
+
+        const supabase = getPublicClient()
+        const { data: offersData } = await supabase
+            .from('product_offers')
+            .select('id, product_id, price_paise, sale_price_paise, status, seller_id')
+            .in('product_id', productIds)
+
+        const offersByProductId = (offersData || []).reduce((acc: any, row: any) => {
+            if (!acc[row.product_id]) acc[row.product_id] = [];
+            acc[row.product_id].push(row);
+            return acc;
+        }, {});
+
+        return products.map(p => ({
+            ...p,
+            product_offers: offersByProductId[p.id || p.product_id] || []
+        }));
+    }
+
     // --- Layout Data ---
 
     static async getStoreSettings() {
@@ -137,7 +161,7 @@ export class StorefrontService {
                     const supabase = getPublicClient()
                     const { data } = await supabase
                         .from('products')
-                        .select('*, product_inventory(size, stock), product_media(*)')
+                        .select('*, product_offers(id, price_paise, sale_price_paise, status, seller_id), product_inventory(size, stock), product_media(*)')
                         .eq('is_active', true)
                         .order('created_at', { ascending: false })
                         .limit(8)
@@ -162,7 +186,7 @@ export class StorefrontService {
                     const supabase = getPublicClient()
                     const { data } = await supabase
                         .from('products')
-                        .select('id, name, price, brand, category, is_active, product_media(*)')
+                        .select('id, name, price, brand, category, is_active, product_offers(id, price_paise, sale_price_paise, status, seller_id), product_media(*)')
                         .eq('is_active', true)
                         .order('created_at', { ascending: false }) // Trending = Newest for now, or use velocity
                         .limit(12)
@@ -188,7 +212,7 @@ export class StorefrontService {
                     // Recommendations based on global popularity (velocity)
                     const { data } = await supabase
                         .from('products')
-                        .select('id, name, price, brand, category, product_media(*)')
+                        .select('id, name, price, brand, category, product_offers(id, price_paise, sale_price_paise, status, seller_id), product_media(*)')
                         .eq('is_active', true)
                         .order('velocity', { ascending: false })
                         .limit(8)
@@ -216,7 +240,7 @@ export class StorefrontService {
                     // For now, let's filter by a flag or just take featured ones that support it
                     const { data } = await supabase
                         .from('products')
-                        .select('id, name, price, brand, category, product_media(*)')
+                        .select('id, name, price, brand, category, product_offers(id, price_paise, sale_price_paise, status, seller_id), product_media(*)')
                         .eq('is_active', true)
                         // .not('tryon_asset_ref', 'is', null) // Uncomment if column exists
                         .limit(6)
@@ -282,6 +306,17 @@ export class StorefrontService {
                 .from('products')
                 .select(`
                 *,
+                product_offers(
+                    id,
+                    price_paise,
+                    sale_price_paise,
+                    status,
+                    seller_id,
+                    seller:sellers(
+                        seller_profiles(business_name, support_email, business_address)
+                    ),
+                    product_inventory(size, color, stock)
+                ),
                 store:stores(
                     name, 
                     id, 
@@ -290,7 +325,6 @@ export class StorefrontService {
                         seller_profiles(business_name, support_email, business_address)
                     )
                 ),
-                product_inventory(size, color, stock),
                 product_media(*)
             `)
                 .eq('id', id)
@@ -410,7 +444,8 @@ export class StorefrontService {
                         page_size: 8
                     })
                     const filtered = (data || []).filter((p: any) => p.product_id !== currentId).slice(0, 4)
-                    return await populateMediaForProducts(filtered)
+                    const withMedia = await populateMediaForProducts(filtered)
+                    return await StorefrontService.populateOffersForProducts(withMedia)
                 } catch (e) {
                     console.error('getRelatedProducts failed', e)
                     return []
@@ -461,7 +496,8 @@ export class StorefrontService {
                 search_query: query,
                 limit_count: 6
             })
-            return await populateMediaForProducts(data || [])
+            const withMedia = await populateMediaForProducts(data || [])
+            return await StorefrontService.populateOffersForProducts(withMedia)
         } catch (e) {
             console.error('getSuggestions failed', e)
             return []
@@ -480,7 +516,8 @@ export class StorefrontService {
                             search_query: null,
                             page_size: 20
                         })
-                        const results = await populateMediaForProducts(data || [])
+                        const withMedia = await populateMediaForProducts(data || [])
+                        const results = await StorefrontService.populateOffersForProducts(withMedia)
                         return { results, meta: { facets: {} } }
                     } catch (e) {
                         console.error('searchProducts (default) failed', e)
@@ -522,7 +559,8 @@ export class StorefrontService {
                 page_size: 20
             })
 
-            const results = await populateMediaForProducts(data || [])
+            const withMedia = await populateMediaForProducts(data || [])
+            const results = await StorefrontService.populateOffersForProducts(withMedia)
             return { results, meta: { facets: {} } }
         } catch (e) {
             console.error('searchProducts (filtered) failed', e)
@@ -559,7 +597,7 @@ export class StorefrontService {
                     // Fetch products that likely have a discount
                     const { data } = await supabase
                         .from('products')
-                        .select('*, product_inventory(size, stock)')
+                        .select('*, product_offers(id, price_paise, sale_price_paise, status, seller_id), product_inventory(size, stock)')
                         .eq('is_active', true)
                         // optimizations: fetch rows where original_price or mrp is not null
                         // .or('original_price.neq.null,mrp.neq.null') 

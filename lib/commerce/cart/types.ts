@@ -1,11 +1,12 @@
 export interface CartItem {
     productId: string
+    offerId: string
     productName: string
     productImage: string
     price: number // in cents/lowest unit
     size: string
     quantity: number
-    storeId: string
+    storeId?: string
     // Optional metadata that might be useful for engines
     sku?: string
     currency?: string

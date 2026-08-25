@@ -15,6 +15,7 @@ interface AddToCartButtonProps {
     price: number
     selectedSize: string | null
     disabled?: boolean
+    offerId: string
     storeId?: string
 }
 
@@ -25,6 +26,7 @@ export function AddToCartButton({
     price,
     selectedSize,
     disabled = false,
+    offerId,
     storeId = '',
 }: AddToCartButtonProps) {
     const [loading, setLoading] = React.useState(false)
@@ -59,6 +61,7 @@ export function AddToCartButton({
         // Login will be required at checkout
         addItem({
             productId,
+            offerId,
             productName,
             productImage,
             price,

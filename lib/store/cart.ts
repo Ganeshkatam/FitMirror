@@ -6,6 +6,7 @@ import { calculateCartTotal, calculateItemCount } from '@/lib/commerce/cart'
 // DB interfaces remain here or move to database package later
 interface DbCartItem {
     product_id: string
+    offer_id: string
     size: string
     quantity: number
     variant_id?: string | null
@@ -49,6 +50,7 @@ const mapDbCartToClient = (dbCart: DbCart | null): CartItem[] => {
     if (!dbCart || !dbCart.items) return []
     return dbCart.items.map((item: DbCartItem) => ({
         productId: item.product_id,
+        offerId: item.offer_id,
         productName: item.product.name,
         productImage: item.product.image || item.product.image_url || '',
         price: item.product.price,
@@ -82,6 +84,7 @@ export const useCart = create<CartState>((set, get) => ({
         set((state) => {
             const existing = state.items.find(i =>
                 i.productId === item.productId &&
+                i.offerId === item.offerId &&
                 i.size === item.size &&
                 (i.variantId === item.variantId)
             )
@@ -94,7 +97,7 @@ export const useCart = create<CartState>((set, get) => ({
 
         // Server action
         try {
-            const updatedCart = await addToCart(item.productId, item.size, 1, item.variantId)
+            const updatedCart = await addToCart(item.productId, item.offerId, item.size, 1, item.variantId)
             set({ items: mapDbCartToClient(updatedCart) })
         } catch (error) {
             console.error('Failed to add item:', error)

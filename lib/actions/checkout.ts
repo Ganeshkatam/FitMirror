@@ -67,103 +67,64 @@ export async function placeOrder(formData: FormData) {
         updatedAt: new Date()
     }
 
-    // 3.1 Stock Validation
-    const { checkStockAvailability } = await import('@/lib/actions/inventory-reservations')
-
-    for (const item of cartItems) {
-        const stockStatus = await checkStockAvailability(
-            item.productId,
-            item.size,
-            item.quantity,
-            item.variantId,
-            undefined
-        )
-
-        if (!stockStatus.available) {
-            throw new Error(`Item ${item.productName} (${item.size}) is out of stock. Available: ${stockStatus.actualStock - stockStatus.reservedStock}`)
-        }
+    // 3.1 Construct Calculation Payload for RPC
+    // We map the intent data that the RPC requires
+    const calculationPayload = {
+        subtotalPaise: cartSummary.subtotal * 100, // assuming cartSummary is in INR
+        discountPaise: cartSummary.discount * 100,
+        taxPaise: cartSummary.tax * 100,
+        shippingPaise: cartSummary.shipping * 100,
+        totalPaise: cartSummary.total * 100,
+        lines: cartItems.map((item: any) => ({
+            productId: item.productId,
+            offerId: item.offerId,
+            variantId: item.variantId,
+            quantity: item.quantity,
+            unitPricePaise: item.price * 100,
+            taxRuleId: null, // to be updated later if needed
+            taxRateBps: 0,
+            discountAmountPaise: 0,
+            taxableAmountPaise: item.price * 100,
+            taxAmountPaise: 0,
+            totalAmountPaise: (item.price * item.quantity) * 100
+        }))
     }
 
-    // 5. Group Items by Store (Marketplace Logic)
-    const storeOrders = new Map<string, typeof cartItems>()
+    const idempotencyKey = session.id
 
-    cartItems.forEach((item: any) => {
-        const storeId = item.storeId
-        if (!storeId) return // Skip invalid items
-        if (!storeOrders.has(storeId)) {
-            storeOrders.set(storeId, [])
-        }
-        storeOrders.get(storeId)?.push(item)
+    // 4. Create Order via RPC (Handles stock lock, invariants, and snapshotting)
+    const { data: orderId, error } = await supabase.rpc('create_order_snapshot', {
+        p_idempotency_key: idempotencyKey,
+        p_user_id: user.id,
+        p_coupon_id: null, // Future: Handle coupon application
+        p_shipping_method_id: null,
+        p_calculation: calculationPayload
     })
 
-    if (storeOrders.size === 0) {
-        throw new Error("No valid items to checkout")
+    if (error) {
+        console.error("Checkout Failed - RPC Error:", error)
+        throw new Error("Checkout failed during processing. " + error.message)
     }
 
-    // 6. Create Transactions
-    const orderIds = []
+    // 5. Update Order with Address (since the RPC doesn't handle shipping details yet)
+    await supabase.from('orders').update({
+        shipping_address: addressData,
+        payment_method: 'cod' // Assuming COD for now
+    }).eq('id', orderId)
 
-    try {
-        for (const [storeId, items] of storeOrders) {
-            // Engine Calculation
-            // We map CartItem to OrderItem structure implicitly for calc if needed, 
-            // but calculateOrderTotal accepts {total: number}[] 
-            // We need to implement calculateItemsTotal or just loop. 
-            // Let's use the reduction here but relying on Engine Types if we had them fully mapped DB-side.
-            // For MVP, we stick to the simple reduce but ensure it handles floats safely if we used currency lib.
+    // 6. Clear Cart
+    await supabase.from('cart_items').delete().eq('cart_id', cart.id)
 
-            // Re-map to Order Item Schema for DB
-            const orderItems = items.map((item: any) => ({
-                product_id: item.productId,
-                name: item.productName,
-                price: item.price,
-                quantity: item.quantity,
-                size: item.size,
-                variant_id: item.variantId, // Added variant_id
-                image: item.productImage,
-                total: item.price * item.quantity
-            }))
+    // Analytics
+    await analytics.track('Order Completed', {
+        orderId,
+        total: cartSummary.total,
+        currency: 'INR',
+        itemCount: cartItems.length
+    }, user.id)
 
-            const total = calculateOrderTotal(orderItems, 0, 0) // tax=0, shipping=0 for now
-
-            // Insert Order
-            const { data: order, error } = await supabase
-                .from('orders')
-                .insert({
-                    user_id: user.id,
-                    store_id: storeId,
-                    items: orderItems, // JSONB
-                    total_amount: total,
-                    status: 'placed',
-                    payment_status: 'cod',
-                    shipping_address: addressData,
-                    created_at: new Date().toISOString()
-                })
-                .select('id')
-                .single()
-
-            if (error) throw error
-            orderIds.push(order.id)
-        }
-
-        // 7. Clear Cart
-        await supabase.from('cart_items').delete().eq('cart_id', cart.id)
-
-        // Analytics
-        await analytics.track('Order Completed', {
-            orderIds,
-            total: cartItems.reduce((sum: number, item: any) => sum + (item.price * item.quantity), 0),
-            currency: 'INR',
-            itemCount: cartItems.length
-        }, user.id)
-
-    } catch (err) {
-        console.error("Checkout Failed", err)
-        throw new Error("Checkout Failed, please try again.")
-    }
-
-    // 8. Redirect
-    redirect(`/order-confirmation?orders=${orderIds.join(',')}`)
+    // 7. Redirect
+    redirect(`/order-confirmation?orders=${orderId}`)
 }
 
 export async function finalizeOrder(razorpayOrderId: string) {

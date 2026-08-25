@@ -72,7 +72,9 @@ export function ProductDetailsClient({
     // State
     const [selectedSize, setSelectedSize] = React.useState<string | null>(null)
     const [selectedColor, setSelectedColor] = React.useState<string | null>(colors[0] || null)
-    const [inventory, setInventory] = React.useState<InventoryItem[]>(product.product_inventory || [])
+    const activeOffer = product.product_offers?.find((o: any) => o.status === 'active') || null
+    const baseInventory = activeOffer?.product_inventory || product.product_inventory || []
+    const [inventory, setInventory] = React.useState<InventoryItem[]>(baseInventory)
     const [shake, setShake] = React.useState(false)
     const [copied, setCopied] = React.useState(false)
     const [showMobileBuyBar, setShowMobileBuyBar] = React.useState(false)
@@ -166,9 +168,11 @@ export function ProductDetailsClient({
     // Unique sizes from product
     const allSizes = product.sizes || [...new Set(inventory.map((i: InventoryItem) => i.size))].filter(Boolean)
 
-    // Pricing
-    const originalPrice = product.original_price || product.mrp || null
-    const currentPrice = product.price
+    // Pricing from Offer (Fallback to legacy during migration)
+    const currentPrice = activeOffer ? (activeOffer.sale_price_paise || activeOffer.price_paise) : product.price
+    const originalPrice = activeOffer 
+        ? (activeOffer.sale_price_paise ? activeOffer.price_paise : null) 
+        : (product.original_price || product.mrp || null)
     const discount = originalPrice ? Math.round((1 - currentPrice / originalPrice) * 100) : 0
 
     // Handle Add to Cart
@@ -205,6 +209,7 @@ export function ProductDetailsClient({
 
         useCart.getState().addItem({
             productId: product.id,
+            offerId: activeOffer?.id || 'pending',
             productName: product.name,
             productImage: product.images?.[0]?.src || product.image,
             price: currentPrice,
@@ -249,6 +254,7 @@ export function ProductDetailsClient({
 
         useCart.getState().addItem({
             productId: product.id,
+            offerId: activeOffer?.id || 'pending',
             productName: product.name,
             productImage: product.images?.[0]?.src || product.image,
             price: currentPrice,

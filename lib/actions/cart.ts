@@ -82,7 +82,7 @@ async function getOrCreateCartId(): Promise<string> {
 }
 
 // Add Item
-export async function addToCart(productId: string, size: string, quantity: number = 1, variantId?: string) {
+export async function addToCart(productId: string, offerId: string, size: string, quantity: number = 1, variantId?: string) {
     const supabase = await createClient()
     const cartId = await getOrCreateCartId()
 
@@ -112,6 +112,7 @@ export async function addToCart(productId: string, size: string, quantity: numbe
             .insert({
                 cart_id: cartId,
                 product_id: productId,
+                offer_id: offerId,
                 size,
                 quantity,
                 variant_id: variantId || null
@@ -253,6 +254,7 @@ export async function mergeAnonymousCart() {
                     .insert({
                         cart_id: userCartId,
                         product_id: item.product_id,
+                        offer_id: item.offer_id,
                         size: item.size,
                         quantity: item.quantity
                     })
