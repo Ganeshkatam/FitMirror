@@ -206,7 +206,7 @@ export function ProductDetailsClient({
         useCart.getState().addItem({
             productId: product.id,
             productName: product.name,
-            productImage: product.images?.[0] || product.image,
+            productImage: (typeof product.images?.[0] === 'string' ? (typeof product.images?.[0] === 'string' ? product.images[0] : (product.images?.[0] as any)?.src) : (product.images?.[0] as any)?.src) || product.image,
             price: currentPrice,
             size: selectedSize,
             storeId: product.store?.id || product.store_id || '',
@@ -250,7 +250,7 @@ export function ProductDetailsClient({
         useCart.getState().addItem({
             productId: product.id,
             productName: product.name,
-            productImage: product.images?.[0] || product.image,
+            productImage: (typeof product.images?.[0] === 'string' ? (typeof product.images?.[0] === 'string' ? product.images[0] : (product.images?.[0] as any)?.src) : (product.images?.[0] as any)?.src) || product.image,
             price: currentPrice,
             size: selectedSize,
             storeId: product.store?.id || product.store_id || '',

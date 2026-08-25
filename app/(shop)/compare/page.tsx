@@ -71,7 +71,7 @@ export default async function ComparePage({ searchParams }: { searchParams: Prom
                                             <div className="space-y-3">
                                                 <div className="relative aspect-[3/4] rounded-lg overflow-hidden bg-gray-100">
                                                     <Image
-                                                        src={product.images?.[0] || product.image || '/placeholder.png'}
+                                                        src={(typeof product.images?.[0] === 'string' ? (typeof product.images?.[0] === 'string' ? product.images[0] : (product.images?.[0] as any)?.src) : (product.images?.[0] as any)?.src) || product.image || '/placeholder.png'}
                                                         alt={product.name}
                                                         fill
                                                         className="object-cover"

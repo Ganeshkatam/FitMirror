@@ -47,7 +47,7 @@ export default async function OrderHistoryPage() {
             id: i.id,
             productId: i.product?.id,
             name: i.product?.name || 'Unknown Product',
-            image: (i.product?.images && i.product.images.length > 0 ? i.product.images[0] : ''),
+            image: (i.product?.images && i.product.images.length > 0 ? (typeof i.product.images?.[0] === 'string' ? i.product.images[0] : (i.product.images?.[0] as any)?.src) : ''),
             price: i.price,
             quantity: i.quantity,
             size: i.size

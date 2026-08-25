@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { PersonalizationService } from '@/lib/service/personalization'
+import { normalizeProductMedia } from '@/lib/service/media'
 
 export const dynamic = 'force-dynamic'
 
@@ -29,13 +30,16 @@ export async function GET(request: NextRequest) {
             // For anonymous users, return trending/new products
             const { data: products } = await supabase
                 .from('products')
-                .select('id, name, price, images, category, color, brand')
+                .select('id, name, price, product_media(*), category, color, brand')
                 .eq('is_active', true)
                 .order('created_at', { ascending: false })
                 .limit(limit)
 
             return NextResponse.json({
-                products: products || [],
+                products: (products || []).map(p => ({
+                    ...p,
+                    images: normalizeProductMedia(p.product_media)
+                })),
                 personalized: false,
                 type: 'trending'
             })

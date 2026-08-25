@@ -12,7 +12,7 @@ interface Product {
     id: string
     name: string
     price: number
-    images: string[]
+    images?: any[]
     velocity?: number
     brand?: string
     category?: string

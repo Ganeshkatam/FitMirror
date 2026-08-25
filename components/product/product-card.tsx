@@ -21,7 +21,7 @@ export interface Product {
     price: number
     original_price?: number | null
     mrp?: number | null
-    images?: string[]
+    images?: any[]
     image?: string
     stock?: number
     is_in_stock?: boolean | null
@@ -64,8 +64,8 @@ export function ProductCard({ product, priority = false, className, showTryOn = 
     let hoverImageUrl = null
 
     if (product.images && product.images.length > 0) {
-        imageUrl = product.images[0]
-        if (product.images.length > 1) hoverImageUrl = product.images[1]
+        imageUrl = (typeof product.images?.[0] === 'string' ? product.images[0] : (product.images?.[0] as any)?.src)
+        if (product.images.length > 1) hoverImageUrl = (typeof product.images?.[1] === 'string' ? product.images[1] : (product.images?.[1] as any)?.src)
     } else if (product.image) {
         imageUrl = product.image
     }

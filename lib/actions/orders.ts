@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { normalizeProductMedia } from '../service/media'
 
 export async function getOrder(orderId: string) {
     const supabase = await createClient()
@@ -22,7 +23,7 @@ export async function getOrder(orderId: string) {
                 product:products(
                     id,
                     name,
-                    images,
+                    product_media(*),
                     slug
                 )
             ),
@@ -37,6 +38,15 @@ export async function getOrder(orderId: string) {
 
     if (error || !order) {
         return null
+    }
+
+    if (order.items) {
+        order.items = order.items.map((item: any) => {
+            if (item.product) {
+                item.product.images = normalizeProductMedia(item.product.product_media)
+            }
+            return item
+        })
     }
 
     return order

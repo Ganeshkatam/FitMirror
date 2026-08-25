@@ -72,7 +72,7 @@ export function StickySmartBar({ product, selectedSize, isOutOfStock, onAddToCar
                         <div className="flex items-center gap-3">
                             <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                                 <Image
-                                    src={product.images?.[0] || product.image || '/placeholder.jpg'}
+                                    src={(typeof product.images?.[0] === 'string' ? (typeof product.images?.[0] === 'string' ? product.images[0] : (product.images?.[0] as any)?.src) : (product.images?.[0] as any)?.src) || product.image || '/placeholder.jpg'}
                                     alt={product.name}
                                     fill
                                     className="object-cover"

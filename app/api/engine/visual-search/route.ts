@@ -117,7 +117,7 @@ IMPORTANT: Return ONLY the JSON object, nothing else.`
                 name: p.title || p.name,
                 category: p.category,
                 price: p.price,
-                image: p.images?.[0] || p.image,
+                image: (typeof p.images?.[0] === 'string' ? (typeof p.images?.[0] === 'string' ? p.images[0] : (p.images?.[0] as any)?.src) : (p.images?.[0] as any)?.src) || p.image,
                 match_reason: `Matches ${analysis.color} ${analysis.category}`
             }))
         })

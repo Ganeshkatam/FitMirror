@@ -13,7 +13,7 @@ interface StoryProduct {
     brand?: string | null
     price: number
     original_price?: number | null
-    images?: string[] | null
+    images?: any[]
     image?: string | null
     category?: string | null
 }
@@ -87,7 +87,7 @@ export function StorySwiper({ products, title = "Today's Picks" }: StorySwiperPr
     }
 
     const getImage = (p: StoryProduct) =>
-        p.images?.[0] || p.image || '/placeholder.svg'
+        (typeof p.images?.[0] === 'string' ? (typeof p.images?.[0] === 'string' ? p.images[0] : (p.images?.[0] as any)?.src) : (p.images?.[0] as any)?.src) || p.image || '/placeholder.svg'
 
     const discount = current?.original_price && current.original_price > current.price
         ? Math.round((1 - current.price / current.original_price) * 100)

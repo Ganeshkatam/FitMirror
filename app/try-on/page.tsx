@@ -19,6 +19,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useTryOnStore } from '@/lib/store/use-try-on'
 import { createClient } from '@/lib/supabase/client'
+import { normalizeProductMedia } from '@/lib/service/media'
 
 // Dynamic import for 3D Avatar Canvas
 const AvatarCanvas = dynamic(
@@ -56,7 +57,7 @@ export default function TryOnRoomPage() {
                 const supabase = createClient()
                 const { data } = await supabase
                     .from('products')
-                    .select('id, name, price, images, image_url, category')
+                    .select('id, name, price, product_media(*), image_url, category')
                     .eq('is_active', true)
                     .limit(20)
 
@@ -72,7 +73,7 @@ export default function TryOnRoomPage() {
                             id: p.id,
                             name: p.name,
                             price: p.price,
-                            image: (p.images && p.images[0]) || p.image_url || '',
+                            image: (normalizeProductMedia(p.product_media)?.[0]?.src) || p.image_url || '',
                             category: catType
                         }
                     })

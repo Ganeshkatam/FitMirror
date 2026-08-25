@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { normalizeProductMedia } from '@/lib/service/media'
 
 /**
  * GET /api/products/[productId]/related
@@ -44,7 +45,7 @@ export async function GET(
                     id,
                     name,
                     price,
-                    images,
+                    product_media(*),
                     category
                 )
             `)
@@ -72,7 +73,7 @@ export async function GET(
             if (currentProduct) {
                 const { data: similar } = await supabase
                     .from('products')
-                    .select('id, name, price, images, category')
+                    .select('id, name, price, product_media(*), category')
                     .eq('category', getComplementaryCategory(currentProduct.category))
                     .eq('is_active', true)
                     .neq('id', productId)
@@ -83,7 +84,7 @@ export async function GET(
                         productId: p.id,
                         name: p.name,
                         price: p.price,
-                        imageUrl: p.images?.[0] || null,
+                        imageUrl: normalizeProductMedia(p.product_media)?.[0]?.src || null,
                         category: p.category,
                         relationType: 'similar_style'
                     }))
@@ -102,7 +103,7 @@ export async function GET(
                 productId: r.product.id,
                 name: r.product.name,
                 price: r.product.price,
-                imageUrl: r.product.images?.[0] || null,
+                imageUrl: normalizeProductMedia(r.product.product_media)?.[0]?.src || null,
                 category: r.product.category,
                 relationType: r.relation_type
             }))

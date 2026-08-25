@@ -17,7 +17,7 @@ interface Product {
     name?: string
     title?: string
     price: number
-    images?: string[]
+    images?: any[]
     image?: string
     stock?: number
     is_in_stock?: boolean | null
@@ -45,8 +45,8 @@ export function LuxuryProductCard({ product, priority = false, className }: Luxu
     // Data Normalization
     const title = product.name || product.title || 'Untitled Product'
     const price = product.price || 0
-    const imageUrl = product.images?.[0] || product.image || '/placeholder.png'
-    const hoverImageUrl = product.images?.[1] || null
+    const imageUrl = (typeof product.images?.[0] === 'string' ? (typeof product.images?.[0] === 'string' ? product.images[0] : (product.images?.[0] as any)?.src) : (product.images?.[0] as any)?.src) || product.image || '/placeholder.png'
+    const hoverImageUrl = (typeof product.images?.[1] === 'string' ? (typeof product.images?.[1] === 'string' ? product.images[1] : (product.images?.[1] as any)?.src) : (product.images?.[1] as any)?.src) || null
     const isOutOfStock = (typeof product.stock === 'number' && product.stock <= 0) || (product.is_in_stock === false)
 
     const handleQuickAdd = (e: React.MouseEvent) => {

@@ -1,5 +1,6 @@
 import 'server-only'
 import { createClient } from '@/lib/supabase/server'
+import { normalizeProductMedia } from './media'
 import { UserStyleProfile, ProductViewEvent } from './personalization/types'
 
 /**
@@ -313,7 +314,7 @@ export class PersonalizationService {
         // 1. Purchased
         const { data: ordered } = await supabase
             .from('order_items')
-            .select('product_id, created_at, products(*), orders!inner(user_id)')
+            .select('product_id, created_at, products(*, product_media(*)), orders!inner(user_id)')
             .eq('orders.user_id', userId)
             .order('created_at', { ascending: false })
             .limit(20)
@@ -321,7 +322,7 @@ export class PersonalizationService {
         // 2. Wishlist
         const { data: wishlist } = await supabase
             .from('wishlists')
-            .select('product_id, created_at, products(*)')
+            .select('product_id, created_at, products(*, product_media(*))')
             .eq('user_id', userId)
             .order('created_at', { ascending: false })
             .limit(20)
@@ -329,7 +330,7 @@ export class PersonalizationService {
         // 3. Tried On
         const { data: tried } = await supabase
             .from('tryon_results')
-            .select('product_id, created_at, products(*)')
+            .select('product_id, created_at, products(*, product_media(*))')
             .eq('user_id', userId)
             .order('created_at', { ascending: false })
             .limit(20)
@@ -338,7 +339,7 @@ export class PersonalizationService {
         const format = (items: any[], status: string) => items?.map(i => ({
             id: i.products.id,
             name: i.products.name,
-            image: i.products.images?.[0] || '/placeholder.jpg',
+            image: normalizeProductMedia(i.products.product_media)?.[0]?.src || '/placeholder.jpg',
             status,
             date: new Date(i.created_at).toLocaleDateString(),
             price: i.products.price

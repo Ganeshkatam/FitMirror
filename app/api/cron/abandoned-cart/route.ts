@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServiceRoleClient } from '@/lib/supabase/service-role'
 import { EmailService } from '@/lib/email/service'
+import { normalizeProductMedia } from '@/lib/service/media'
 
 export const dynamic = 'force-dynamic'
 
@@ -30,7 +31,7 @@ export async function GET(request: NextRequest) {
                     name,
                     price,
                     image_url,
-                    images,
+                    product_media(*),
                     slug
                 )
             )
@@ -71,7 +72,7 @@ export async function GET(request: NextRequest) {
                 name: item.product.name,
                 price: item.product.price,
                 // Fallback for image
-                image: item.product.image_url || (item.product.images ? item.product.images[0] : '') || 'https://fitmirror.app/placeholder.png'
+                image: item.product.image_url || normalizeProductMedia(item.product.product_media)?.[0]?.src || 'https://fitmirror.app/placeholder.png'
             }))
 
             if (emailItems.length === 0) continue

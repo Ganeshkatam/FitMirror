@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
 import { unstable_cache } from 'next/cache'
+import { normalizeProductMedia, populateMediaForProducts } from './media'
 
 // Create a public client for cached requests (no cookies)
 const getPublicClient = () => createClient(
@@ -136,11 +137,14 @@ export class StorefrontService {
                     const supabase = getPublicClient()
                     const { data } = await supabase
                         .from('products')
-                        .select('*, product_inventory(size, stock)')
+                        .select('*, product_inventory(size, stock), product_media(*)')
                         .eq('is_active', true)
                         .order('created_at', { ascending: false })
                         .limit(8)
-                    return data || []
+                    return (data || []).map(p => ({
+                        ...p,
+                        images: normalizeProductMedia(p.product_media)
+                    }))
                 } catch (e) {
                     console.error('getFeaturedProducts failed', e)
                     return []
@@ -158,11 +162,14 @@ export class StorefrontService {
                     const supabase = getPublicClient()
                     const { data } = await supabase
                         .from('products')
-                        .select('id, name, images, price, brand, category, is_active')
+                        .select('id, name, price, brand, category, is_active, product_media(*)')
                         .eq('is_active', true)
                         .order('created_at', { ascending: false }) // Trending = Newest for now, or use velocity
                         .limit(12)
-                    return data || []
+                    return (data || []).map(p => ({
+                        ...p,
+                        images: normalizeProductMedia(p.product_media)
+                    }))
                 } catch (e) {
                     console.error('getTrendingProducts failed', e)
                     return []
@@ -181,11 +188,14 @@ export class StorefrontService {
                     // Recommendations based on global popularity (velocity)
                     const { data } = await supabase
                         .from('products')
-                        .select('id, name, images, price, brand, category')
+                        .select('id, name, price, brand, category, product_media(*)')
                         .eq('is_active', true)
                         .order('velocity', { ascending: false })
                         .limit(8)
-                    return data || []
+                    return (data || []).map(p => ({
+                        ...p,
+                        images: normalizeProductMedia(p.product_media)
+                    }))
                 } catch (e) {
                     console.error('getRecommendedProducts failed', e)
                     return []
@@ -206,11 +216,14 @@ export class StorefrontService {
                     // For now, let's filter by a flag or just take featured ones that support it
                     const { data } = await supabase
                         .from('products')
-                        .select('id, name, images, price, brand, category')
+                        .select('id, name, price, brand, category, product_media(*)')
                         .eq('is_active', true)
                         // .not('tryon_asset_ref', 'is', null) // Uncomment if column exists
                         .limit(6)
-                    return data || []
+                    return (data || []).map(p => ({
+                        ...p,
+                        images: normalizeProductMedia(p.product_media)
+                    }))
                 } catch (e) {
                     console.error('getTryOnProducts failed', e)
                     return []
@@ -278,7 +291,7 @@ export class StorefrontService {
                     )
                 ),
                 product_inventory(size, color, stock),
-                product_media(id, url, media_type, storage_path)
+                product_media(*)
             `)
                 .eq('id', id)
                 .single()
@@ -286,6 +299,12 @@ export class StorefrontService {
             if (error) {
                 console.error('Detailed Supabase Error:', error)
                 return { error }
+            }
+            if (data) {
+                return {
+                    ...data,
+                    images: normalizeProductMedia(data.product_media)
+                }
             }
             return data
         } catch (e) {
@@ -390,7 +409,8 @@ export class StorefrontService {
                         filter_genders: gender ? [gender] : null,
                         page_size: 8
                     })
-                    return (data || []).filter((p: any) => p.product_id !== currentId).slice(0, 4)
+                    const filtered = (data || []).filter((p: any) => p.product_id !== currentId).slice(0, 4)
+                    return await populateMediaForProducts(filtered)
                 } catch (e) {
                     console.error('getRelatedProducts failed', e)
                     return []
@@ -410,13 +430,16 @@ export class StorefrontService {
                     const supabase = getPublicClient()
                     const { data } = await supabase
                         .from('products')
-                        .select('id, color, images')
+                        .select('id, color, product_media(*)')
                         .eq('name', name)
                         .eq('is_active', true)
                         .neq('id', currentId)
                         .not('color', 'is', null)
 
-                    return data || []
+                    return (data || []).map(p => ({
+                        ...p,
+                        images: normalizeProductMedia(p.product_media)
+                    }))
                 } catch (e) {
                     console.error('getProductColorVariants failed', e)
                     return []
@@ -438,7 +461,7 @@ export class StorefrontService {
                 search_query: query,
                 limit_count: 6
             })
-            return data || []
+            return await populateMediaForProducts(data || [])
         } catch (e) {
             console.error('getSuggestions failed', e)
             return []
@@ -457,7 +480,8 @@ export class StorefrontService {
                             search_query: null,
                             page_size: 20
                         })
-                        return { results: data || [], meta: { facets: {} } }
+                        const results = await populateMediaForProducts(data || [])
+                        return { results, meta: { facets: {} } }
                     } catch (e) {
                         console.error('searchProducts (default) failed', e)
                         return { results: [], meta: { facets: {} } }
@@ -498,7 +522,8 @@ export class StorefrontService {
                 page_size: 20
             })
 
-            return { results: data || [], meta: { facets: {} } }
+            const results = await populateMediaForProducts(data || [])
+            return { results, meta: { facets: {} } }
         } catch (e) {
             console.error('searchProducts (filtered) failed', e)
             return { results: [], meta: { facets: {} } }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { normalizeProductMedia } from '@/lib/service/media'
 
 /**
  * POST /api/tryon/assets
@@ -66,7 +67,7 @@ export async function GET(request: NextRequest) {
             .from('garment_assets')
             .select(`
                 *,
-                product:products(id, name, price, images)
+                product:products(id, name, price, product_media(*))
             `)
             .eq('status', 'approved')
             .order('created_at', { ascending: false })
@@ -95,7 +96,7 @@ export async function GET(request: NextRequest) {
                 id: item.product.id,
                 name: item.product.name,
                 price: item.product.price,
-                image: item.product.images?.[0]
+                image: normalizeProductMedia(item.product.product_media)?.[0]?.src || null
             } : null
         }))
 

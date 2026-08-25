@@ -449,7 +449,7 @@ function GlobalGenie({ open, onOpenChange, pendingMessage, onPendingMessageConsu
                                                     >
                                                         <div className="aspect-[3/4] bg-gray-100 dark:bg-zinc-800 overflow-hidden relative">
                                                             <Image
-                                                                src={prod.images?.[0] || '/placeholder.jpg'}
+                                                                src={(typeof prod.images?.[0] === 'string' ? (typeof prod.images?.[0] === 'string' ? prod.images[0] : (prod.images?.[0] as any)?.src) : (prod.images?.[0] as any)?.src) || '/placeholder.jpg'}
                                                                 alt={prod.name}
                                                                 className="object-cover group-hover:scale-105 transition-transform duration-300"
                                                                 fill
