@@ -1,6 +1,7 @@
 -- Migration: Phase 8C Order RPC
 
 CREATE OR REPLACE FUNCTION create_order_snapshot(
+    p_idempotency_key uuid,
     p_user_id uuid,
     p_coupon_id uuid,
     p_shipping_method_id uuid,
@@ -15,6 +16,7 @@ DECLARE
     v_item jsonb;
     v_product_id uuid;
     v_variant_id uuid;
+    v_store_id uuid;
     v_quantity integer;
     v_stock integer;
     
@@ -24,6 +26,14 @@ DECLARE
     v_shipping bigint;
     v_total bigint;
 BEGIN
+    -- Idempotency check
+    IF p_idempotency_key IS NOT NULL THEN
+        SELECT id INTO v_order_id FROM orders WHERE idempotency_key = p_idempotency_key;
+        IF FOUND THEN
+            RETURN v_order_id;
+        END IF;
+    END IF;
+
     -- Extract totals
     v_subtotal := (p_calculation->>'subtotalPaise')::bigint;
     v_discount := (p_calculation->>'discountPaise')::bigint;
@@ -46,6 +56,21 @@ BEGIN
             RAISE EXCEPTION 'Coupon is not active';
         END IF;
 
+        -- Check global usage limit
+        IF v_coupon_record.usage_limit IS NOT NULL THEN
+            DECLARE
+                v_global_uses integer;
+            BEGIN
+                SELECT count(*) INTO v_global_uses 
+                FROM coupon_usages 
+                WHERE coupon_id = p_coupon_id;
+
+                IF v_global_uses >= v_coupon_record.usage_limit THEN
+                    RAISE EXCEPTION 'Coupon global usage limit exceeded';
+                END IF;
+            END;
+        END IF;
+
         -- Check user usage limits
         IF v_coupon_record.max_uses_per_user IS NOT NULL THEN
             DECLARE
@@ -64,10 +89,10 @@ BEGIN
 
     -- 2. Insert Order Snapshot
     INSERT INTO orders (
-        user_id, status, subtotal_amount, discount_amount, 
+        idempotency_key, user_id, status, subtotal_amount, discount_amount, 
         shipping_cost, tax_amount, total_amount, currency, shipping_method_id
     ) VALUES (
-        p_user_id, 'pending_payment', v_subtotal, v_discount,
+        p_idempotency_key, p_user_id, 'pending_payment', v_subtotal, v_discount,
         v_shipping, v_tax, v_total, 'INR', p_shipping_method_id
     ) RETURNING id INTO v_order_id;
 
@@ -86,9 +111,9 @@ BEGIN
 
         -- Lock and decrement stock
         IF v_variant_id IS NOT NULL THEN
-            UPDATE product_variants
+            UPDATE product_inventory
             SET stock = stock - v_quantity
-            WHERE id = v_variant_id AND stock >= v_quantity
+            WHERE variant_id = v_variant_id AND stock >= v_quantity
             RETURNING stock INTO v_stock;
 
             IF v_stock IS NULL THEN
@@ -106,13 +131,16 @@ BEGIN
             END IF;
         END IF;
 
+        -- Fetch store_id from product
+        SELECT store_id INTO v_store_id FROM products WHERE id = v_product_id;
+
         -- Insert Order Item
         INSERT INTO order_items (
-            order_id, product_id, variant_id, quantity,
+            order_id, store_id, product_id, variant_id, quantity,
             unit_price, tax_rule_id, tax_rate_bps,
             discount_amount_paise, taxable_amount_paise, tax_amount_paise, total_amount
         ) VALUES (
-            v_order_id, v_product_id, v_variant_id, v_quantity,
+            v_order_id, v_store_id, v_product_id, v_variant_id, v_quantity,
             (v_item->>'unitPricePaise')::bigint,
             NULLIF(v_item->>'taxRuleId', '')::uuid,
             (v_item->>'taxRateBps')::integer,
@@ -124,5 +152,33 @@ BEGIN
     END LOOP;
 
     RETURN v_order_id;
+END;
+$$;
+CREATE OR REPLACE FUNCTION transition_order_status(
+    p_order_id uuid,
+    p_expected_status order_status,
+    p_new_status order_status
+) RETURNS boolean
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+    v_current_status order_status;
+BEGIN
+    -- Get current status and lock row
+    SELECT status INTO v_current_status FROM orders WHERE id = p_order_id FOR UPDATE;
+    
+    IF v_current_status IS NULL THEN
+        RETURN false;
+    END IF;
+
+    -- Optimistic concurrency / state guard
+    IF v_current_status != p_expected_status THEN
+        RETURN false;
+    END IF;
+
+    -- Perform transition
+    UPDATE orders SET status = p_new_status, updated_at = now() WHERE id = p_order_id;
+    RETURN true;
 END;
 $$;

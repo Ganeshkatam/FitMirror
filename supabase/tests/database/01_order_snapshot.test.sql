@@ -48,6 +48,7 @@ BEGIN
                     "variantId": "v_test_1",
                     "quantity": 1,
                     "unitPricePaise": 100000,
+                    "taxRateBps": 1800,
                     "discountAmountPaise": 0,
                     "taxableAmountPaise": 100000,
                     "taxAmountPaise": 18000,
@@ -72,6 +73,7 @@ BEGIN
                     "variantId": "v_test_1",
                     "quantity": 1,
                     "unitPricePaise": 100000,
+                    "taxRateBps": 1800,
                     "discountAmountPaise": 0,
                     "taxableAmountPaise": 100000,
                     "taxAmountPaise": 18000,
@@ -108,6 +110,7 @@ BEGIN
                     "variantId": "v_test_1",
                     "quantity": 1,
                     "unitPricePaise": 100000,
+                    "taxRateBps": 1800,
                     "discountAmountPaise": 0,
                     "taxableAmountPaise": 100000,
                     "taxAmountPaise": 18000,
@@ -164,8 +167,8 @@ BEGIN
         -- Assert rollback occurred successfully
         PERFORM is((SELECT current_uses FROM coupons WHERE id = 'c_test_1'), 0, 'Coupon usage absent after failed transaction rollback');
         PERFORM is((SELECT COUNT(*)::int FROM coupon_usages WHERE coupon_id = 'c_test_1'), 0, 'Coupon usage ledger absent after failed transaction rollback');
-        -- Stock was 4 previously
-        PERFORM is((SELECT stock FROM product_variants WHERE id = 'v_test_1'), 4, 'Inventory restored after failed transaction rollback');
+        -- Stock was 3 previously because Test 1 (4) and Test 2 (3) decremented it
+        PERFORM is((SELECT stock FROM product_inventory WHERE variant_id = 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb'), 3, 'Inventory restored after failed transaction rollback');
     END;
 END $$;
 
@@ -189,6 +192,7 @@ BEGIN
                     "variantId": "v_test_1",
                     "quantity": 1,
                     "unitPricePaise": 100000,
+                    "taxRateBps": 1800,
                     "discountAmountPaise": 0,
                     "taxableAmountPaise": 100000,
                     "taxAmountPaise": 18000,
