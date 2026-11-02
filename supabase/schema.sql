@@ -223,25 +223,11 @@ create table public.admin_credentials (
   verification_purpose text null,
   created_at timestamp with time zone null default now(),
   updated_at timestamp with time zone null default now(),
-  chairman_id uuid null,
   constraint admin_credentials_pkey primary key (id),
   constraint admin_credentials_profile_id_key unique (profile_id),
   constraint admin_credentials_admin_id_key unique (admin_id),
   constraint admin_credentials_admin_id_fkey foreign KEY (admin_id) references admins (id) on delete CASCADE,
-  constraint admin_credentials_chairman_id_fkey foreign KEY (chairman_id) references chairmen (id),
   constraint admin_credentials_profile_id_fkey foreign KEY (profile_id) references profiles (id) on delete CASCADE,
-  constraint admin_credentials_owner_check check (
-    (
-      (
-        (admin_id is not null)
-        and (chairman_id is null)
-      )
-      or (
-        (admin_id is null)
-        and (chairman_id is not null)
-      )
-    )
-  ),
   constraint admin_credentials_verification_purpose_check check (
     (
       verification_purpose = any (
@@ -416,7 +402,6 @@ create table public.admin_pending_changes (
   constraint admin_pending_changes_requested_by_admin_id_fkey foreign KEY (requested_by_admin_id) references admins (id) on delete set null,
   constraint admin_pending_changes_requested_by_email_fkey foreign KEY (requested_by_email) references profiles (email),
   constraint admin_pending_changes_requested_by_profile_id_fkey foreign KEY (requested_by_profile_id) references profiles (id) on delete set null,
-  constraint admin_pending_changes_reviewed_by_super_admin_id_fkey foreign KEY (reviewed_by_super_admin_id) references chairmen (id) on delete set null,
   constraint admin_pending_changes_severity_check check (
     (
       severity = any (
@@ -714,116 +699,6 @@ create index IF not exists idx_categories_slug_fast on public.categories using b
 
 create index IF not exists idx_categories_parent_fast on public.categories using btree (parent_id) TABLESPACE pg_default;
 
-
-create table public.chairman_audit_logs (
-  id uuid not null default gen_random_uuid (),
-  action text not null,
-  category text not null,
-  severity text not null,
-  user_id uuid not null,
-  target_resource text null,
-  target_resource_id text null,
-  previous_value jsonb null,
-  new_value jsonb null,
-  ip_address text not null,
-  user_agent text null,
-  metadata jsonb null default '{}'::jsonb,
-  created_at timestamp with time zone null default now(),
-  constraint chairman_audit_logs_pkey primary key (id),
-  constraint chairman_audit_logs_user_id_fkey foreign KEY (user_id) references auth.users (id),
-  constraint chairman_audit_logs_category_check check (
-    (
-      category = any (
-        array[
-          'auth'::text,
-          'access'::text,
-          'data'::text,
-          'system'::text,
-          'security'::text
-        ]
-      )
-    )
-  ),
-  constraint chairman_audit_logs_severity_check check (
-    (
-      severity = any (
-        array[
-          'info'::text,
-          'warning'::text,
-          'critical'::text,
-          'alert'::text
-        ]
-      )
-    )
-  )
-) TABLESPACE pg_default;
-
-create index IF not exists idx_chairman_audit_user on public.chairman_audit_logs using btree (user_id) TABLESPACE pg_default;
-
-create index IF not exists idx_chairman_audit_category on public.chairman_audit_logs using btree (category) TABLESPACE pg_default;
-
-create index IF not exists idx_chairman_audit_severity on public.chairman_audit_logs using btree (severity) TABLESPACE pg_default;
-
-create index IF not exists idx_chairman_audit_created on public.chairman_audit_logs using btree (created_at desc) TABLESPACE pg_default;
-
-create index IF not exists idx_chairman_audit_action on public.chairman_audit_logs using btree (action) TABLESPACE pg_default;
-
-
-create table public.chairman_sessions (
-  id uuid not null default gen_random_uuid (),
-  user_id uuid not null,
-  ip_address text not null,
-  user_agent text null,
-  device_fingerprint text not null,
-  created_at timestamp with time zone not null default now(),
-  last_activity timestamp with time zone null default now(),
-  expires_at timestamp with time zone not null,
-  is_active boolean not null default true,
-  mfa_verified boolean null default false,
-  terminated_at timestamp with time zone null,
-  termination_reason text null,
-  metadata jsonb not null default '{}'::jsonb,
-  constraint chairman_sessions_pkey primary key (id),
-  constraint chairman_sessions_user_id_fkey foreign KEY (user_id) references auth.users (id) on delete CASCADE
-) TABLESPACE pg_default;
-
-create index IF not exists idx_chairman_sessions_user on public.chairman_sessions using btree (user_id) TABLESPACE pg_default;
-
-create index IF not exists idx_chairman_sessions_active on public.chairman_sessions using btree (is_active, expires_at) TABLESPACE pg_default;
-
-create index IF not exists idx_chairman_sessions_fingerprint on public.chairman_sessions using btree (device_fingerprint) TABLESPACE pg_default;
-
-
-create table public.chairmen (
-  id uuid not null default gen_random_uuid (),
-  profile_id uuid not null,
-  title text null default 'Chairman & CEO'::text,
-  full_name text null,
-  email text not null,
-  phone text null,
-  access_level text null default 'full'::text,
-  can_override_all boolean null default true,
-  company_role text null default 'Owner'::text,
-  appointment_date timestamp with time zone null default now(),
-  dashboard_widgets jsonb null default '["revenue", "users", "orders", "pending_approvals"]'::jsonb,
-  notification_preferences jsonb null default '{"sms": true, "push": true, "email": true}'::jsonb,
-  last_login timestamp with time zone null,
-  last_ip_address inet null,
-  last_device text null,
-  previous_session_info jsonb null,
-  total_logins integer null default 0,
-  created_at timestamp with time zone null default now(),
-  updated_at timestamp with time zone null default now(),
-  security_key_hash text null,
-  totp_secret text null,
-  is_totp_enabled boolean null default false,
-  admin_id uuid null,
-  constraint super_admins_pkey primary key (id),
-  constraint super_admins_profile_id_key unique (profile_id),
-  constraint super_admins_admin_id_fkey foreign KEY (admin_id) references admins (id) on delete CASCADE,
-  constraint super_admins_profile_id_fkey foreign KEY (profile_id) references profiles (id) on delete CASCADE,
-  constraint super_admins_access_level_check check ((access_level = 'full'::text))
-) TABLESPACE pg_default;
 
 
 create table public.change_approval_rules (
@@ -2870,8 +2745,7 @@ create table public.session_activity (
   status_code integer null,
   response_time_ms integer null,
   created_at timestamp with time zone null default now(),
-  constraint session_activity_pkey primary key (id),
-  constraint session_activity_session_id_fkey foreign KEY (session_id) references chairman_sessions (id) on delete CASCADE
+  constraint session_activity_pkey primary key (id)
 ) TABLESPACE pg_default;
 
 create index IF not exists idx_session_activity_session on public.session_activity using btree (session_id) TABLESPACE pg_default;
