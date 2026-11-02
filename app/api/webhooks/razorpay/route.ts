@@ -1,22 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { headers } from 'next/headers'
 import { verifyWebhookSignature } from '@/lib/razorpay'
 import { createServiceRoleClient } from '@/lib/supabase/service-role'
 
-const WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET!
-
 export async function POST(req: NextRequest) {
     try {
+        const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET
         const body = await req.text()
-        const headerPayload = await headers()
-        const signature = headerPayload.get('x-razorpay-signature')
-        const eventId = headerPayload.get('x-razorpay-event-id')
+        const signature = req.headers.get('x-razorpay-signature')
+        const eventId = req.headers.get('x-razorpay-event-id')
 
-        if (!signature || !WEBHOOK_SECRET || !eventId) {
+        if (!signature || !webhookSecret || !eventId) {
             return NextResponse.json({ error: 'Missing signature, secret or event ID' }, { status: 400 })
         }
 
-        const isValid = verifyWebhookSignature(body, signature, WEBHOOK_SECRET)
+        const isValid = verifyWebhookSignature(body, signature, webhookSecret)
         if (!isValid) {
             return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
         }
@@ -25,105 +22,200 @@ export async function POST(req: NextRequest) {
         const payload = event.payload
         const supabase = createServiceRoleClient()
 
-        // 1. Webhook Idempotency Check (C13)
-        const { error: insertEventError } = await supabase
+        // 1. Durable Idempotency & Claim Lifecycle
+        const { data: existingEvent } = await supabase
             .from('payment_webhook_events')
-            .insert({
-                event_id: eventId,
-                event_type: event.event,
-                status: 'processing'
-            })
+            .select('event_id, status, created_at, updated_at')
+            .eq('event_id', eventId)
+            .maybeSingle()
 
-        if (insertEventError) {
-            if (insertEventError.code === '23505') { // unique violation
-                return NextResponse.json({ status: 'success', message: 'Event already processed' })
+        if (existingEvent) {
+            if (existingEvent.status === 'processed' || existingEvent.status === 'ignored') {
+                return NextResponse.json({ status: 'success', message: 'Event already processed' }, { status: 200 })
             }
-            throw insertEventError
-        }
-
-        if (event.event === 'payment.captured') {
-            const payment = payload.payment.entity
-            const razorpayOrderId = payment.order_id
-
-            // 2. Fetch authoritative order by matching provider order ID (Wait, we need the local DB order ID. We can query by Razorpay Order ID if we saved it! But we didn't save Razorpay order ID in orders. Wait. The Razorpay order ID is in Razorpay's receipt field, or we can look it up in payments table. Wait, in Phase 1 we dropped the `payments` table logic and put `razorpay_order_id` where? We don't have it in `orders` natively.
-            // Oh, the old code used `payments` table. Let's see if `payment.notes?.order_id` is set.)
-            let dbOrderId = payment.notes?.order_id
-            
-            // If it's not in notes, we can find the order by parsing the receipt ID (receipt_UUID)
-            if (!dbOrderId && payment.receipt) {
-                dbOrderId = payment.receipt.replace('receipt_', '') // Needs to match exact UUID if we did that
-                // Actually, our create-order put receipt_ + orderId.substring(0,30). It's not a full UUID.
-                // It is safer to query orders by idempotency key? No.
-                // We should pass dbOrderId in Razorpay notes during creation! Let's assume we do.
+            if (existingEvent.status === 'failed_terminal') {
+                return NextResponse.json({ status: 'ignored', message: 'Terminal event failure previously recorded' }, { status: 200 })
             }
-
-            if (!dbOrderId) {
-                console.error('No order_id found in payment notes')
-                await supabase.from('payment_webhook_events').update({ status: 'failed_missing_order_id' }).eq('event_id', eventId)
-                return NextResponse.json({ received: true })
+            if (existingEvent.status === 'processing') {
+                const lastUpdated = new Date(existingEvent.updated_at || existingEvent.created_at).getTime()
+                const ageSeconds = (Date.now() - lastUpdated) / 1000
+                // If claim is recent (< 60s), consider it in flight to prevent duplicate concurrency
+                if (ageSeconds < 60) {
+                    return NextResponse.json({ status: 'in_flight', message: 'Event currently processing' }, { status: 200 })
+                }
+                // Stale claim: worker timed out or died; reclaim for retry
+                await supabase
+                    .from('payment_webhook_events')
+                    .update({ status: 'processing', updated_at: new Date().toISOString() })
+                    .eq('event_id', eventId)
+            } else if (existingEvent.status === 'failed_retryable') {
+                // Retryable failure: reclaim event
+                await supabase
+                    .from('payment_webhook_events')
+                    .update({ status: 'processing', updated_at: new Date().toISOString() })
+                    .eq('event_id', eventId)
             }
-
-            // 3. Load authoritative order
-            const { data: order, error: orderError } = await supabase
-                .from('orders')
-                .select('id, total_amount, currency, status, user_id')
-                .eq('id', dbOrderId)
-                .single()
-
-            if (orderError || !order) {
-                await supabase.from('payment_webhook_events').update({ status: 'failed_order_not_found' }).eq('event_id', eventId)
-                return NextResponse.json({ received: true })
-            }
-
-            // 4. Invariant Validation (C10, C11)
-            if (payment.currency !== 'INR' || order.currency !== 'INR') {
-                await supabase.from('payment_webhook_events').update({ status: 'failed_currency_mismatch' }).eq('event_id', eventId)
-                return NextResponse.json({ error: 'Currency violation' }, { status: 400 })
-            }
-            if (payment.amount !== Number(order.total_amount)) {
-                await supabase.from('payment_webhook_events').update({ status: 'failed_amount_mismatch' }).eq('event_id', eventId)
-                return NextResponse.json({ error: 'Amount mismatch violation' }, { status: 400 })
-            }
-
-            // 5. State Transition
-            if (order.status !== 'placed' && order.status !== 'confirmed') {
-                const { data: transitioned } = await supabase.rpc('transition_order_status', {
-                    p_order_id: dbOrderId,
-                    p_expected_state: 'pending_payment',
-                    p_next_state: 'placed'
+        } else {
+            // New event: claim idempotency key
+            const { error: insertError } = await supabase
+                .from('payment_webhook_events')
+                .insert({
+                    event_id: eventId,
+                    event_type: event.event,
+                    status: 'processing'
                 })
 
-                if (transitioned) {
-                    await supabase.from('orders').update({
-                        is_paid: true,
-                        payment_status: 'captured'
-                    }).eq('id', dbOrderId)
+            if (insertError) {
+                if (insertError.code === '23505') { // Unique constraint violation (concurrent race)
+                    return NextResponse.json({ status: 'success', message: 'Event already claimed' }, { status: 200 })
                 }
+                throw insertError
             }
-
-            await supabase.from('payment_webhook_events').update({ status: 'processed', processed_at: new Date().toISOString() }).eq('event_id', eventId)
-
-        } else if (event.event === 'payment.authorized') {
-            const payment = payload.payment.entity
-            const dbOrderId = payment.notes?.order_id
-            if (dbOrderId) {
-                await supabase.from('orders').update({ payment_status: 'authorized' }).eq('id', dbOrderId)
-            }
-            await supabase.from('payment_webhook_events').update({ status: 'processed', processed_at: new Date().toISOString() }).eq('event_id', eventId)
-        } else if (event.event === 'payment.failed') {
-            const payment = payload.payment.entity
-            const dbOrderId = payment.notes?.order_id
-            if (dbOrderId) {
-                await supabase.from('orders').update({ payment_status: 'failed' }).eq('id', dbOrderId)
-            }
-            await supabase.from('payment_webhook_events').update({ status: 'processed', processed_at: new Date().toISOString() }).eq('event_id', eventId)
-        } else {
-            await supabase.from('payment_webhook_events').update({ status: 'ignored', processed_at: new Date().toISOString() }).eq('event_id', eventId)
         }
 
-        return NextResponse.json({ received: true })
-    } catch (error) {
-        console.error('Webhook Error:', error)
+        // 2. Transactional Event Processing with Monotonic Ordering Protections
+        try {
+            if (event.event === 'payment.captured') {
+                const payment = payload.payment?.entity
+                if (!payment) {
+                    throw new Error('Malformed payment entity in captured payload')
+                }
+
+                const dbOrderId = payment.notes?.order_id || (payment.receipt ? payment.receipt.replace('receipt_', '') : null)
+
+                if (!dbOrderId) {
+                    await supabase
+                        .from('payment_webhook_events')
+                        .update({ status: 'failed_terminal', error_message: 'No order_id in payment notes or receipt' })
+                        .eq('event_id', eventId)
+                    return NextResponse.json({ received: true })
+                }
+
+                // 3. Load authoritative order
+                const { data: order, error: orderError } = await supabase
+                    .from('orders')
+                    .select('id, total_amount, currency, status, payment_status, is_paid')
+                    .eq('id', dbOrderId)
+                    .maybeSingle()
+
+                if (orderError || !order) {
+                    await supabase
+                        .from('payment_webhook_events')
+                        .update({ status: 'failed_terminal', error_message: 'Authoritative order not found' })
+                        .eq('event_id', eventId)
+                    return NextResponse.json({ received: true })
+                }
+
+                // 4. Invariant Validation
+                if (payment.currency !== 'INR' || order.currency !== 'INR') {
+                    await supabase
+                        .from('payment_webhook_events')
+                        .update({ status: 'failed_terminal', error_message: 'Currency violation' })
+                        .eq('event_id', eventId)
+                    return NextResponse.json({ error: 'Currency violation' }, { status: 400 })
+                }
+                if (payment.amount !== Number(order.total_amount)) {
+                    await supabase
+                        .from('payment_webhook_events')
+                        .update({ status: 'failed_terminal', error_message: 'Amount mismatch violation' })
+                        .eq('event_id', eventId)
+                    return NextResponse.json({ error: 'Amount mismatch violation' }, { status: 400 })
+                }
+
+                // 5. State Transition: transition to placed if not already placed or confirmed
+                if (order.status !== 'placed' && order.status !== 'confirmed') {
+                    await supabase.rpc('transition_order_status', {
+                        p_order_id: dbOrderId,
+                        p_expected_state: 'pending_payment',
+                        p_next_state: 'placed'
+                    })
+                }
+
+                // Monotonic paid update: MUST mark order as paid & captured regardless of whether
+                // status was already placed/confirmed earlier (e.g. via client verification)
+                await supabase.from('orders').update({
+                    is_paid: true,
+                    payment_status: 'captured',
+                    updated_at: new Date().toISOString()
+                }).eq('id', dbOrderId)
+
+                await supabase.from('payment_webhook_events').update({
+                    status: 'processed',
+                    processed_at: new Date().toISOString()
+                }).eq('event_id', eventId)
+
+            } else if (event.event === 'payment.authorized') {
+                const payment = payload.payment?.entity
+                const dbOrderId = payment?.notes?.order_id
+
+                if (dbOrderId) {
+                    const { data: order } = await supabase
+                        .from('orders')
+                        .select('id, payment_status, is_paid')
+                        .eq('id', dbOrderId)
+                        .maybeSingle()
+
+                    // Monotonic check: Never downgrade an already captured payment
+                    if (order && !order.is_paid && order.payment_status !== 'captured') {
+                        await supabase.from('orders').update({
+                            payment_status: 'authorized',
+                            updated_at: new Date().toISOString()
+                        }).eq('id', dbOrderId)
+                    }
+                }
+
+                await supabase.from('payment_webhook_events').update({
+                    status: 'processed',
+                    processed_at: new Date().toISOString()
+                }).eq('event_id', eventId)
+
+            } else if (event.event === 'payment.failed') {
+                const payment = payload.payment?.entity
+                const dbOrderId = payment?.notes?.order_id
+
+                if (dbOrderId) {
+                    const { data: order } = await supabase
+                        .from('orders')
+                        .select('id, payment_status, is_paid')
+                        .eq('id', dbOrderId)
+                        .maybeSingle()
+
+                    // Monotonic check: Never downgrade an already captured payment to failed
+                    if (order && !order.is_paid && order.payment_status !== 'captured') {
+                        await supabase.from('orders').update({
+                            payment_status: 'failed',
+                            updated_at: new Date().toISOString()
+                        }).eq('id', dbOrderId)
+                    }
+                }
+
+                await supabase.from('payment_webhook_events').update({
+                    status: 'processed',
+                    processed_at: new Date().toISOString()
+                }).eq('event_id', eventId)
+
+            } else {
+                await supabase.from('payment_webhook_events').update({
+                    status: 'ignored',
+                    processed_at: new Date().toISOString()
+                }).eq('event_id', eventId)
+            }
+
+            return NextResponse.json({ received: true })
+        } catch (processError: any) {
+            console.error('Webhook processing exception:', processError)
+            // Record retryable failure so subsequent webhook attempts can reclaim
+            await supabase.from('payment_webhook_events').update({
+                status: 'failed_retryable',
+                error_message: processError?.message || 'Processing failed',
+                updated_at: new Date().toISOString()
+            }).eq('event_id', eventId)
+
+            return NextResponse.json({ error: 'Processing failure; retry requested' }, { status: 500 })
+        }
+
+    } catch (error: any) {
+        console.error('Webhook Ingestion Error:', error)
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
     }
 }
