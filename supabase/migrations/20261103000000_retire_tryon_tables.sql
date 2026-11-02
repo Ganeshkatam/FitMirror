@@ -14,3 +14,4 @@ ALTER TABLE public.products DROP COLUMN IF EXISTS tryon_count;
 ALTER TABLE public.products DROP COLUMN IF EXISTS is_tryon_enabled;
 ALTER TABLE public.products DROP COLUMN IF EXISTS tryon_config;
 ALTER TABLE public.products DROP COLUMN IF EXISTS physics_profile;
+
