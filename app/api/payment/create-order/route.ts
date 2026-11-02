@@ -110,6 +110,17 @@ export async function POST(req: NextRequest) {
                 notes: { order_id: dbOrderId }
             });
 
+            // Persist provider order ID immediately to bind financial identity monotonically
+            const { error: updateOrderError } = await supabase
+                .from('orders')
+                .update({ razorpay_order_id: razorpayOrder.id })
+                .eq('id', dbOrderId);
+
+            if (updateOrderError) {
+                console.error("Failed to persist razorpay_order_id:", updateOrderError);
+                throw updateOrderError;
+            }
+
             return NextResponse.json({
                 status: 'success',
                 orderData: {
