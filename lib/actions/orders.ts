@@ -58,43 +58,19 @@ export async function cancelOrder(orderId: string) {
 
     if (!user) throw new Error("Unauthorized")
 
-    // 1. Fetch Order to verify ownership and status
-    const { data: order, error: fetchError } = await supabase
-        .from('orders')
-        .select('id, status, items:order_items(product_id, size, quantity)')
-        .eq('id', orderId)
-        .eq('user_id', user.id)
-        .single()
+    // Atomic order cancellation and inventory restoration via RPC
+    const { data, error } = await supabase.rpc('cancel_order', {
+        p_order_id: orderId,
+        p_user_id: user.id,
+        p_reason: 'User cancelled'
+    })
 
-    if (fetchError || !order) throw new Error("Order not found")
-
-    // 2. Check if cancellable
-    if (!['pending', 'placed', 'processing'].includes(order.status)) { // 'placed' is our main status
-        throw new Error("Order cannot be cancelled at this stage")
-    }
-
-    // 3. Update Status
-    const { error: updateError } = await supabase
-        .from('orders')
-        .update({ status: 'cancelled', cancellation_reason: 'User cancelled' })
-        .eq('id', orderId)
-
-    if (updateError) throw new Error("Failed to cancel order")
-
-    // 4. Restock Inventory
-    // We reuse decrement_stock with negative quantity to increment
-    if (order.items) {
-        for (const item of order.items) {
-            // @ts-ignore
-            const { error: stockError } = await supabase.rpc('decrement_stock', {
-                p_product_id: item.product_id,
-                p_size: item.size,
-                p_quantity: -item.quantity // Nitrogen!
-            })
-            if (stockError) console.error("Failed to restock item", item, stockError)
-        }
+    if (error) {
+        console.error("Failed to cancel order atomically:", error)
+        throw new Error(error.message || "Failed to cancel order")
     }
 
     revalidatePath(`/account/orders/${orderId}`)
     revalidatePath('/account/orders')
+    return data
 }

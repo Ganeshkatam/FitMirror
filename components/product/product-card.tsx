@@ -31,7 +31,6 @@ export interface Product {
     brand?: string | null
     avg_rating?: number | null
     review_count?: number | null
-    ai_match_score?: number | null
 }
 
 interface ProductCardProps {
@@ -228,14 +227,6 @@ export function ProductCard({ product, priority = false, className, showQuickAdd
                             {product.review_count && (
                                 <span className="text-gray-400 font-normal text-[10px]">| {product.review_count > 999 ? `${(product.review_count / 1000).toFixed(1)}k` : product.review_count}</span>
                             )}
-                        </div>
-                    )}
-
-                    {/* --- BOTTOM RIGHT: AI Match Score --- */}
-                    {product.ai_match_score && product.ai_match_score > 0 && !isOutOfStock && (
-                        <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-2 py-0.5 rounded-full text-[10px] font-bold shadow-lg z-10">
-                            <Sparkles className="h-3 w-3" />
-                            {product.ai_match_score}% Match
                         </div>
                     )}
                 </div>

@@ -11,11 +11,6 @@ const nextConfig = {
       { protocol: 'https', hostname: '**' },
     ],
   },
-  // Ensure accurate real-time data by disabling aggressive caching if needed, 
-  // though 'dynamic' exports in pages are better for this.
-  typescript: {
-    ignoreBuildErrors: true,
-  },
 };
 
 export default nextConfig;

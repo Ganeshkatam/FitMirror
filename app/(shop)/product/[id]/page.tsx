@@ -308,7 +308,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
                 </section>
 
                 
-                {/* Tabbed Recommendations (Similar / Complete Look / AI Picks) */}
+                {/* Tabbed Recommendations (Similar / Complete Look) */}
                 {relatedProducts.length > 0 && (
                     <section className="mt-12 md:mt-20">
                         <TabbedRecommendations

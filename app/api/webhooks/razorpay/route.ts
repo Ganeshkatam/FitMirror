@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import { verifyWebhookSignature } from '@/lib/razorpay'
-import { createClient } from '@/lib/supabase/server'
+import { createServiceRoleClient } from '@/lib/supabase/service-role'
 
 const WEBHOOK_SECRET = process.env.RAZORPAY_WEBHOOK_SECRET!
 
@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
 
         const event = JSON.parse(body)
         const payload = event.payload
-        const supabase = await createClient()
+        const supabase = createServiceRoleClient()
 
         // 1. Webhook Idempotency Check (C13)
         const { error: insertEventError } = await supabase
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest) {
             throw insertEventError
         }
 
-        if (event.event === 'payment.captured' || event.event === 'payment.authorized') {
+        if (event.event === 'payment.captured') {
             const payment = payload.payment.entity
             const razorpayOrderId = payment.order_id
 
@@ -103,6 +103,13 @@ export async function POST(req: NextRequest) {
 
             await supabase.from('payment_webhook_events').update({ status: 'processed', processed_at: new Date().toISOString() }).eq('event_id', eventId)
 
+        } else if (event.event === 'payment.authorized') {
+            const payment = payload.payment.entity
+            const dbOrderId = payment.notes?.order_id
+            if (dbOrderId) {
+                await supabase.from('orders').update({ payment_status: 'authorized' }).eq('id', dbOrderId)
+            }
+            await supabase.from('payment_webhook_events').update({ status: 'processed', processed_at: new Date().toISOString() }).eq('event_id', eventId)
         } else if (event.event === 'payment.failed') {
             const payment = payload.payment.entity
             const dbOrderId = payment.notes?.order_id
