@@ -15,8 +15,14 @@ export default async function ShopLayout({
 }: {
     children: React.ReactNode
 }) {
-    const supabase = await createClient()
-    const { data: storeSettings } = await supabase.from('store_settings').select('*').single()
+    let storeSettings: any = null
+    try {
+        const supabase = await createClient()
+        const { data } = await supabase.from('store_settings').select('*').single()
+        storeSettings = data
+    } catch {
+        storeSettings = { store_open: true }
+    }
 
     // Store Closed Logic
     if (storeSettings?.store_open === false) {
