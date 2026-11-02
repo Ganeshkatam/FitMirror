@@ -69,8 +69,8 @@ export async function populateMediaForProducts(products: any[]) {
     if (productIds.length === 0) return products;
 
     const supabase = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co',
+        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder'
     )
 
     const { data: mediaData, error } = await supabase
