@@ -5,5 +5,5 @@ export const brevoClient = new BrevoClient({
 })
 
 if (!process.env.BREVO_API_KEY) {
-    console.warn('⚠️ BREVO_API_KEY is missing. Emails will not be sent.')
+    console.warn('BREVO_API_KEY is missing. Emails will not be sent.')
 }

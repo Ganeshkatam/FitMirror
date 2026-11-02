@@ -41,7 +41,7 @@ export default async function StorePage({ params }: Props) {
         .eq('seller_id', id)
         .eq('status', 'active')
 
-    const products = offers?.map(o => o.products).filter(p => p?.is_active) || []
+    const products = (offers?.map(o => (Array.isArray(o.products) ? o.products[0] : o.products) as any).filter((p: any) => p?.is_active) || []) as any[]
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
