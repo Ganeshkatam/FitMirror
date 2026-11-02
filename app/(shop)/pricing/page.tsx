@@ -10,7 +10,7 @@ export default function PricingPage() {
                     Unlock Your Style Potential
                 </h1>
                 <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                    Choose the plan that fits your fashion journey. Upgrade to Pro for unlimited virtual try-ons and personalized AI styling.
+                    Choose the plan that fits your fashion journey. Upgrade to Pro for advanced wardrobe management and personalized AI styling.
                 </p>
             </div>
 
@@ -24,7 +24,7 @@ export default function PricingPage() {
                     </div>
                     <p className="mt-6 text-gray-600">The basics for every fashion enthusiast.</p>
                     <ul role="list" className="mt-6 space-y-4">
-                        {['5 Virtual Try-Ons per day', 'Basic Outfit Builder', 'Standard Shipping', 'Community Access'].map((feature) => (
+                        {['Personalized Style Recommendations', 'Basic Outfit Builder', 'Standard Shipping', 'Community Access'].map((feature) => (
                             <li key={feature} className="flex">
                                 <Check className="h-6 w-6 flex-none text-violet-600" />
                                 <span className="ml-3 text-gray-600">{feature}</span>
@@ -49,7 +49,7 @@ export default function PricingPage() {
                     <p className="mt-6 text-violet-800">Everything you need to redefine your style.</p>
                     <ul role="list" className="mt-6 space-y-4">
                         {[
-                            'Unlimited Virtual Try-Ons',
+                            'Unlimited AI Wardrobe Styling',
                             'AI Personal Stylist (24/7)',
                             'Priority Shipping',
                             'Early Access to New Collections',

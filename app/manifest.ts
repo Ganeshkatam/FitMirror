@@ -2,9 +2,9 @@ import { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: 'FitMirror | Virtual Try-On Fashion',
+        name: 'FitMirror | AI Fashion & Personal Styling',
         short_name: 'FitMirror',
-        description: 'Experience the perfect fit with AI virtual try-on technology.',
+        description: 'Experience the perfect fit with AI-guided fashion styling.',
         start_url: '/',
         display: 'standalone',
         background_color: '#ffffff',

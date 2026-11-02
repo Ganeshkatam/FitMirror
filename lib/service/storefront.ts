@@ -230,34 +230,6 @@ export class StorefrontService {
         )()
     }
 
-    static async getTryOnProducts() {
-        return unstable_cache(
-            async () => {
-                try {
-                    const supabase = getPublicClient()
-                    // Products with virtual try-on assets
-                    // Assuming 'tryon_asset_ref' or checking garment_assets join
-                    // For now, let's filter by a flag or just take featured ones that support it
-                    const { data } = await supabase
-                        .from('products')
-                        .select('id, name, price, brand, category, product_offers(id, price_paise, sale_price_paise, status, seller_id), product_media(*)')
-                        .eq('is_active', true)
-                        // .not('tryon_asset_ref', 'is', null) // Uncomment if column exists
-                        .limit(6)
-                    return (data || []).map(p => ({
-                        ...p,
-                        images: normalizeProductMedia(p.product_media)
-                    }))
-                } catch (e) {
-                    console.error('getTryOnProducts failed', e)
-                    return []
-                }
-            },
-            ['tryon-products'],
-            { revalidate: 3600, tags: ['products', 'tryon'] }
-        )()
-    }
-
     static async getCollections() {
         return unstable_cache(
             async () => {

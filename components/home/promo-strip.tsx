@@ -18,7 +18,7 @@ interface PromoStripProps {
 const DEFAULT_PROMOS: PromoItem[] = [
     { id: '1', text: 'Free Shipping on orders above ₹999', gradient: 'from-emerald-500 to-teal-500' },
     { id: '2', text: 'New User? Get 15% OFF — Use code WELCOME15', code: 'WELCOME15', gradient: 'from-purple-500 to-pink-500' },
-    { id: '3', text: 'Try Before You Buy — Virtual Try-On Available', gradient: 'from-amber-500 to-orange-500' },
+    { id: '3', text: 'Premium Handpicked Quality — 7-Day Easy Returns', gradient: 'from-amber-500 to-orange-500' },
 ]
 
 export function PromoStrip({ promos }: PromoStripProps) {

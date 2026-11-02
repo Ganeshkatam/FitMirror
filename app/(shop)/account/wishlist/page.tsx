@@ -61,7 +61,6 @@ export default async function WishlistPage() {
                         <div key={item.id} className="h-full relative group">
                             <ProductCard
                                 product={item.products}
-                                showTryOn={true}
                             />
                             <PriceAlertButton
                                 productId={item.products.id}

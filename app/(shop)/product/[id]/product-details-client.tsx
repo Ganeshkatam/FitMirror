@@ -531,39 +531,7 @@ export function ProductDetailsClient({
                     BUY NOW
                 </Button>
 
-                {/* Virtual Try-On */}
-                {product.tryon_asset_ref ? (
-                    <Button
-                        className="w-full h-12 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white gap-2 font-bold shadow-lg shadow-amber-500/20"
-                        onClick={async () => {
-                            const { data: { user } } = await supabase.auth.getUser()
-                            if (!user) {
-                                toast.error("Please login to use Virtual Try-On", {
-                                    action: {
-                                        label: "Login",
-                                        onClick: () => router.push('/login?next=' + encodeURIComponent(window.location.pathname))
-                                    }
-                                })
-                                setTimeout(() => router.push('/login?next=' + encodeURIComponent(window.location.pathname)), 1500)
-                                return
-                            }
-                            router.push(`/try-on/${product.id}`)
-                        }}
-                    >
-                        <Sparkles className="h-4 w-4" />
-                        TRY VIRTUAL FITTING ROOM
-                    </Button>
-                ) : (
-                    <Button
-                        variant="secondary"
-                        className="w-full h-12 rounded-xl border-2 border-dashed border-amber-300 bg-amber-50 text-amber-700 hover:bg-amber-100 hover:border-amber-400 gap-2 font-bold"
-                        onClick={() => toast.success("Request sent! We'll notify you when Virtual Try-On is ready.")}
-                    >
-                        <Sparkles className="h-4 w-4" />
-                        REQUEST VIRTUAL TRY-ON
-                    </Button>
-                )}
-            </div>
+                </div>
 
             {/* Mobile Sticky Buy Bar */}
             <MobileBuyBar
@@ -573,7 +541,6 @@ export function ProductDetailsClient({
                 onAddToCart={handleAddToCart}
                 onBuyNow={handleBuyNow}
                 isOutOfStock={selectedSize ? getStock(selectedSize, selectedColor || undefined) === 0 : false}
-                hasTryOn={!!product.tryon_asset_ref}
                 visible={showMobileBuyBar}
             />
 

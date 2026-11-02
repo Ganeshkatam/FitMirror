@@ -5,7 +5,7 @@ import { useLoyalty } from '@/lib/loyalty/use-loyalty'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import { Trophy, Flame, Coins, Gift, Share2, Crown } from 'lucide-react'
+import { Trophy, Flame, Coins, Gift, Share2, Crown, Calendar, CheckCircle, Star, Users } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { format } from 'date-fns'
 
@@ -93,19 +93,24 @@ export default function LoyaltyPage() {
                     </CardHeader>
                     <CardContent className="space-y-4">
                         {[
-                            { title: 'Daily Check-in', points: '+10', icon: '📅' },
-                            { title: 'Virtual Try-On', points: '+50', icon: '👗' },
-                            { title: 'Write a Review', points: '+20', icon: '⭐' },
-                            { title: 'Refer a Friend', points: '+500', icon: '💌' },
-                        ].map((way, i) => (
-                            <div key={i} className="flex items-center justify-between p-3 bg-muted/50 rounded-xl">
-                                <div className="flex items-center gap-3">
-                                    <span className="text-2xl">{way.icon}</span>
-                                    <span className="font-medium">{way.title}</span>
+                            { title: 'Daily Check-in', points: '+10', icon: Calendar },
+                            { title: 'Complete Style Profile', points: '+50', icon: CheckCircle },
+                            { title: 'Write a Review', points: '+20', icon: Star },
+                            { title: 'Refer a Friend', points: '+500', icon: Users },
+                        ].map((way, i) => {
+                            const IconComp = way.icon
+                            return (
+                                <div key={i} className="flex items-center justify-between p-3 bg-muted/50 rounded-xl">
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-8 w-8 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-600 dark:text-amber-400">
+                                            <IconComp className="h-4 w-4" />
+                                        </div>
+                                        <span className="font-medium text-sm">{way.title}</span>
+                                    </div>
+                                    <span className="font-bold text-green-600 bg-green-100 dark:bg-green-950/40 px-2 py-1 rounded-md text-xs">{way.points}</span>
                                 </div>
-                                <span className="font-bold text-green-600 bg-green-100 px-2 py-1 rounded-md text-xs">{way.points}</span>
-                            </div>
-                        ))}
+                            )
+                        })}
                     </CardContent>
                 </Card>
 

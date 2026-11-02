@@ -32,7 +32,7 @@ const checkStockSchema = z.object({
 });
 
 const navigateSchema = z.object({
-    destination: z.enum(['product', 'cart', 'try-on', 'shop', 'wishlist']).describe('Where to navigate'),
+    destination: z.enum(['product', 'cart', 'shop', 'wishlist']).describe('Where to navigate'),
     productId: z.string().optional().describe('Product ID if navigating to a product page'),
 });
 
@@ -43,7 +43,7 @@ async function searchProducts(params: z.infer<typeof searchProductsSchema>) {
 
     let queryBuilder = supabase
         .from('products')
-        .select('id, name, price, category, product_media(*), tryon_supported')
+        .select('id, name, price, category, product_media(*)')
         .eq('is_active', true)
         .limit(10);
 
@@ -111,7 +111,6 @@ async function navigate(params: z.infer<typeof navigateSchema>) {
     const routes: Record<string, string> = {
         'product': productId ? `/product/${productId}` : '/shop',
         'cart': '/cart',
-        'try-on': '/try-on',
         'shop': '/shop',
         'wishlist': '/account/wishlist',
     };
@@ -177,8 +176,7 @@ export async function POST(req: Request) {
 
     // I will skip this call and use multi_replace in the tool list (but I can't call multi_replace twice strictly in parallel if implied?
     // "Do NOT make multiple parallel calls to this tool OR replace_file_content for same file."
-    // I am editing TWO DIFFERENT FILES. `try-on/route.ts` and `chat/agent/route.ts`.
-    // So I can use multi_replace for BOTH in parallel? 
+        // So I can use multi_replace for BOTH in parallel? 
     // "Do NOT make multiple parallel calls to this tool... for the SAME file."
     // Different files is fine.
 

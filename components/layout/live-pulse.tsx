@@ -9,7 +9,7 @@ interface Activity {
     id: string
     message: string
     timestamp: number
-    type: 'purchase' | 'try-on'
+    type: 'purchase' | 'browse'
 }
 
 export function LivePulse() {
@@ -40,7 +40,7 @@ export function LivePulse() {
         const mockActivities = [
             "Someone in Mumbai just bought a Red Velvet Dress",
             "3 people are looking at Denim Jackets",
-            "Someone in Delhi is trying on Sunglasses",
+            "Someone in Delhi just styled an outfit with the AI Assistant",
             "A customer in Bangalore just rated a product 5 stars",
             "Limited stock alert: specific sizes running low"
         ]
@@ -53,7 +53,7 @@ export function LivePulse() {
                 id: Date.now().toString(),
                 message: randomMsg,
                 timestamp: Date.now(),
-                type: 'try-on'
+                type: 'browse'
             })
         }, 15000 + Math.random() * 20000) // Random interval 15-35s
 

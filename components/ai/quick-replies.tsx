@@ -34,19 +34,13 @@ export function QuickReplies({ suggestions, onSelect, disabled }: QuickRepliesPr
 }
 
 // Intent-based suggestion generator
-export function getSuggestionsForIntent(intent: string, lastMessage?: string): string[] {
+export function getSuggestionsForIntent(intent: string): string[] {
     switch (intent) {
         case 'styling':
             return [
                 "Show more options",
                 "Something more casual",
                 "Budget-friendly picks",
-            ]
-        case 'tryOn':
-            return [
-                "How does it work?",
-                "Is it accurate?",
-                "Try on this outfit",
             ]
         case 'support':
             return [
@@ -57,7 +51,7 @@ export function getSuggestionsForIntent(intent: string, lastMessage?: string): s
         default:
             return [
                 "Help me find an outfit",
-                "What's trending?",
+                "What is trending?",
                 "Show me dresses",
             ]
     }

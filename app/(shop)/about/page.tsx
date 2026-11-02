@@ -8,21 +8,21 @@ import { Sparkles, Shield, Heart, Zap, Users, Award, ArrowRight, CheckCircle2 } 
 const stats = [
     { value: '50K+', label: 'Happy Customers', icon: Users },
     { value: '99%', label: 'Fit Accuracy', icon: Award },
-    { value: '2M+', label: 'Try-Ons Daily', icon: Zap },
+    { value: '100K+', label: 'Outfits Styled', icon: Zap },
 ]
 
 const features = [
     {
         icon: Zap,
-        title: 'AI-Powered Try-On',
-        description: 'Our cutting-edge AI shows you exactly how clothes will look on YOUR body. Upload one photo, try on thousands of outfits in seconds.',
+        title: 'AI-Powered Styling',
+        description: 'Our intelligent algorithms curate the perfect outfits tailored to your unique taste, sizing, and occasions.',
         gradient: 'from-amber-500 to-orange-500',
         bgGlow: 'bg-amber-500/20',
     },
     {
         icon: Shield,
         title: 'Privacy First',
-        description: 'Your photos are encrypted end-to-end, never shared with third parties, and you can delete them anytime with one click.',
+        description: 'Your style preferences are encrypted end-to-end, never shared with third parties, and you can manage your data anytime.',
         gradient: 'from-blue-500 to-cyan-500',
         bgGlow: 'bg-blue-500/20',
     },
@@ -75,7 +75,7 @@ export default function AboutPage() {
                         </h1>
 
                         <p className="text-base md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 md:mb-10 leading-relaxed animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                            FitMirror uses AI-powered virtual try-on technology to eliminate the guesswork from online shopping.
+                            FitMirror uses AI-powered styling and precision fit guidance to eliminate the guesswork from online shopping.
                             No more returns. No more disappointment. Just confidence.
                         </p>
 
@@ -83,7 +83,7 @@ export default function AboutPage() {
                         <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center animate-fade-in" style={{ animationDelay: '0.3s' }}>
                             <Link href="/shop">
                                 <Button size="lg" className="w-full sm:w-auto h-12 md:h-14 px-8 md:px-10 rounded-full bg-gradient-to-r from-gray-900 to-gray-700 hover:from-gray-800 hover:to-gray-600 dark:from-white dark:to-gray-200 dark:text-gray-900 shadow-xl hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 text-base">
-                                    Try It Now
+                                    Explore Now
                                     <ArrowRight className="ml-2 h-5 w-5" />
                                 </Button>
                             </Link>
@@ -242,7 +242,7 @@ export default function AboutPage() {
                             <span className="bg-gradient-to-r from-amber-400 to-rose-400 bg-clip-text text-transparent"> Perfect Fit</span>?
                         </h2>
                         <p className="text-base md:text-lg text-white/70 mb-8 md:mb-10 max-w-xl mx-auto">
-                            Stop guessing. Start knowing. Try on any outfit from our collection and shop with complete confidence.
+                            Curated collections, precision fit guidance, and premium styles delivered with complete confidence.
                         </p>
 
                         <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center">
@@ -252,9 +252,9 @@ export default function AboutPage() {
                                     <ArrowRight className="ml-2 h-5 w-5" />
                                 </Button>
                             </Link>
-                            <Link href="/try-on">
+                            <Link href="/shop?sort=new">
                                 <Button size="lg" variant="outline" className="w-full sm:w-auto h-12 md:h-14 px-8 md:px-10 rounded-full border-2 border-white/30 text-white hover:bg-white/10 transition-all duration-300 hover:-translate-y-1 text-base">
-                                    Try Virtual Mirror
+                                    Explore New Arrivals
                                 </Button>
                             </Link>
                         </div>

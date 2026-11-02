@@ -96,12 +96,11 @@ const SORT_OPTIONS = [
 ]
 
 const QUICK_FILTERS = [
-    { tag: 'New In', emoji: '✨', gradient: 'from-purple-500 to-pink-500', filter: 'new' },
-    { tag: 'Best Sellers', emoji: '🔥', gradient: 'from-orange-500 to-red-500', filter: 'bestseller' },
-    { tag: 'Sale', emoji: '💰', gradient: 'from-green-500 to-emerald-500', filter: 'sale' },
-    { tag: 'Sustainable', emoji: '🌿', gradient: 'from-teal-500 to-green-500', filter: 'sustainable' },
-    { tag: 'Premium', emoji: '👑', gradient: 'from-amber-500 to-yellow-500', filter: 'premium' },
-    { tag: 'Try-On Ready', emoji: '👗', gradient: 'from-indigo-500 to-blue-500', filter: 'tryon' },
+    { tag: 'New In', emoji: '', gradient: 'from-purple-500 to-pink-500', filter: 'new' },
+    { tag: 'Best Sellers', emoji: '', gradient: 'from-orange-500 to-red-500', filter: 'bestseller' },
+    { tag: 'Sale', emoji: '', gradient: 'from-green-500 to-emerald-500', filter: 'sale' },
+    { tag: 'Sustainable', emoji: '', gradient: 'from-teal-500 to-green-500', filter: 'sustainable' },
+    { tag: 'Premium', emoji: '', gradient: 'from-amber-500 to-yellow-500', filter: 'premium' },
 ]
 
 interface ShopClientProps {
@@ -149,7 +148,6 @@ export function ShopClient({ slug, initialProducts = [], initialFacets = { categ
     const [products, setProducts] = React.useState<any[]>(initialProducts)
     const [facets, setFacets] = React.useState<any>(initialFacets)
     const [loading, setLoading] = React.useState(initialProducts.length === 0)
-    const [isMirrorMode, setMirrorMode] = React.useState(false)
     const [activeFiltersCount, setActiveFiltersCount] = React.useState(0)
 
     // Pagination State
@@ -517,19 +515,6 @@ export function ShopClient({ slug, initialProducts = [], initialFacets = { categ
                                     </SheetFooter>
                                 </SheetContent>
                             </Sheet>
-
-                            {/* Mirror Mode Toggle */}
-                            <div className="flex items-center gap-2 border-r pr-4 mr-4 hidden md:flex">
-                                <Label htmlFor="mirror-mode" className="text-xs uppercase font-bold text-gray-600 flex items-center gap-1 cursor-pointer">
-                                    <Sparkles className="h-3 w-3 text-amber-500" /> Try-On
-                                </Label>
-                                <Switch
-                                    id="mirror-mode"
-                                    checked={isMirrorMode}
-                                    onCheckedChange={setMirrorMode}
-                                    className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-amber-500 data-[state=checked]:to-pink-600"
-                                />
-                            </div>
 
                             {/* View Toggle */}
                             <div className="flex items-center border-r pr-2 mr-2 hidden md:flex gap-1">

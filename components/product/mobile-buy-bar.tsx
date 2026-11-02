@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { cn } from '@/lib/utils'
-import { ShoppingBag, Sparkles } from 'lucide-react'
+import { ShoppingBag } from 'lucide-react'
 
 interface MobileBuyBarProps {
     price: number
@@ -11,7 +11,6 @@ interface MobileBuyBarProps {
     onAddToCart: () => void
     onBuyNow: () => void
     isOutOfStock?: boolean
-    hasTryOn?: boolean
     visible: boolean
 }
 
@@ -20,9 +19,7 @@ export function MobileBuyBar({
     originalPrice,
     discount = 0,
     onAddToCart,
-    onBuyNow,
     isOutOfStock = false,
-    hasTryOn = false,
     visible,
 }: MobileBuyBarProps) {
     if (!visible) return null
@@ -64,24 +61,13 @@ export function MobileBuyBar({
                             Out of Stock
                         </button>
                     ) : (
-                        <>
-                            <button
-                                onClick={onAddToCart}
-                                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg bg-[#ff3f6c] text-white text-sm font-bold shadow-sm active:scale-[0.98] transition-transform"
-                            >
-                                <ShoppingBag className="h-4 w-4" />
-                                ADD TO BAG
-                            </button>
-                            {hasTryOn && (
-                                <button
-                                    onClick={onBuyNow}
-                                    className="flex items-center justify-center gap-1 px-3 py-2.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold shadow-sm active:scale-[0.98] transition-transform"
-                                >
-                                    <Sparkles className="h-3.5 w-3.5" />
-                                    TRY
-                                </button>
-                            )}
-                        </>
+                        <button
+                            onClick={onAddToCart}
+                            className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg bg-[#ff3f6c] text-white text-sm font-bold shadow-sm active:scale-[0.98] transition-transform"
+                        >
+                            <ShoppingBag className="h-4 w-4" />
+                            ADD TO BAG
+                        </button>
                     )}
                 </div>
             </div>

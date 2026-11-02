@@ -125,7 +125,7 @@ export function MobileNav({ categories = [], user, orderCount = 0, wishlistCount
                             </div>
                             <span className="text-xl font-serif font-bold tracking-tight">FitMirror</span>
                         </Link>
-                        <p className="text-sm text-muted-foreground mb-4">Sign in for personalized shopping, try-ons, and exclusive deals.</p>
+                        <p className="text-sm text-muted-foreground mb-4">Sign in for personalized shopping, style curation, and exclusive deals.</p>
                         <div className="flex gap-2">
                             <Button className="flex-1 rounded-full bg-gray-900 hover:bg-gray-800 text-sm h-10" asChild>
                                 <Link href="/login" onClick={closeAndNavigate}>Log In</Link>
@@ -233,7 +233,6 @@ export function MobileNav({ categories = [], user, orderCount = 0, wishlistCount
                     {/* Features Section  */}
                     <div className="p-4 space-y-1">
                         <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.15em] px-3 mb-2">Features</p>
-                        <NavLink href="/try-on" icon={Camera} label="Virtual Try-On" onClick={closeAndNavigate} highlight />
                         <NavLink href="/outfit-builder" icon={Shirt} label="Outfit Builder" onClick={closeAndNavigate} />
                         <NavLink href="/shop?sort=new" icon={Star} label="New Arrivals" onClick={closeAndNavigate} />
                     </div>
@@ -249,7 +248,6 @@ export function MobileNav({ categories = [], user, orderCount = 0, wishlistCount
                                 <NavLink href="/account/orders" icon={Package} label="My Orders" onClick={closeAndNavigate} count={orderCount} />
                                 <NavLink href="/account/wishlist" icon={Heart} label="Wishlist" onClick={closeAndNavigate} count={wishlistCount} countColor="text-rose-500 bg-rose-50" />
                                 <NavLink href="/account/closet" icon={Shirt} label="My Closet" onClick={closeAndNavigate} />
-                                <NavLink href="/account/tryon-history" icon={Clock} label="Try-On History" onClick={closeAndNavigate} />
                                 <NavLink href="/account/addresses" icon={MapPin} label="Addresses" onClick={closeAndNavigate} />
                                 <NavLink href="/account/notifications" icon={Bell} label="Notifications" onClick={closeAndNavigate} />
                             </div>

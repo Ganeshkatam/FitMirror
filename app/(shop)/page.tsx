@@ -30,7 +30,6 @@ const JournalSection = dynamic(() => import('@/components/home/journal-section')
 const ConsciousLuxurySection = dynamic(() => import('@/components/home/sustainability-section').then(mod => mod.ConsciousLuxurySection))
 import { ContinueShopping } from '@/components/home/continue-shopping'
 import { RecommendedProducts } from '@/components/home/recommended-products'
-import { TryOnShowcase } from '@/components/home/try-on-showcase'
 import { CouponStrip } from '@/components/home/coupon-strip'
 import { CategoryShowcase } from '@/components/home/category-showcase'
 
@@ -40,11 +39,11 @@ import { HeroCarousel } from '@/components/hero/hero-carousel'
 export const revalidate = 3600 // ISR: Revalidate every hour
 
 export const metadata: Metadata = {
-    title: 'FitMirror | AI-Powered Fashion & Virtual Try-On',
-    description: 'Shop the latest trends and try them on virtually before you buy. Experience the future of online fashion shopping with FitMirror.',
+    title: 'FitMirror | Curated Contemporary Fashion',
+    description: 'Discover curated fashion collections, timeless silhouettes, and effortless style with FitMirror.',
     openGraph: {
-        title: 'FitMirror | Virtual Try-On Fashion',
-        description: 'See exactly how clothes look on you with our AI technology.',
+        title: 'FitMirror | Modern Fashion Destination',
+        description: 'Curated collections and seamless shopping experience with FitMirror.',
         type: 'website',
     }
 }
@@ -135,9 +134,6 @@ export default async function HomePage() {
                 <RecommendedProducts products={recommendedProducts} />
             )}
 
-            {/* 7. Try-On Showcase (New - Feature Highlight) */}
-            <TryOnShowcase />
-
             {/* 6. Coupon Banner */}
             <CouponBanner />
 
@@ -188,7 +184,7 @@ export default async function HomePage() {
                         <StaggerContainer className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-6">
                             {products.map((product) => (
                                 <StaggerItem key={product.id}>
-                                    <ProductCard product={product} showTryOn />
+                                    <ProductCard product={product} />
                                 </StaggerItem>
                             ))}
                         </StaggerContainer>
@@ -253,7 +249,7 @@ export default async function HomePage() {
                             Ready to Transform<br />Your Wardrobe?
                         </h2>
                         <p className="text-white/60 max-w-2xl mx-auto mb-6 md:mb-10 text-sm md:text-xl">
-                            Join with millions of people who shop with confidence using virtual try-on
+                            Join thousands of happy shoppers discovering effortless style every day.
                         </p>
                         <div className="flex flex-wrap gap-4 justify-center">
                             <Link href="/signup">

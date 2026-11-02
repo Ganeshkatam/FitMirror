@@ -46,7 +46,7 @@ export default function ClosetPage() {
     }
 
     return (
-        <AccountLayout title="My Digital Closet 🧥" description="Digitize your wardrobe and mix-and-match with our catalog.">
+        <AccountLayout title="My Digital Closet" description="Digitize your wardrobe and mix-and-match with our catalog.">
             <div className="flex gap-4">
                 {/* Uploader Section - 30% */}
                 <div className="w-1/3 min-w-[200px] shrink-0">
@@ -91,8 +91,8 @@ export default function ClosetPage() {
                                     {/* Actions Overlay */}
                                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3">
                                         <div className="flex gap-2">
-                                            <Button size="sm" className="flex-1 bg-white text-black hover:bg-white/90 text-xs">
-                                                Try On
+                                            <Button size="sm" variant="secondary" className="flex-1 text-xs" onClick={() => toast.info("Item saved in your digital wardrobe")}>
+                                                Saved Item
                                             </Button>
                                             <Button
                                                 size="icon"

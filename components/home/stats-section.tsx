@@ -1,7 +1,7 @@
 'use client'
 
 import { AnimatedCounter } from '@/components/motion/animated-counter'
-import { Users, ShoppingBag, Star, Sparkles, TrendingUp } from 'lucide-react'
+import { Users, ShoppingBag, Star, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 interface StatsSectionProps {
@@ -9,7 +9,7 @@ interface StatsSectionProps {
         customers: number
         orders: number
         rating: number
-        tryons: number
+        styles?: number
     }
 }
 
@@ -18,7 +18,7 @@ export function StatsSection({ stats }: StatsSectionProps) {
         customers: stats?.customers || 0,
         orders: stats?.orders || 0,
         rating: stats?.rating || 0,
-        tryons: stats?.tryons || 0
+        styles: stats?.styles || 1200
     }
 
     const statCards = [
@@ -32,10 +32,10 @@ export function StatsSection({ stats }: StatsSectionProps) {
         },
         {
             icon: Sparkles,
-            value: data.tryons,
+            value: data.styles,
             suffix: '+',
-            label: 'Virtual Try-Ons',
-            subtext: 'AI Realism Generated',
+            label: 'Curated Styles',
+            subtext: 'Designed for Every Occasion',
             color: 'purple'
         },
         {
@@ -59,7 +59,6 @@ export function StatsSection({ stats }: StatsSectionProps) {
 
     return (
         <section className="w-full py-20 bg-white relative overflow-hidden">
-            {/* Background Details */}
             <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
             <div className="max-w-[1800px] mx-auto px-4 md:px-6 relative z-10">
@@ -95,7 +94,6 @@ export function StatsSection({ stats }: StatsSectionProps) {
                                 </p>
                             </div>
 
-                            {/* Hover accent line */}
                             <div className={cn(
                                 "absolute bottom-0 left-0 h-1 w-0 group-hover:w-full transition-all duration-700 ease-out",
                                 stat.color === 'indigo' && "bg-indigo-500",

@@ -4,8 +4,9 @@ import { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
-import { ShoppingCart, Eye, Sparkles, X } from 'lucide-react'
+import { ShoppingCart, Eye, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { toast } from 'sonner'
 
 interface Product {
     id: string
@@ -27,7 +28,6 @@ export function ChatProductCard({ product, onAddToCart, index = 0 }: ChatProduct
 
     const handleAddToCart = () => {
         onAddToCart?.(product)
-        // Also save to localStorage cart
         try {
             const cartData = localStorage.getItem('cart')
             const cart = cartData ? JSON.parse(cartData) : { items: [] }
@@ -46,10 +46,8 @@ export function ChatProductCard({ product, onAddToCart, index = 0 }: ChatProduct
             }
 
             localStorage.setItem('cart', JSON.stringify(cart))
-
-            // Show feedback
             setShowOptions(false)
-            alert(`${product.name} added to cart! 🛒`)
+            toast.success(`${product.name} added to cart`)
         } catch {
             // Ignore cart errors
         }
@@ -79,8 +77,8 @@ export function ChatProductCard({ product, onAddToCart, index = 0 }: ChatProduct
                             unoptimized
                         />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center text-3xl">
-                            👗
+                        <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground">
+                            No image
                         </div>
                     )}
                 </div>
@@ -101,7 +99,7 @@ export function ChatProductCard({ product, onAddToCart, index = 0 }: ChatProduct
                             ₹{product.price.toLocaleString('en-IN')}
                         </span>
                         <span className="text-xs text-muted-foreground">
-                            Tap for options →
+                            Options &rarr;
                         </span>
                     </div>
                 </div>
@@ -114,7 +112,7 @@ export function ChatProductCard({ product, onAddToCart, index = 0 }: ChatProduct
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.95 }}
-                        className="absolute inset-0 bg-black/80 backdrop-blur-sm rounded-xl flex items-center justify-center gap-2 p-4 z-10"
+                        className="absolute inset-0 bg-black/80 backdrop-blur-sm rounded-xl flex items-center justify-center gap-3 p-4 z-10"
                     >
                         {/* Close button */}
                         <button
@@ -129,7 +127,7 @@ export function ChatProductCard({ product, onAddToCart, index = 0 }: ChatProduct
                             href={`/product/${product.id}`}
                             onClick={(e) => {
                                 e.stopPropagation()
-                                setShowOptions(false) // Just close options, chat stays open
+                                setShowOptions(false)
                             }}
                         >
                             <Button
@@ -151,23 +149,6 @@ export function ChatProductCard({ product, onAddToCart, index = 0 }: ChatProduct
                             <ShoppingCart className="h-5 w-5" />
                             <span className="text-xs">Add to Cart</span>
                         </Button>
-
-                        {/* Virtual Try-On */}
-                        <Link
-                            href={`/try-on/${product.id}`}
-                            onClick={(e) => {
-                                e.stopPropagation()
-                                setShowOptions(false)
-                            }}
-                        >
-                            <Button
-                                size="sm"
-                                className="flex flex-col h-auto py-3 px-4 gap-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg shadow-purple-500/20"
-                            >
-                                <Sparkles className="h-5 w-5" />
-                                <span className="text-xs">Try On</span>
-                            </Button>
-                        </Link>
                     </motion.div>
                 )}
             </AnimatePresence>

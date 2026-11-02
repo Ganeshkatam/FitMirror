@@ -21,18 +21,18 @@ import { MobileShell } from '@/components/mobile/mobile-shell'
 export const metadata: Metadata = {
   metadataBase: new URL('https://fitmirror.in'), // Fixes social image resolution
   title: {
-    default: 'FitMirror | Virtual Try-On Fashion',
+    default: 'FitMirror | AI Fashion & Personal Styling',
     template: '%s | FitMirror'
   },
-  description: 'Experience the perfect fit. Virtual try-on technology for the modern woman. Shop tops, dresses, jeans and more with confidence.',
-  keywords: ['virtual try-on', 'fashion', 'online shopping', 'women fashion', 'fit mirror', 'clothing'],
+  description: 'Experience the perfect fit with AI-guided fashion styling. Shop tops, dresses, jeans and curated collections with confidence.',
+  keywords: ['fashion', 'online shopping', 'personal styling', 'curated wardrobe', 'women fashion', 'fit mirror', 'clothing'],
   authors: [{ name: 'FitMirror' }],
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: 'FitMirror | Virtual Try-On Fashion',
-    description: 'Experience the perfect fit. Virtual try-on technology for the modern woman.',
+    title: 'FitMirror | AI Fashion & Personal Styling',
+    description: 'Experience the perfect fit with AI-guided fashion styling for the modern wardrobe.',
     url: 'https://fitmirror.in',
     siteName: 'FitMirror',
     locale: 'en_IN',
@@ -40,8 +40,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'FitMirror | Virtual Try-On Fashion',
-    description: 'Experience the perfect fit. Virtual try-on technology for the modern fashion.',
+    title: 'FitMirror | AI Fashion & Personal Styling',
+    description: 'Experience the perfect fit with AI-guided fashion styling for the modern wardrobe.',
   },
   robots: {
     index: true,

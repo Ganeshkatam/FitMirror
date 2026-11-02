@@ -7,7 +7,7 @@ export default function SignupPage() {
             <CardHeader className="space-y-1 px-4 md:px-6 py-4 md:py-6 pb-2 md:pb-4">
                 <CardTitle className="text-xl md:text-3xl font-serif">Create Account</CardTitle>
                 <CardDescription className="text-sm md:text-base">
-                    Join FitMirror and experience virtual try-on shopping
+                    Join FitMirror and discover personalized fashion shopping
                 </CardDescription>
             </CardHeader>
             <CardContent className="px-4 md:px-6 pb-4 md:pb-6">

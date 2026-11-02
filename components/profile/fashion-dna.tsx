@@ -50,7 +50,7 @@ export function FashionDNA({ profile }: { profile?: any }) {
                             <Info className="h-4 w-4 text-gray-400 hover:text-indigo-500 transition-colors" />
                         </PopoverTrigger>
                         <PopoverContent className="w-64 text-xs text-gray-600">
-                            Analysis based on your purchase history and try-on sessions.
+                            Analysis based on your purchase history and style interactions.
                         </PopoverContent>
                     </Popover>
                 </div>

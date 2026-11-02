@@ -9,32 +9,23 @@ import {
     Heart,
     MapPin,
     Settings,
-    LogOut,
     Shirt,
-    Clock,
     Bell,
     Gift,
     Zap
 } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { SignOutButton } from '@/app/(shop)/profile/sign-out-button'
 
 const navItems = [
     { href: '/account', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/account/orders', label: 'Orders', icon: Package },
     { href: '/account/wishlist', label: 'Wishlist', icon: Heart },
     { href: '/account/closet', label: 'My Closet', icon: Shirt },
-    { href: '/account/tryon-history', label: 'Try-On History', icon: Clock },
     { href: '/account/addresses', label: 'Addresses', icon: MapPin },
     { href: '/account/notifications', label: 'Notifications', icon: Bell },
     { href: '/account/referrals', label: 'Referrals', icon: Gift },
     { href: '/loyalty', label: 'Loyalty Program', icon: Zap },
     { href: '/account/settings', label: 'Settings', icon: Settings },
 ]
-
-// ... existing imports ...
-
-// removed UnlockProCard import
 
 export function AccountNav() {
     const pathname = usePathname()
@@ -59,10 +50,6 @@ export function AccountNav() {
                     </Link>
                 )
             })}
-
-            <div className="pt-4 mt-4 border-t border-gray-100">
-                <SignOutButton className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50" />
-            </div>
         </nav>
     )
 }

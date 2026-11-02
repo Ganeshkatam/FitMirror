@@ -13,7 +13,7 @@ interface ParallaxHeroProps {
 
 export function ParallaxHero({
     headline = "Experience the Perfect Fit",
-    subheadline = "See how clothes look on your body before you buy. Upload one photo, try on our entire collection in seconds."
+    subheadline = "Explore tailored styles, premium fabrics, and curated collections designed to look and feel effortless."
 }: ParallaxHeroProps) {
     const ref = useRef(null)
     const { scrollYProgress } = useScroll({
@@ -34,18 +34,19 @@ export function ParallaxHero({
             {/* Animated Background */}
             <motion.div
                 style={{ y: bgY }}
-                className="absolute inset-0 -z-10"
+                className="absolute inset-0 z-0 bg-gradient-to-b from-amber-500/10 via-rose-500/5 to-background"
             >
-                {/* Gradient Base - Mixed White */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white via-slate-50 to-gray-100" />
+                {/* Decorative Blobs */}
+                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-amber-400/20 to-orange-400/20 rounded-full blur-3xl animate-pulse" />
+                <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-gradient-to-br from-rose-400/20 to-violet-400/20 rounded-full blur-3xl animate-pulse delay-1000" />
 
-                {/* Animated Blobs - Silver/Pearlescent */}
-                <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gradient-to-br from-gray-200/40 to-slate-200/40 rounded-full blur-3xl animate-blob" />
-                <div className="absolute top-1/3 right-1/4 w-80 h-80 bg-gradient-to-br from-slate-100/30 to-gray-100/30 rounded-full blur-3xl animate-blob animation-delay-2000" />
-                <div className="absolute bottom-1/4 left-1/3 w-72 h-72 bg-gradient-to-br from-white/30 to-zinc-100/30 rounded-full blur-3xl animate-blob animation-delay-4000" />
-
-                {/* Grid Pattern */}
-                <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] bg-[size:60px_60px] [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_70%)]" />
+                {/* Subtle Grid */}
+                <div
+                    className="absolute inset-0 opacity-[0.03]"
+                    style={{
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+                    }}
+                />
             </motion.div>
 
             {/* Content */}
@@ -62,7 +63,7 @@ export function ParallaxHero({
                         className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/80 backdrop-blur-md rounded-full border border-slate-200 shadow-lg"
                     >
                         <Sparkles className="h-4 w-4 text-amber-500" />
-                        <span className="text-sm font-semibold text-slate-800">AI-Powered Virtual Try-On</span>
+                        <span className="text-sm font-semibold text-slate-800">Curated Modern Fashion</span>
                     </motion.div>
 
                     {/* Main Heading */}
@@ -73,11 +74,6 @@ export function ParallaxHero({
                         className="space-y-4"
                     >
                         <h1 data-testid="hero-headline" className="text-3xl font-bold tracking-tight sm:text-5xl md:text-7xl lg:text-8xl font-serif leading-tight flex flex-col items-center gap-2 sm:gap-4">
-                            {/* Logic to split headline if needed, or just render it. 
-                                The original had "Experience the \n Perfect Fit" with gradient. 
-                                We'll check if it matches the default to keep the special styling, 
-                                otherwise render the custom string. 
-                            */}
                             {headline === "Experience the Perfect Fit" ? (
                                 <>
                                     <span>Experience the</span>
@@ -99,13 +95,10 @@ export function ParallaxHero({
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: 0.5 }}
-
                             className="mx-auto max-w-[700px] text-sm md:text-xl text-slate-600 leading-relaxed"
-                            dangerouslySetInnerHTML={{
-                                __html: subheadline
-                                    .replace("your body", "<strong class='text-slate-900 font-semibold'>your body</strong>")
-                            }}
-                        />
+                        >
+                            {subheadline}
+                        </motion.p>
                     </motion.div>
 
                     {/* CTA Buttons */}
@@ -137,7 +130,7 @@ export function ParallaxHero({
                     >
                         {[
                             { icon: Star, label: "4.9/5 Rating", color: "text-amber-500", fill: true },
-                            { icon: Shield, label: "Privacy Guaranteed", color: "text-green-600" },
+                            { icon: Shield, label: "Quality Guaranteed", color: "text-green-600" },
                             { icon: Truck, label: "Free Shipping", color: "text-blue-600" },
                         ].map(({ icon: Icon, label, color, fill }) => (
                             <div key={label} className="flex items-center gap-2 text-sm text-slate-600">

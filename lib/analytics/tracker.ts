@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/client'
 
-export type AnalyticsEventType = 'view_item' | 'add_to_cart' | 'purchase' | 'try_on' | 'ai_chat' | 'quick_view'
+export type AnalyticsEventType = 'view_item' | 'add_to_cart' | 'purchase' | 'ai_chat' | 'quick_view'
 
 interface TrackEventParams {
     eventType: AnalyticsEventType
@@ -16,7 +16,6 @@ export async function trackEvent({ eventType, offerId, sellerId, productId, meta
         const { data: { session } } = await supabase.auth.getSession()
         const userId = session?.user?.id
 
-        // 1. Log to Analytics Table (Fire & Forget)
         supabase
             .from('analytics_events')
             .insert({
@@ -31,7 +30,6 @@ export async function trackEvent({ eventType, offerId, sellerId, productId, meta
                 if (error) console.error("Analytics Error:", error.message, error)
             })
 
-        // 2. Send Signal to Personalization Engine (Fire & Forget)
         if ((eventType === 'view_item' || eventType === 'purchase') && productId && metadata?.category) {
             fetch('/api/personalization/track', {
                 method: 'POST',

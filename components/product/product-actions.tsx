@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { useCart } from '@/lib/store/cart'
 import { useWishlist } from '@/lib/store/use-wishlist'
 import { useRouter } from 'next/navigation'
-import { Sparkles, ShoppingBag, Heart } from 'lucide-react'
+import { ShoppingBag, Heart } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 
@@ -75,7 +75,6 @@ export function ProductActions({
                         const updated = payload.new as InventoryItem & { product_id: string }
                         setInventory(prev =>
                             prev.map(item =>
-                                // Match by variant_id if available, else fallback to size
                                 (item.variant_id && item.variant_id === updated.variant_id) || item.size === updated.size
                                     ? { ...item, stock: updated.stock, variant_id: updated.variant_id || item.variant_id }
                                     : item
@@ -123,7 +122,6 @@ export function ProductActions({
                 offerId: offerId || 'pending',
                 variantId: itemInventory?.variant_id || undefined
             })
-            // Simulate network delay for better UX feeling
             setTimeout(() => toast.success("Added to bag"), 500)
         })
     }
@@ -154,7 +152,7 @@ export function ProductActions({
 
     return (
         <div className="space-y-6">
-            {/* Size Selection - Myntra Style */}
+            {/* Size Selection */}
             <div className={cn("space-y-3 transition-transform", shake && "animate-shake")}>
                 <div className="flex items-center justify-between">
                     <h3 className={cn("font-semibold text-sm uppercase tracking-wide", shake ? "text-red-500" : "text-gray-600")}>
@@ -209,9 +207,8 @@ export function ProductActions({
                 )}
             </div>
 
-            {/* Action Buttons - Myntra Style */}
+            {/* Action Buttons */}
             <div className="space-y-3">
-                {/* Primary Actions Row */}
                 <div className="flex gap-3">
                     {/* Add to Bag or Waitlist */}
                     <div className="flex-1">
@@ -232,7 +229,7 @@ export function ProductActions({
                         </WaitlistButton>
                     </div>
 
-                    {/* Wishlist Button - Myntra Style */}
+                    {/* Wishlist Button */}
                     <Button
                         variant="outline"
                         className={cn(
@@ -257,15 +254,6 @@ export function ProductActions({
                     loading={isPending}
                 >
                     BUY NOW
-                </Button>
-
-                {/* Virtual Try-On */}
-                <Button
-                    className="w-full h-12 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white gap-2 font-bold shadow-lg shadow-amber-500/20"
-                    onClick={() => router.push(`/try-on/${productId}`)}
-                >
-                    <Sparkles className="h-4 w-4" />
-                    TRY VIRTUAL FITTING ROOM
                 </Button>
             </div>
         </div>

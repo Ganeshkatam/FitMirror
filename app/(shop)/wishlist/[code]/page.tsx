@@ -118,7 +118,7 @@ export default async function PublicWishlistPage({
                                 className="animate-fade-in"
                                 style={{ animationDelay: `${index * 50}ms` }}
                             >
-                                <ProductCard product={product} showTryOn={true} />
+                                <ProductCard product={product}  />
                             </div>
                         ))}
                     </div>

@@ -8,7 +8,7 @@ export const WelcomeEmail: React.FC<WelcomeEmailProps> = ({ firstName }) => (
     <div style={{ fontFamily: 'sans-serif', lineHeight: '1.5', color: '#333' }}>
         <h1>Welcome to fitmirror, {firstName}!</h1>
         <p>We&apos;re thrilled to have you here on board. At fitmirror, we believe in helping you find the perfect fit.</p>
-        <p>Explore our latest collection and try on clothes virtually using our AI technology.</p>
+        <p>Explore our latest collection and discover tailored looks curated by our AI styling technology.</p>
         <a
             href="https://fitmirror.app/shop"
             style={{

@@ -29,7 +29,7 @@ export default function ContactPage() {
                         <div>
                             <h2 className="font-serif text-3xl md:text-4xl text-gray-900 mb-6">Contact Information</h2>
                             <p className="text-gray-600 text-lg leading-relaxed">
-                                Our team is dedicated to providing you with the best virtual try-on experience.
+                                Our team is dedicated to providing you with the best fashion shopping experience.
                                 Reach out to us through any of the channels below.
                             </p>
                         </div>

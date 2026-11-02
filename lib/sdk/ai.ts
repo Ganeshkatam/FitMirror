@@ -1,6 +1,6 @@
 import { detectIntent } from '@/lib/search/intent'
 
-export type AssistantActionType = 'SEARCH' | 'TRY_ON' | 'STYLE_HELP' | 'NAVIGATE' | 'EXPLAIN' | 'ORDER_TRACKING'
+export type AssistantActionType = 'SEARCH' | 'STYLE_HELP' | 'NAVIGATE' | 'EXPLAIN' | 'ORDER_TRACKING'
 
 export interface AssistantResponse {
     type: 'ACTION'
@@ -22,29 +22,29 @@ export interface AssistantContext {
     supabase?: any
 }
 
-// 10x KNOWLEDGE GRAPH
+// KNOWLEDGE GRAPH
 const FASHION_KNOWLEDGE: Record<string, { advice: string, related: string[] }> = {
-    'party': { advice: "Time to shine! ✨ For parties, I love our Midnight Velvet collection or a sequin bodycon dress.", related: ['heels', 'clutch'] },
-    'wedding': { advice: "Wedding guest? 💍 Go for elegant florals, a silk saree, or a pastel maxi dress. Classy is key.", related: ['jewelry', 'heels'] },
-    'office': { advice: "Power dressing mode: ON. 💼 Try a structured blazer with high-waisted trousers or a pencil skirt.", related: ['blazer', 'trousers'] },
-    'date': { advice: "Ooh, date night? ❤️ A satin slip dress or a chic off-shoulder top is perfect. Keep it romantic!", related: ['dress', 'skirt'] },
-    'vacation': { advice: "Vacay vibes! ✈️ Pack breezy linens, maxi dresses, and comfortable sandals. Don't forget a hat!", related: ['hat', 'sandals'] },
-    'gym': { advice: "Crushing goals? 🏋️‍♀️ Look for high-compression leggings and moisture-wicking racerback tops.", related: ['leggings', 'sports bra'] },
-    'brunch': { advice: "Sunday funday! 🥂 A floral sundress or white denim with a cute crop top is the ultimate brunch look.", related: ['sundress', 'sunglasses'] },
-    'festival': { advice: "Festival season! 🎡 Think boho-chic: fringe, denim shorts, and boots. Go wild with accessories!", related: ['shorts', 'boots'] },
-    'interview': { advice: "First impressions count. 🤝 A navy or black suit/dress is professional and timeless.", related: ['blazer', 'formal shoes'] },
-    'summer': { advice: "Stay cool! ☀️ Light cottons, linens, and whites are your best friends right now.", related: ['shorts', 'dress'] },
-    'winter': { advice: "Cozy up! ❄️ Layer a chunky knit sweater over a collar shirt, paired with wool trousers.", related: ['jacket', 'sweater'] },
+    'party': { advice: "Time to shine. For parties, consider a velvet collection piece or a sequin bodycon dress.", related: ['heels', 'clutch'] },
+    'wedding': { advice: "Attending a wedding? Opt for elegant florals, a silk saree, or a pastel maxi dress. Refined elegance is key.", related: ['jewelry', 'heels'] },
+    'office': { advice: "Professional tailored mode: Try a structured blazer with high-waisted trousers or a pencil skirt.", related: ['blazer', 'trousers'] },
+    'date': { advice: "Planning a dinner or date night? A satin slip dress or a chic off-shoulder top is classic and flattering.", related: ['dress', 'skirt'] },
+    'vacation': { advice: "Vacation ready: Pack breathable linens, flowing maxi dresses, and comfortable sandals.", related: ['hat', 'sandals'] },
+    'gym': { advice: "Active performance: Look for high-compression leggings and moisture-wicking racerback tops.", related: ['leggings', 'sports bra'] },
+    'brunch': { advice: "Casual daytime outing: A floral sundress or white denim with a tailored crop top creates a timeless look.", related: ['sundress', 'sunglasses'] },
+    'festival': { advice: "Festival style: Consider boho-chic elements like structured denim and comfortable leather boots.", related: ['shorts', 'boots'] },
+    'interview': { advice: "First impressions count: A tailored navy or dark charcoal suit or dress provides a polished, professional silhouette.", related: ['blazer', 'formal shoes'] },
+    'summer': { advice: "Stay comfortable in heat: Lightweight cottons, breathable linens, and soft neutral tones work best.", related: ['shorts', 'dress'] },
+    'winter': { advice: "Cold-weather layering: Layer a chunky knit sweater over a collared shirt, paired with wool trousers.", related: ['jacket', 'sweater'] },
 }
 
 const COLOR_MATRIX: Record<string, string> = {
-    'red': "Red matches beautifully with Black, White, or Denim. For a bold look, try Red + Pink! ❤️🩷",
-    'blue': "Blue is a neutral! Pair it with Beige, White, Mustard Yellow, or even Emerald Green. 💙💛",
-    'green': "Green loves Earth tones: Beige, Brown, Cream. Or go fresh with White! 💚🤎",
-    'black': "Black is the universal donor. It goes with EVERYTHING. Try Neon for a pop! 🖤💚",
-    'white': "White is clean and crisp. It makes any other color pop. Try White + Metallics! 🤍✨",
-    'yellow': "Yellow is sunshine! Tone it down with Grey or Navy, or go bright with Purple. 💛💜",
-    'pink': "Pink pairs sweetly with Grey, White, or Red for a monochrome moment. 🩷🤍"
+    'red': "Red matches cleanly with black, white, or deep denim. For a high-contrast style, pair red with soft blush.",
+    'blue': "Blue is a versatile neutral. Pair it with beige, white, mustard yellow, or deep emerald tones.",
+    'green': "Green complements earth tones: beige, brown, and cream. Or pair with crisp white for clean contrast.",
+    'black': "Black pairs universally across all palettes. Add contrast with vibrant monochrome accents or clean metallics.",
+    'white': "White offers a crisp, clean base that highlights textures and accent shades. Works seamlessly with warm neutrals.",
+    'yellow': "Yellow brings warmth and energy. Ground it with grey, charcoal, or deep navy.",
+    'pink': "Pink pairs smoothly with grey, white, camel, or burgundy for a cohesive monochrome look."
 }
 
 export class FitMirrorAI {
@@ -68,7 +68,7 @@ export class FitMirrorAI {
             if (context.user_context?.userId) {
                 return await this.handleOrderTracking(context.user_context.userId, supabase)
             } else {
-                return { type: 'ACTION', action: 'NAVIGATE', payload: { url: '/login' }, reply: "I can check your orders, but I need you to login first! 🔐" }
+                return { type: 'ACTION', action: 'NAVIGATE', payload: { url: '/login' }, reply: "Please sign in to your account so I can verify your order details." }
             }
         }
 
@@ -76,30 +76,19 @@ export class FitMirrorAI {
         const navResponse = this.checkNavigation(msg)
         if (navResponse) return navResponse
 
-        // 3. Try-On Intent
-        if (msg.includes('try') || msg.includes('wear') || msg.includes('mirror') || msg.includes('fitting')) {
-            if (context.page?.includes('product')) {
-                return { type: 'ACTION', action: 'TRY_ON', reply: "Initializing Magic Mirror... ✨ Let's see you in this!" }
-            }
-            return { type: 'ACTION', action: 'NAVIGATE', payload: { url: '/try-on' }, reply: "Opening the Virtual Studio so you can mix & match! 👗" }
-        }
-
-        // 4. Advanced Search (Fully DB Aware)
+        // 3. Advanced Search (Fully DB Aware)
         const searchIntent = detectIntent(msg)
         if (this.isSearchIntent(msg, searchIntent)) {
             return await this.handleSearch(msg, searchIntent, supabase)
         }
 
-        // 5. Expert Styling Advice (Enhanced with Personalization)
+        // 4. Expert Styling Advice (Enhanced with Personalization)
         for (const [key, data] of Object.entries(FASHION_KNOWLEDGE)) {
             if (msg.includes(key)) {
                 let products: any[] = []
                 try {
                     const { StorefrontService } = await import('@/lib/service/storefront')
 
-                    // Search for products related to the occasion + advice
-                    // e.g. "wedding" -> keywords from advice like "floral", "saree", "maxi"
-                    // For now, let's just search for the occasion/related terms
                     const queryV2 = `${key} ${data.related.join(' ')}`
 
                     const { results } = await StorefrontService.searchProducts({
@@ -114,13 +103,13 @@ export class FitMirrorAI {
                 return {
                     type: 'ACTION',
                     action: 'STYLE_HELP',
-                    reply: `${data.advice} \n\n(Tip: Don't forget ${data.related.join(' & ')}!)`,
+                    reply: `${data.advice} \n\n(Tip: Don't forget ${data.related.join(' & ')}.)`,
                     payload: { products }
                 }
             }
         }
 
-        // 6. Color Theory
+        // 5. Color Theory
         for (const [color, advice] of Object.entries(COLOR_MATRIX)) {
             if (msg.includes(color) && (msg.includes('match') || msg.includes('wear') || msg.includes('outfit'))) {
                 return { type: 'ACTION', action: 'STYLE_HELP', reply: advice }
@@ -133,7 +122,7 @@ export class FitMirrorAI {
     // --- Private Intelligence Helpers ---
 
     private isSearchIntent(msg: string, intent: any): boolean {
-        return intent.type === 'search' || intent.filters.category ||
+        return intent.type === 'search' || intent.filters?.category ||
             ['buy', 'show', 'find', 'get', 'need', 'looking for', 'have', 'stock'].some(v => msg.includes(v))
     }
 
@@ -147,7 +136,7 @@ export class FitMirrorAI {
                 .limit(1)
 
             if (error || !orders || orders.length === 0) {
-                return { type: 'ACTION', action: 'NAVIGATE', payload: { url: '/shop' }, reply: "You haven't placed any orders yet. Time to go shopping! 🛍️" }
+                return { type: 'ACTION', action: 'NAVIGATE', payload: { url: '/shop' }, reply: "You have not placed any orders yet. Visit our shop to explore current collections." }
             }
 
             const latest = orders[0]
@@ -155,10 +144,10 @@ export class FitMirrorAI {
             return {
                 type: 'ACTION',
                 action: 'ORDER_TRACKING',
-                reply: `Your latest order (placed on ${date}) is currently **${latest.status.toUpperCase()}**. 🚚`
+                reply: `Your latest order placed on ${date} is currently ${latest.status.toUpperCase()}.`
             }
         } catch (e) {
-            return { type: 'ACTION', action: 'EXPLAIN', reply: "I'm having trouble accessing the order database right now. Please check your profile page." }
+            return { type: 'ACTION', action: 'EXPLAIN', reply: "Unable to access order records at this time. Please check your account profile." }
         }
     }
 
@@ -166,7 +155,6 @@ export class FitMirrorAI {
         const { StorefrontService } = await import('@/lib/service/storefront')
 
         let query = msg
-        // Remove common trigger words for cleaner search
         const triggers = ['show me', 'find', 'looking for', 'i need', 'buy', 'get']
         triggers.forEach(t => query = query.replace(t, ''))
         query = query.trim()
@@ -183,42 +171,38 @@ export class FitMirrorAI {
                 type: 'ACTION',
                 action: 'SEARCH',
                 payload: { query: msg, products: results.slice(0, 5) },
-                reply: `I found ${count} items match your search. Here are the top picks! 👇`
+                reply: `Found ${count} items matching your criteria. Here are the top selections:`
             }
         }
 
         return {
             type: 'ACTION',
-            action: 'EXPLAIN', // Fallback to explain if no results
-            reply: "I couldn't find anything matching that exactly. Try searching for 'summer dresses' or 'casual shirts'."
+            action: 'EXPLAIN',
+            reply: "No direct matches found. Try searching by garment category like dresses, jackets, or trousers."
         }
     }
 
     private checkNavigation(msg: string): AssistantResponse | null {
         const routes: Record<string, string> = {
             'cart': '/cart', 'checkout': '/cart', 'orders': '/orders', 'home': '/', 'shop': '/shop',
-            'profile': '/profile', 'settings': '/settings', 'wishlist': '/wishlist', 'try-on': '/try-on',
+            'profile': '/profile', 'settings': '/settings', 'wishlist': '/wishlist',
             'outfit': '/outfit-builder', 'blog': '/blog'
         }
 
         for (const [key, path] of Object.entries(routes)) {
             if (msg.includes(key) && (msg.includes('go') || msg.includes('take') || msg.includes('open') || msg.includes('show') || msg.includes('view'))) {
-                return { type: 'ACTION', action: 'NAVIGATE', payload: { url: path }, reply: `Navigating to ${key}... 🚀` }
+                return { type: 'ACTION', action: 'NAVIGATE', payload: { url: path }, reply: `Navigating to ${key}.` }
             }
         }
         return null
     }
 
     private getFallbackResponse(msg: string): AssistantResponse {
-        if (msg.length < 4) return { type: 'ACTION', action: 'EXPLAIN', reply: "Tell me more! What are you looking for? 🤔" }
+        if (msg.length < 4) return { type: 'ACTION', action: 'EXPLAIN', reply: "Please provide more details on what styles or garments you are looking for." }
         return {
             type: 'ACTION',
             action: 'EXPLAIN',
-            reply: "I'm your Smart Stylist! 🤖 Ask me to:\n- Track your order 🚚\n- Find slim fit shirts 👕\n- Suggest a wedding outfit 💍"
+            reply: "I am your Style Assistant. You can ask me to track orders, search garments by style, or recommend color pairings."
         }
     }
-}
-
-function listContains(str: string, list: string[]): boolean {
-    return list.some(item => str.includes(item))
 }

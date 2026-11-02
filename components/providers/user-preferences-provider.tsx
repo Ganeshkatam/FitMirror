@@ -15,11 +15,7 @@ const defaultPrefs: UserPreferencesData = {
     preferred_fit: null,
     hide_out_of_stock: false,
     auto_wishlist_oos: false,
-    body_profile_mode: 'static_tryon',
-    auto_apply_body_profile: false,
-    remember_last_tryon: false,
     show_fit_confidence: true,
-    retain_tryon_images: true,
     recently_viewed_days: 30,
     show_data_usage_hints: false,
     order_update_level: 'all',
@@ -51,7 +47,6 @@ export function UserPreferencesProvider({ children }: { children: ReactNode }) {
                 }
                 setLoaded(true)
             } catch {
-                // Silently fail - defaults will be used
                 setLoaded(true)
             }
         }
@@ -64,14 +59,10 @@ export function UserPreferencesProvider({ children }: { children: ReactNode }) {
         if (!loaded) return
         if (pathname !== '/') return
 
-        // Check if we've already redirected this session
         const hasRedirected = sessionStorage.getItem('default_view_redirected')
         if (hasRedirected) return
 
-        if (prefs.default_view === 'tryon') {
-            sessionStorage.setItem('default_view_redirected', 'true')
-            router.push('/try-on')
-        } else if (prefs.default_view === 'shop') {
+        if (prefs.default_view === 'shop') {
             sessionStorage.setItem('default_view_redirected', 'true')
             router.push('/shop')
         }

@@ -138,7 +138,7 @@ export default async function StorePage({ params }: Props) {
                             <ProductCard
                                 key={product.id}
                                 product={product}
-                                showTryOn={!!product.tryon_asset_ref}
+                                
                             />
                         ))}
                     </div>

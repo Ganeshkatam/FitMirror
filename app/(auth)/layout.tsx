@@ -21,7 +21,7 @@ export default function AuthLayout({
                         </div>
                         <h1 className="text-4xl md:text-5xl font-serif font-bold mb-4">FitMirror</h1>
                         <p className="text-lg text-muted-foreground max-w-md">
-                            Experience the future of fashion with our AI-powered virtual try-on technology.
+                            Experience the future of fashion with personalized styling and smart fit recommendations.
                         </p>
 
                         <div className="mt-12 space-y-4">

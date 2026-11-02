@@ -9,6 +9,7 @@ export interface CompareItem {
     price: number
     category: string
     brand?: string
+    rating?: number
 }
 
 interface CompareStore {

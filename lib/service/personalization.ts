@@ -306,7 +306,7 @@ export class PersonalizationService {
         return []
     }
     /**
-     * Get Wardrobe Items (Purchased, Wishlist, Tried)
+     * Get Wardrobe Items (Purchased, Wishlist)
      */
     static async getWardrobeItems(userId: string) {
         const supabase = await createClient()
@@ -327,14 +327,6 @@ export class PersonalizationService {
             .order('created_at', { ascending: false })
             .limit(20)
 
-        // 3. Tried On
-        const { data: tried } = await supabase
-            .from('tryon_results')
-            .select('product_id, created_at, products(*, product_media(*))')
-            .eq('user_id', userId)
-            .order('created_at', { ascending: false })
-            .limit(20)
-
         // Helper to format
         const format = (items: any[], status: string) => items?.map(i => ({
             id: i.products.id,
@@ -347,8 +339,7 @@ export class PersonalizationService {
 
         return [
             ...format(ordered || [], 'ordered'),
-            ...format(wishlist || [], 'wishlist'),
-            ...format(tried || [], 'tried')
+            ...format(wishlist || [], 'wishlist')
         ].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     }
 }

@@ -3,10 +3,10 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { User, Settings, Heart, Gift, ShieldCheck, ChevronRight, Edit2, Sparkles, Camera, ShoppingBag, Calendar, Star, Clock, Package, Bell, Shirt, MessageSquare } from 'lucide-react'
+import { User, Settings, Heart, Gift, ChevronRight, Edit2, Sparkles, ShoppingBag, Calendar, Star, Package, Bell, Shirt, MessageSquare, MapPin } from 'lucide-react'
 import { AvatarUpload } from '@/components/account/avatar-upload'
 import { OrderList } from '@/components/account/order-list'
 import { StatsSection } from '@/components/account/stats-section'
@@ -15,7 +15,6 @@ import { FashionDNA } from '@/components/profile/fashion-dna'
 import { VirtualWardrobe } from '@/components/profile/virtual-wardrobe'
 import { SignOutButton } from './sign-out-button'
 import * as motion from 'framer-motion/client'
-import { MapPin } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -31,7 +30,6 @@ export default async function ProfilePage() {
     let profile = null
     let orderStats: any[] = []
     let wishlistCount = 0
-    let tryonResults: any[] = []
     let recentReviews: any[] = []
     let hasBodyProfile = false
 
@@ -43,8 +41,6 @@ export default async function ProfilePage() {
             .single()
         profile = data
     } catch (e) { /* ignore */ }
-
-    // ... (orders fetch) ...
 
     try {
         const { data } = await supabase
@@ -69,26 +65,6 @@ export default async function ProfilePage() {
             .select('*', { count: 'exact', head: true })
             .eq('user_id', user.id)
         wishlistCount = count || 0
-    } catch (e) { /* ignore */ }
-
-    try {
-        const { data } = await supabase
-            .from('tryon_results')
-            .select('*, products(id, name, image, price)')
-            .eq('user_id', user.id)
-            .order('created_at', { ascending: false })
-            .limit(4)
-        tryonResults = data || []
-    } catch (e) { /* ignore */ }
-
-    try {
-        const { data } = await supabase
-            .from('reviews')
-            .select('*, products(id, name, image)')
-            .eq('user_id', user.id)
-            .order('created_at', { ascending: false })
-            .limit(3)
-        recentReviews = data || []
     } catch (e) { /* ignore */ }
 
     try {
@@ -117,7 +93,7 @@ export default async function ProfilePage() {
 
     return (
         <div className="min-h-screen bg-slate-50/50">
-            {/* HER HERO: Immersive Header */}
+            {/* Immersive Header */}
             <div className="relative h-[300px] md:h-[350px] w-full overflow-hidden bg-gray-900">
                 <div className="absolute inset-0 bg-gradient-to-r from-violet-900 via-indigo-900 to-purple-900" />
                 <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-20 mix-blend-overlay" />
@@ -149,7 +125,7 @@ export default async function ProfilePage() {
                                 <span>{timeOfDay}</span>
                             </div>
                             <h1 className="text-3xl md:text-5xl font-bold font-serif tracking-tight mb-2 flex items-center gap-3 justify-center md:justify-start">
-                                {profile?.display_name || 'Fashionista'}
+                                {profile?.display_name || 'Member'}
                             </h1>
                             <div className="flex flex-wrap justify-center md:justify-start gap-3 items-center text-sm text-gray-300">
                                 <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm border border-white/10">
@@ -202,7 +178,6 @@ export default async function ProfilePage() {
                                     <MenuItem href="/account/addresses" icon={MapPin} label="Addresses" />
                                     <MenuItem href="/account/wishlist" icon={Heart} label="Wishlist" badge={wishlistCount} color="rose" />
                                     <MenuItem href="/account/closet" icon={Shirt} label="My Closet" />
-                                    <MenuItem href="/account/tryon-history" icon={Clock} label="Try-On History" />
                                     <MenuItem href="/account/notifications" icon={Bell} label="Notifications" />
                                     <div className="my-2 border-t border-gray-100" />
                                     <MenuItem href="/account/settings" icon={Settings} label="Settings" />
@@ -224,8 +199,8 @@ export default async function ProfilePage() {
                             totalSpent={totalSpent}
                             wishlistCount={wishlistCount}
                             memberSince={new Date(user.created_at).toLocaleDateString(undefined, { month: 'long', year: 'numeric' })}
-                            points={0} // TODO: Fetch from database
-                            styleScore={0} // TODO: Fetch from database
+                            points={0}
+                            styleScore={0}
                         />
 
                         {/* 1.5 GAMIFICATION SECTION */}
@@ -238,89 +213,31 @@ export default async function ProfilePage() {
                             </div>
                         </div>
 
-                        {/* 2. BODY PROFILE & ACTIONS */}
+                        {/* 2. BODY PROFILE & OUTFIT BUILDER */}
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                             <div className="md:col-span-2">
                                 <BodyProfileCard hasPhotos={hasBodyProfile} />
                             </div>
-                            <div className="md:col-span-1 space-y-4">
-                                <Card className="h-full border-0 shadow-md bg-gradient-to-br from-gray-900 to-gray-800 text-white overflow-hidden relative group cursor-pointer">
-                                    <div className="absolute inset-0 bg-[url('/noise.png')] opacity-20" />
-                                    <CardHeader className="relative z-10 flex flex-col items-center text-center pb-2">
-                                        <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-                                            <Camera className="h-8 w-8 text-pink-400" />
-                                        </div>
-                                        <CardTitle className="font-bold text-xl mb-1 text-white">Virtual Try-On</CardTitle>
-                                        <CardDescription className="text-gray-400 text-sm">Upload a photo to see how clothes fit you instantly.</CardDescription>
-                                    </CardHeader>
-                                    <CardContent className="relative z-10 pt-0 px-6 pb-6">
-                                        <Link href="/try-on" className="w-full">
-                                            <Button className="w-full bg-pink-500 hover:bg-pink-600 text-white border-0">
-                                                Open Studio ✨
-                                            </Button>
-                                        </Link>
-                                    </CardContent>
-                                </Card>
-
-
-                            </div>
-                        </div>
-
-                        {/* 3. RECENT TRY-ONS (Horizontal Scroll) */}
-                        {tryonResults.length > 0 && (
-                            <section>
-                                <div className="flex items-center justify-between mb-4">
-                                    <h2 className="text-xl font-bold font-serif flex items-center gap-2">
-                                        <Clock className="h-5 w-5 text-indigo-500" /> Recent Try-Ons
-                                    </h2>
-                                    <Link href="/account/tryon-history" className="text-sm font-medium text-indigo-600 hover:text-indigo-700 hover:underline">
-                                        View All
-                                    </Link>
-                                </div>
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    {tryonResults.map((tryon: any) => (
-                                        <Link key={tryon.id} href={`/product/${tryon.products?.id}`} className="group relative aspect-[3/4] rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all">
-                                            <Image
-                                                src={tryon.result_image_url || tryon.products?.image}
-                                                alt="Try Effect"
-                                                fill
-                                                className="object-cover group-hover:scale-105 transition-transform duration-500"
-                                            />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                            <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                                                <p className="text-white text-sm font-medium truncate">{tryon.products?.name}</p>
-                                                <p className="text-white/70 text-xs">View Result</p>
-                                            </div>
-                                        </Link>
-                                    ))}
-                                </div>
-                            </section>
-                        )}
-
-                        {/* OUTFIT BUILDER BANNER */}
-                        <div className="rounded-xl bg-gradient-to-r from-indigo-900 to-violet-900 p-4 sm:p-5 text-white shadow-lg relative overflow-hidden group">
-                            <div className="absolute inset-0 bg-[url('/noise.png')] opacity-20" />
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16" />
-
-                            <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-4">
-                                <div className="flex items-center gap-4 text-center md:text-left">
-                                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center backdrop-blur-sm shrink-0">
-                                        <Shirt className="h-6 w-6 text-indigo-200" />
+                            <div className="md:col-span-1 flex flex-col justify-center rounded-xl bg-gradient-to-r from-indigo-900 to-violet-900 p-5 text-white shadow-md relative overflow-hidden">
+                                <div className="absolute inset-0 bg-[url('/noise.png')] opacity-20" />
+                                <div className="relative z-10 space-y-3">
+                                    <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center backdrop-blur-sm">
+                                        <Shirt className="h-5 w-5 text-indigo-200" />
                                     </div>
                                     <div>
-                                        <h3 className="text-lg font-serif font-bold">Outfit Builder</h3>
-                                        <p className="text-indigo-200 text-sm hidden sm:block">Mix & match items to create the perfect look.</p>
+                                        <h3 className="text-base font-serif font-bold">Outfit Builder</h3>
+                                        <p className="text-indigo-200 text-xs mt-1">Mix and match garments to create coordinating outfits.</p>
                                     </div>
+                                    <Link href="/outfit-builder" className="block pt-2">
+                                        <Button size="sm" className="w-full bg-white text-indigo-900 hover:bg-indigo-50 border-0 font-medium text-xs">
+                                            Create Look
+                                        </Button>
+                                    </Link>
                                 </div>
-                                <Link href="/outfit-builder" className="w-full md:w-auto">
-                                    <Button size="sm" className="w-full md:w-auto bg-white text-indigo-900 hover:bg-indigo-50 border-0 font-medium whitespace-nowrap">
-                                        Create Look 🎨
-                                    </Button>
-                                </Link>
                             </div>
                         </div>
 
-                        {/* 3.5 RECENT REVIEWS */}
+                        {/* 3. RECENT REVIEWS */}
                         {recentReviews.length > 0 && (
                             <section>
                                 <div className="flex items-center justify-between mb-4">
@@ -375,8 +292,6 @@ export default async function ProfilePage() {
     )
 }
 
-// --- Components ---
-
 function MenuItem({ href, icon: Icon, label, active, badge, color = "blue" }: any) {
     const badgeColors: any = {
         blue: "bg-blue-100 text-blue-700",
@@ -404,5 +319,3 @@ function MenuItem({ href, icon: Icon, label, active, badge, color = "blue" }: an
         </Link>
     )
 }
-
-

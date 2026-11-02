@@ -136,7 +136,7 @@ export default async function AccountDashboardPage() {
                     <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10" />
                     <h3 className="font-bold text-xl mb-2 relative z-10">Complete Your Style Profile</h3>
                     <p className="text-indigo-100 text-sm mb-6 relative z-10">
-                        Get personalized recommendations and unlock virtual try-on features.
+                        Get personalized recommendations tailored to your style.
                     </p>
                     <Link href="/account/settings" className="relative z-10">
                         <Button className="bg-white text-indigo-900 hover:bg-gray-100 border-0 w-full sm:w-auto">

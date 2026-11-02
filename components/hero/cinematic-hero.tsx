@@ -122,7 +122,7 @@ export function CinematicHero({ headline, subheadline, className }: CinematicHer
                     </h1>
 
                     <p className="text-lg md:text-xl text-slate-600 max-w-2xl mx-auto leading-relaxed">
-                        {subheadline || "Step into the future of shopping. Instantly visualize outfits on your digital twin with perfect accuracy."}
+                        {subheadline || "Step into modern fashion. Explore curated collections crafted with impeccable tailoring and premium fabrics."}
                     </p>
 
                     <div className="flex flex-col sm:flex-row gap-4 mt-8">
@@ -131,7 +131,7 @@ export function CinematicHero({ headline, subheadline, className }: CinematicHer
                                 Shop Collection <ArrowRight className="h-5 w-5" />
                             </Button>
                         </Link>
-                        <Link href="/try-on/demo">
+                        <Link href="/about">
                             <Button variant="outline" className="h-14 px-8 rounded-full border-slate-300 bg-white/50 backdrop-blur-sm text-slate-900 hover:bg-white text-lg hover:border-slate-400 transition-all">
                                 How It Works
                             </Button>

@@ -6,14 +6,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Button } from '@/components/ui/button'
-import { Checkbox } from '@/components/ui/checkbox'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { toast } from 'sonner'
-import { Loader2, ShoppingBag, User, Shield, Bell, Palette, Sparkles } from 'lucide-react'
+import { Loader2, ShoppingBag, Shield, Bell, Palette } from 'lucide-react'
 
 // Define the shape of our preferences JSON
-type UserPreferences = {
+export type UserPreferences = {
     // Shopping
     auto_select_size?: boolean
     preferred_fit?: 'slim' | 'regular' | 'relaxed' | null
@@ -21,13 +20,6 @@ type UserPreferences = {
     auto_wishlist_oos?: boolean
     confirm_cart_removal?: boolean
     persist_cart?: boolean
-
-    // Body & Try-On
-    body_profile_mode?: 'avatar' | 'static_tryon'
-    auto_apply_body_profile?: boolean
-    remember_last_tryon?: boolean
-    show_fit_confidence?: boolean
-    retain_tryon_images?: boolean
 
     // Privacy
     recently_viewed_days?: '0' | '7' | '30'
@@ -40,7 +32,7 @@ type UserPreferences = {
     promo_style_tips?: boolean
 
     // UI & Experience
-    default_view?: 'shop' | 'tryon'
+    default_view?: 'shop'
     reduce_motion?: boolean
     image_quality?: 'auto' | 'low' | 'high'
 }
@@ -56,13 +48,6 @@ export function PreferencesForm() {
         auto_wishlist_oos: true,
         confirm_cart_removal: true,
         persist_cart: true,
-
-        // Body & Try-On defaults
-        body_profile_mode: 'avatar',
-        auto_apply_body_profile: false,
-        remember_last_tryon: true,
-        show_fit_confidence: true,
-        retain_tryon_images: false,
 
         // Privacy defaults
         recently_viewed_days: '30',
@@ -99,14 +84,12 @@ export function PreferencesForm() {
                     .eq('user_id', user.id)
                     .maybeSingle()
 
-                // Silently handle all errors (table not found, RLS, etc.)
                 if (error) {
                     setLoading(false)
                     return
                 }
 
                 if (data?.preferences) {
-                    // Merge defaults with saved prefs
                     const merged = { ...prefs, ...data.preferences }
                     setPrefs(merged)
                     setInitialPrefs(merged)
@@ -121,7 +104,7 @@ export function PreferencesForm() {
         }
         fetchPrefs()
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [supabase]) // Removed dependency on prefs to avoid loop, and logic was effectively mounting only
+    }, [supabase])
 
     const savePreferences = async () => {
         if (JSON.stringify(prefs) === JSON.stringify(initialPrefs)) {
@@ -216,7 +199,7 @@ export function PreferencesForm() {
                     <div className="flex items-center justify-between space-x-2">
                         <div className="space-y-0.5">
                             <Label>Hide Out of Stock Items</Label>
-                            <p className="text-sm text-muted-foreground">Don&apos;t show products that are currently unavailable.</p>
+                            <p className="text-sm text-muted-foreground">Do not display products that are currently unavailable.</p>
                         </div>
                         <Switch
                             checked={prefs.hide_out_of_stock}
@@ -227,7 +210,7 @@ export function PreferencesForm() {
                     <div className="flex items-center justify-between space-x-2">
                         <div className="space-y-0.5">
                             <Label>Auto-Wishlist on Out of Stock</Label>
-                            <p className="text-sm text-muted-foreground">If I click an Out of Stock item, add it to my wishlist instead.</p>
+                            <p className="text-sm text-muted-foreground">Add unavailable items to wishlist instead of cart.</p>
                         </div>
                         <Switch
                             checked={prefs.auto_wishlist_oos}
@@ -261,72 +244,6 @@ export function PreferencesForm() {
                 </CardContent>
             </Card>
 
-            {/* Body & Try-On */}
-            <Card>
-                <CardHeader>
-                    <div className="flex items-center gap-2">
-                        <User className="h-5 w-5 text-primary" />
-                        <CardTitle>Body & Try-On</CardTitle>
-                    </div>
-                    <CardDescription>Customize your virtual try-on experience</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-                        <div className="space-y-0.5">
-                            <Label>Default Try-On Mode</Label>
-                            <p className="text-sm text-muted-foreground">Which experience do you prefer?</p>
-                        </div>
-                        <Select
-                            value={prefs.body_profile_mode}
-                            onValueChange={(v) => updatePref('body_profile_mode', v)}
-                        >
-                            <SelectTrigger>
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="avatar">3D Avatar (Privacy First)</SelectItem>
-                                <SelectItem value="static_tryon">Photo Try-On (Realistic)</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <Separator />
-
-                    <div className="flex items-center justify-between space-x-2">
-                        <div className="space-y-0.5">
-                            <Label>Auto-Apply Body Profile</Label>
-                            <p className="text-sm text-muted-foreground">Automatically load my avatar when entering Try-On.</p>
-                        </div>
-                        <Switch
-                            checked={prefs.auto_apply_body_profile}
-                            onCheckedChange={(c) => updatePref('auto_apply_body_profile', c)}
-                        />
-                    </div>
-
-                    <div className="flex items-center justify-between space-x-2">
-                        <div className="space-y-0.5">
-                            <Label>Remember Last Try-On</Label>
-                            <p className="text-sm text-muted-foreground">Auto-load the last garment you tried when returning.</p>
-                        </div>
-                        <Switch
-                            checked={prefs.remember_last_tryon}
-                            onCheckedChange={(c) => updatePref('remember_last_tryon', c)}
-                        />
-                    </div>
-
-                    <div className="flex items-center justify-between space-x-2">
-                        <div className="space-y-0.5">
-                            <Label>Show Fit Confidence Score</Label>
-                            <p className="text-sm text-muted-foreground">Display AI-calculated fit percentage (e.g. &quot;98% Match&quot;).</p>
-                        </div>
-                        <Switch
-                            checked={prefs.show_fit_confidence}
-                            onCheckedChange={(c) => updatePref('show_fit_confidence', c)}
-                        />
-                    </div>
-                </CardContent>
-            </Card>
-
             {/* Privacy */}
             <Card>
                 <CardHeader>
@@ -337,21 +254,10 @@ export function PreferencesForm() {
                     <CardDescription>Control how your data is used and retained</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                    <div className="flex items-center justify-between space-x-2">
-                        <div className="space-y-0.5">
-                            <Label>Retain Try-On Images</Label>
-                            <p className="text-sm text-muted-foreground">Save generated try-on images for faster loading. Disable to auto-delete.</p>
-                        </div>
-                        <Switch
-                            checked={prefs.retain_tryon_images}
-                            onCheckedChange={(c) => updatePref('retain_tryon_images', c)}
-                        />
-                    </div>
-
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
                         <div className="space-y-0.5">
                             <Label>Recently Viewed History</Label>
-                            <p className="text-sm text-muted-foreground">How long should we remember items you&apos;ve seen?</p>
+                            <p className="text-sm text-muted-foreground">How long should viewed items be retained?</p>
                         </div>
                         <Select
                             value={prefs.recently_viewed_days}
@@ -361,7 +267,7 @@ export function PreferencesForm() {
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="0">Disabled (Don&apos;t Remember)</SelectItem>
+                                <SelectItem value="0">Do Not Track</SelectItem>
                                 <SelectItem value="7">7 Days</SelectItem>
                                 <SelectItem value="30">30 Days</SelectItem>
                             </SelectContent>
@@ -372,8 +278,8 @@ export function PreferencesForm() {
 
                     <div className="flex items-center justify-between space-x-2">
                         <div className="space-y-0.5">
-                            <Label>Show Data Transparency Hints</Label>
-                            <p className="text-sm text-muted-foreground">Show tooltips explaining how we use your data.</p>
+                            <Label>Show Data Usage Hints</Label>
+                            <p className="text-sm text-muted-foreground">Show helpful notes explaining why certain data is collected.</p>
                         </div>
                         <Switch
                             checked={prefs.show_data_usage_hints}
@@ -383,20 +289,20 @@ export function PreferencesForm() {
                 </CardContent>
             </Card>
 
-            {/* Communication */}
+            {/* Notifications */}
             <Card>
                 <CardHeader>
                     <div className="flex items-center gap-2">
                         <Bell className="h-5 w-5 text-primary" />
-                        <CardTitle>Notifications & Promos</CardTitle>
+                        <CardTitle>Notifications & Alerts</CardTitle>
                     </div>
-                    <CardDescription>Control what emails and notifications you receive</CardDescription>
+                    <CardDescription>Choose which notifications you receive</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
                         <div className="space-y-0.5">
-                            <Label>Order Updates</Label>
-                            <p className="text-sm text-muted-foreground">Which order emails do you want to receive?</p>
+                            <Label>Order Update Frequency</Label>
+                            <p className="text-sm text-muted-foreground">Choose update detail level for purchases.</p>
                         </div>
                         <Select
                             value={prefs.order_update_level}
@@ -406,87 +312,63 @@ export function PreferencesForm() {
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="important_only">Important Only (Shipped/Delivered)</SelectItem>
-                                <SelectItem value="all">All Updates (Every Status Change)</SelectItem>
+                                <SelectItem value="important_only">Essential Only (Shipped, Delivered)</SelectItem>
+                                <SelectItem value="all">All Updates (Packed, Transit, etc.)</SelectItem>
                             </SelectContent>
                         </Select>
                     </div>
 
                     <Separator />
 
-                    <div className="space-y-3">
-                        <Label>Promotional Content</Label>
-                        <p className="text-sm text-muted-foreground mb-3">Choose what promotional content you want to receive.</p>
-
-                        <div className="flex items-center space-x-2">
-                            <Checkbox
-                                id="promo_offers"
-                                checked={prefs.promo_offers}
-                                onCheckedChange={(c) => updatePref('promo_offers', c)}
-                            />
-                            <Label htmlFor="promo_offers" className="font-normal cursor-pointer">
-                                Exclusive Offers & Sales
-                            </Label>
+                    <div className="flex items-center justify-between space-x-2">
+                        <div className="space-y-0.5">
+                            <Label>Promotional Offers & Discounts</Label>
+                            <p className="text-sm text-muted-foreground">Receive alerts about sales and exclusive discounts.</p>
                         </div>
+                        <Switch
+                            checked={prefs.promo_offers}
+                            onCheckedChange={(c) => updatePref('promo_offers', c)}
+                        />
+                    </div>
 
-                        <div className="flex items-center space-x-2">
-                            <Checkbox
-                                id="promo_arrivals"
-                                checked={prefs.promo_new_arrivals}
-                                onCheckedChange={(c) => updatePref('promo_new_arrivals', c)}
-                            />
-                            <Label htmlFor="promo_arrivals" className="font-normal cursor-pointer">
-                                New Arrivals Announcements
-                            </Label>
+                    <div className="flex items-center justify-between space-x-2">
+                        <div className="space-y-0.5">
+                            <Label>New Arrival Alerts</Label>
+                            <p className="text-sm text-muted-foreground">Be notified when new collections drop.</p>
                         </div>
+                        <Switch
+                            checked={prefs.promo_new_arrivals}
+                            onCheckedChange={(c) => updatePref('promo_new_arrivals', c)}
+                        />
+                    </div>
 
-                        <div className="flex items-center space-x-2">
-                            <Checkbox
-                                id="promo_tips"
-                                checked={prefs.promo_style_tips}
-                                onCheckedChange={(c) => updatePref('promo_style_tips', c)}
-                            />
-                            <Label htmlFor="promo_tips" className="font-normal cursor-pointer">
-                                Style Tips & Inspiration
-                            </Label>
+                    <div className="flex items-center justify-between space-x-2">
+                        <div className="space-y-0.5">
+                            <Label>Style & Trend Tips</Label>
+                            <p className="text-sm text-muted-foreground">Periodic seasonal trend advice.</p>
                         </div>
+                        <Switch
+                            checked={prefs.promo_style_tips}
+                            onCheckedChange={(c) => updatePref('promo_style_tips', c)}
+                        />
                     </div>
                 </CardContent>
             </Card>
 
-            {/* UI & Experience */}
+            {/* Display Preferences */}
             <Card>
                 <CardHeader>
                     <div className="flex items-center gap-2">
                         <Palette className="h-5 w-5 text-primary" />
-                        <CardTitle>UI & Experience</CardTitle>
+                        <CardTitle>Display & Experience</CardTitle>
                     </div>
-                    <CardDescription>Customize how the app looks and feels</CardDescription>
+                    <CardDescription>Fine-tune interface performance and appearance</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
                         <div className="space-y-0.5">
-                            <Label>Default View</Label>
-                            <p className="text-sm text-muted-foreground">What do you want to see first when visiting?</p>
-                        </div>
-                        <Select
-                            value={prefs.default_view}
-                            onValueChange={(v) => updatePref('default_view', v)}
-                        >
-                            <SelectTrigger>
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="shop">Shop Collection</SelectItem>
-                                <SelectItem value="tryon">Virtual Try-On</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
-                        <div className="space-y-0.5">
                             <Label>Image Quality</Label>
-                            <p className="text-sm text-muted-foreground">Lower quality uses less data on slow connections.</p>
+                            <p className="text-sm text-muted-foreground">Lower quality uses less data on slower connections.</p>
                         </div>
                         <Select
                             value={prefs.image_quality}

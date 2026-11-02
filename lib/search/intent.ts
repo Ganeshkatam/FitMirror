@@ -1,4 +1,4 @@
-import { SearchIntent, SearchFilters, SearchSort } from './types'
+import { SearchIntent, SearchFilters } from './types'
 
 const CATEGORY_KEYWORDS: Record<string, string[]> = {
     'tops': ['shirt', 't-shirt', 'top', 'blouse', 'tee', 'hoodie', 'sweatshirt', 'jacket', 'coat'],
@@ -26,7 +26,7 @@ export function detectIntent(query: string): SearchIntent {
     // 1. Detect Category
     for (const [cat, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
         if (keywords.some(k => q.includes(k))) {
-            filters.category = cat // Simple single category for now
+            filters.category = cat
             break
         }
     }
@@ -34,7 +34,7 @@ export function detectIntent(query: string): SearchIntent {
     // 2. Detect Gender
     if (q.includes('men') && !q.includes('women')) filters.gender = 'men'
     else if (q.includes('women') || q.includes('lady') || q.includes('girl')) filters.gender = 'women'
-    else if (q.includes('kid') || q.includes('boy') || q.includes('baby')) filters.gender = 'unisex' // mapped 'kids' to unisex or specific if supported
+    else if (q.includes('kid') || q.includes('boy') || q.includes('baby')) filters.gender = 'unisex'
 
     // 3. Detect Price Intent
     const underMatch = q.match(/under\s?(\d+)/)
@@ -51,19 +51,14 @@ export function detectIntent(query: string): SearchIntent {
         }
     }
 
-    // 4. Detect Signals & Type
-    const isTryOn = q.includes('try') || q.includes('wear') || q.includes('see') || q.includes('virtual')
-    const type = isTryOn ? 'tryon_request' : 'search'
-
     return {
         originalQuery: query,
-        normalizedQuery: q, // In V2, remove stop words
-        type,
+        normalizedQuery: q,
+        type: 'search',
         filters,
-        sort: 'relevance', // Default
+        sort: 'relevance',
         signals: {
             isPriceSensitive: !!filters.maxPrice,
-            isTryOnIntent: isTryOn,
             detectedOccasion: undefined
         }
     }

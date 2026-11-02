@@ -3,14 +3,14 @@
 export type IntentType =
     | 'NAVIGATE'
     | 'SEARCH'
-    | 'ACTION' // e.g. "Toggle Theme", "Add to Cart"
+    | 'ACTION'
     | 'STYLE_ADVICE'
-    | 'chat'   // Fallback
+    | 'chat'
 
 export interface Intent {
     type: IntentType
     confidence: number
-    payload: any // Dynamic based on type
+    payload: any
     originalQuery: string
 }
 
@@ -25,7 +25,7 @@ export interface Skill {
 export interface SkillResult {
     success: boolean
     message?: string
-    action?: () => void // UI Action to run (e.g. router.push)
+    action?: () => void
     data?: any
 }
 
@@ -43,7 +43,6 @@ export function detectIntent(query: string): Intent {
         if (q.includes('orders')) target = '/account/orders'
         if (q.includes('settings')) target = '/account/settings'
         if (q.includes('closet')) target = '/account/closet'
-        if (q.includes('try-on') || q.includes('tryon')) target = '/try-on'
 
         return {
             type: 'NAVIGATE',

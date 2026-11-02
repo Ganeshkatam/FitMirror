@@ -1,8 +1,8 @@
 'use client'
-import { ProductImage } from '@/lib/service/media';
+import { ProductImage } from '@/lib/service/media'
 
 import { useQuickView } from '@/lib/store/use-quick-view'
-import { Eye, Heart, Star, ShoppingBag } from 'lucide-react'
+import { Eye, Heart, Star, ShoppingBag, Check, Plus, Sparkles } from 'lucide-react'
 import { useCompareStore } from '@/lib/store/compare'
 import { useWishlist } from '@/lib/store/use-wishlist'
 import { useCart } from '@/lib/store/cart'
@@ -11,7 +11,6 @@ import { cn } from '@/lib/utils'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { Check, Plus, Sparkles } from 'lucide-react'
 import { trackEvent } from '@/lib/analytics/tracker'
 import { toast } from 'sonner'
 
@@ -39,11 +38,10 @@ interface ProductCardProps {
     product: Product
     priority?: boolean
     className?: string
-    showTryOn?: boolean
     showQuickAdd?: boolean
 }
 
-export function ProductCard({ product, priority = false, className, showTryOn = false, showQuickAdd = false }: ProductCardProps) {
+export function ProductCard({ product, priority = false, className, showQuickAdd = false }: ProductCardProps) {
     const { items, addItem, removeItem, isMobileSelectionMode } = useCompareStore()
     const { open: openQuickView } = useQuickView()
     const { isInWishlist, toggleWishlist } = useWishlist()
@@ -53,57 +51,29 @@ export function ProductCard({ product, priority = false, className, showTryOn = 
     // Data Normalization
     const title = product.name || product.title || 'Untitled Product'
     const category = product.category || 'Uncategorized'
-    const brand = product.brand || null
+    const brand = product.brand || ''
+
+    // Images
+    const rawImages = (product.images as any[]) || []
+    const firstImg = rawImages[0]
+    const primaryImage = typeof firstImg === 'string'
+        ? firstImg
+        : firstImg?.src || product.image || '/placeholder.png'
+
+    const secondImg = rawImages[1]
+    const secondaryImage = typeof secondImg === 'string'
+        ? secondImg
+        : secondImg?.src || null
 
     // Pricing
-    const activeOffer = product.product_offers?.find((o: any) => o.status === 'active') || null
-    const price = activeOffer ? (activeOffer.sale_price_paise || activeOffer.price_paise) : (product.price || 0)
-    const originalPrice = activeOffer 
-        ? (activeOffer.sale_price_paise ? activeOffer.price_paise : null) 
-        : (product.original_price || product.mrp || null)
-    const discount = originalPrice && originalPrice > price ? Math.round((1 - price / originalPrice) * 100) : 0
+    const price = product.price || 0
+    const originalPrice = product.original_price || product.mrp || null
+    const discount = originalPrice && originalPrice > price
+        ? Math.round(((originalPrice - price) / originalPrice) * 100)
+        : 0
 
-    // Image Logic
-    let imageUrl = '/placeholder.png'
-    let hoverImageUrl = null
-
-    if (product.images && product.images.length > 0) {
-        imageUrl = product.images?.[0]?.src
-        if (product.images.length > 1) hoverImageUrl = product.images?.[1]?.src
-    } else if (product.image) {
-        imageUrl = product.image
-    }
-
-    const isOutOfStock = (typeof product.stock === 'number' && product.stock <= 0) || (product.is_in_stock === false)
-
-    const handleSelection = (e: React.MouseEvent) => {
-        e.preventDefault()
-        e.stopPropagation()
-        if (isSelected) {
-            removeItem(product.id)
-        } else {
-            addItem({ id: product.id, name: title, image: imageUrl, price, category })
-        }
-    }
-
-    const handleClick = (e: React.MouseEvent) => {
-        if (isMobileSelectionMode) {
-            e.preventDefault()
-            handleSelection(e)
-        }
-    }
-
-    const handleQuickView = (e: React.MouseEvent) => {
-        e.preventDefault()
-        e.stopPropagation()
-        openQuickView(product as any)
-        trackEvent({
-            eventType: 'quick_view',
-            offerId: activeOffer?.id,
-            sellerId: activeOffer?.seller_id,
-            productId: product.id
-        })
-    }
+    // Stock
+    const isOutOfStock = product.is_in_stock === false || (product.stock !== undefined && product.stock <= 0)
 
     const handleWishlist = (e: React.MouseEvent) => {
         e.preventDefault()
@@ -116,72 +86,98 @@ export function ProductCard({ product, priority = false, className, showTryOn = 
         e.stopPropagation()
         useCart.getState().addItem({
             productId: product.id,
-            offerId: activeOffer?.id || 'pending',
             productName: title,
-            productImage: imageUrl,
-            price,
-            size: 'M', // Default — user can change in cart
+            productImage: primaryImage,
+            price: price,
+            size: 'Free Size',
+            offerId: 'direct',
+            variantId: undefined
         })
-        toast.success('Added to bag!')
-        trackEvent({
-            eventType: 'add_to_cart',
-            offerId: activeOffer?.id,
-            sellerId: activeOffer?.seller_id,
-            productId: product.id,
-            metadata: { source: 'quick_add' }
-        })
+        toast.success("Added to bag")
+    }
+
+    const handleSelection = (e: React.MouseEvent) => {
+        e.preventDefault()
+        e.stopPropagation()
+        if (isSelected) {
+            removeItem(product.id)
+        } else {
+            if (items.length >= 4) {
+                toast.error("You can compare up to 4 products")
+                return
+            }
+            addItem({
+                id: product.id,
+                name: title,
+                price: price,
+                image: primaryImage,
+                category: category,
+                brand: brand,
+                rating: product.avg_rating || 0
+            })
+        }
     }
 
     return (
-        <div
-            data-testid="product-card"
-            className={cn("group block relative select-none", className)}
-        >
+        <div className={cn("group relative flex flex-col", className)}>
             <Link
                 href={`/product/${product.id}`}
-                onClick={handleClick}
-                className={cn("block", isMobileSelectionMode && "pointer-events-none")}
+                className="flex flex-col flex-1"
+                onClick={() => {
+                    trackEvent({
+                        eventType: 'view_item',
+                        productId: product.id,
+                        metadata: {
+                            item_id: product.id,
+                            item_name: title,
+                            price: price,
+                            item_category: category,
+                        }
+                    })
+                }}
             >
-                <div className={cn(
-                    "relative aspect-[3/4] overflow-hidden rounded-xl bg-gray-100 transition-all",
-                    isSelected && "ring-2 ring-black ring-offset-2"
-                )}>
+                {/* --- IMAGE CONTAINER --- */}
+                <div className="relative aspect-[3/4] w-full overflow-hidden rounded-md bg-gray-100">
                     {/* Primary Image */}
                     <Image
-                        src={imageUrl}
+                        src={primaryImage}
                         alt={title}
                         fill
-                        className={cn(
-                            "object-cover transition-all duration-700 ease-in-out",
-                            hoverImageUrl ? "group-hover:opacity-0" : "group-hover:scale-105",
-                            isOutOfStock && "opacity-60 grayscale-[0.5]"
-                        )}
-                        sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
                         priority={priority}
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                        className={cn(
+                            "object-cover object-top transition-transform duration-500 will-change-transform",
+                            secondaryImage
+                                ? "group-hover:scale-105 group-hover:opacity-0"
+                                : "group-hover:scale-105",
+                            isOutOfStock && "opacity-50 grayscale"
+                        )}
                     />
 
-                    {/* Secondary Image (Hover) */}
-                    {hoverImageUrl && (
+                    {/* Secondary Image (Hover Flip) */}
+                    {secondaryImage && !isOutOfStock && (
                         <Image
-                            src={hoverImageUrl}
-                            alt={title}
+                            src={secondaryImage}
+                            alt={`${title} alternate view`}
                             fill
-                            className={cn(
-                                "object-cover absolute inset-0 transition-all duration-700 ease-in-out opacity-0 scale-105 group-hover:opacity-100 group-hover:scale-100",
-                                isOutOfStock && "grayscale-[0.5]"
-                            )}
-                            sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
+                            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                            className="object-cover object-top transition-all duration-500 opacity-0 group-hover:opacity-100 group-hover:scale-105 absolute inset-0"
                         />
                     )}
 
-                    {/* Quick View Overlay (Desktop) */}
-                    <div className="absolute inset-x-0 bottom-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden md:block z-10">
+                    {/* Quick View Button (Desktop Hover) */}
+                    <div className="absolute inset-x-0 bottom-0 p-3 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity hidden md:flex items-center justify-center gap-2">
                         <Button
+                            size="sm"
                             variant="secondary"
-                            className="w-full h-10 bg-white/90 backdrop-blur-sm shadow-sm hover:bg-black hover:text-white transition-all gap-2 font-bold uppercase text-xs tracking-wider"
-                            onClick={handleQuickView}
+                            className="w-full bg-white/90 hover:bg-white text-gray-900 font-medium text-xs h-9 shadow-md backdrop-blur-sm"
+                            onClick={(e) => {
+                                e.preventDefault()
+                                e.stopPropagation()
+                                openQuickView(product as any)
+                            }}
                         >
-                            <Eye className="h-3.5 w-3.5" /> Quick View
+                            <Eye className="w-3.5 h-3.5 mr-1.5" /> Quick View
                         </Button>
                     </div>
 
@@ -196,14 +192,6 @@ export function ProductCard({ product, priority = false, className, showTryOn = 
 
                     {/* --- TOP LEFT BADGES --- */}
                     <div className="absolute top-2 left-2 flex flex-col gap-1.5 z-10">
-                        {/* Try-On Badge */}
-                        {showTryOn && !isOutOfStock && (
-                            <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full flex items-center gap-1 shadow-lg">
-                                <Sparkles className="h-3 w-3" />
-                                Try-On
-                            </div>
-                        )}
-
                         {/* Discount Badge */}
                         {discount > 0 && !isOutOfStock && (
                             <div className="bg-green-600 text-white px-2 py-0.5 text-[10px] font-bold rounded-full shadow-sm">
@@ -214,7 +202,7 @@ export function ProductCard({ product, priority = false, className, showTryOn = 
                         {/* Trending Badge */}
                         {!isOutOfStock && product.trending_score && product.trending_score > 50 && (
                             <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full shadow-lg flex items-center gap-1">
-                                🔥 Hot
+                                HOT
                             </div>
                         )}
                     </div>
@@ -243,23 +231,11 @@ export function ProductCard({ product, priority = false, className, showTryOn = 
                         </div>
                     )}
 
-                    {/* --- BOTTOM RIGHT: AI Match Score (FitMirror exclusive) --- */}
+                    {/* --- BOTTOM RIGHT: AI Match Score --- */}
                     {product.ai_match_score && product.ai_match_score > 0 && !isOutOfStock && (
                         <div className="absolute bottom-2 right-2 flex items-center gap-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-2 py-0.5 rounded-full text-[10px] font-bold shadow-lg z-10">
                             <Sparkles className="h-3 w-3" />
                             {product.ai_match_score}% Match
-                        </div>
-                    )}
-
-                    {/* Ghost Try-On Overlay (Desktop Hover) */}
-                    {!isOutOfStock && showTryOn && (
-                        <div className="absolute inset-0 bg-gradient-to-t from-indigo-900/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex flex-col justify-end p-4 pointer-events-none hidden md:flex">
-                            <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 delay-100">
-                                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white text-[10px] font-bold uppercase tracking-widest shadow-xl">
-                                    <Sparkles className="w-3 h-3 text-indigo-300" />
-                                    <span>Tap to Visualize</span>
-                                </div>
-                            </div>
                         </div>
                     )}
                 </div>

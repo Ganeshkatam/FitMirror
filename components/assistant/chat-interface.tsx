@@ -68,7 +68,7 @@ export function AssistantChat() {
                             {messages.length === 0 && (
                                 <div className="flex flex-col items-center justify-center h-full text-center p-6 text-muted-foreground/60 space-y-4">
                                     <Sparkles className="h-12 w-12 opacity-20" />
-                                    <p className="text-sm">Ask me about the latest trends, find your perfect fit, or get styling advice!</p>
+                                    <p className="text-sm">Ask me about trends, garment details, or styling advice.</p>
                                 </div>
                             )}
 
@@ -87,17 +87,12 @@ export function AssistantChat() {
                                         <div className="mt-3 flex flex-wrap gap-2">
                                             {msg.action.type === 'NAVIGATE' && (
                                                 <a href={msg.action.payload?.url} className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold rounded-full shadow-md transition-colors flex items-center gap-1">
-                                                    Go Now 🚀
-                                                </a>
-                                            )}
-                                            {msg.action.type === 'TRY_ON' && (
-                                                <a href="/try-on" className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white text-xs font-semibold rounded-full shadow-md transition-colors flex items-center gap-1">
-                                                    Open Mirror ✨
+                                                    Go Now
                                                 </a>
                                             )}
                                             {msg.action.type === 'SEARCH' && (
                                                 <a href={`/shop?q=${encodeURIComponent(msg.action.payload?.query || '')}`} className="px-4 py-2 bg-pink-600 hover:bg-pink-700 text-white text-xs font-semibold rounded-full shadow-md transition-colors flex items-center gap-1">
-                                                    View Results 🔍
+                                                    View Results
                                                 </a>
                                             )}
                                             {msg.action.type === 'ORDER_TRACKING' && (
@@ -117,10 +112,7 @@ export function AssistantChat() {
                                             {msg.action.type === 'STYLE_HELP' && (
                                                 <div className="flex gap-2">
                                                     <button onClick={() => window.location.href = '/shop?category=new'} className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-xs rounded-lg border border-white/10 transition-colors">
-                                                        Shop Look 🛍️
-                                                    </button>
-                                                    <button onClick={() => window.location.href = '/try-on'} className="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-xs rounded-lg border border-white/10 transition-colors">
-                                                        Try On 👗
+                                                        Shop Look
                                                     </button>
                                                 </div>
                                             )}

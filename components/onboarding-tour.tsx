@@ -13,8 +13,8 @@ import { cn } from '@/lib/utils'
 const STEPS = [
     {
         target: 'body', // Fallback
-        title: "Welcome to FitMirror! ✨",
-        content: "Discover your perfect fit with our AI-powered virtual try-on technology. Let&apos;s take a quick tour.",
+        title: "Welcome to FitMirror",
+        content: "Discover your perfect style with personalized fashion recommendations. Let&apos;s take a quick tour.",
         position: 'center'
     },
     {
@@ -31,8 +31,8 @@ const STEPS = [
     },
     {
         target: 'nav-account',
-        title: "Body Profile",
-        content: "Create your Body Profile in account settings for personalized AI try-ons.",
+        title: "Style & Fit Profile",
+        content: "Create your Fit Profile in account settings for tailored fashion recommendations.",
         position: 'bottom-end'
     }
 ]

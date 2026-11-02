@@ -4,11 +4,9 @@ import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { useQuickView } from '@/lib/store/use-quick-view'
 import { ProductActions } from '@/components/product/product-actions'
-import { AspectRatio } from '@/components/ui/aspect-ratio'
 import Link from 'next/link'
 import NextImage from 'next/image'
-import { Badge } from '@/components/ui/badge'
-import { Sparkles, ArrowRight } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import * as React from 'react'
 
@@ -41,7 +39,6 @@ export function QuickViewModal() {
     if (!product) return null
     const activeOffer = product.product_offers?.find((o: any) => o.status === 'active') || null
 
-    // Helper to get sizes
     const sizeOrder = ['XS', 'S', 'M', 'L', 'XL', 'XXL', '28', '30', '32', '34', '36', '38', '40']
     const sizes = Array.from(new Set(inventory?.map((i: InventoryItem) => i.size) || []))
         .sort((a, b) => {
@@ -69,11 +66,6 @@ export function QuickViewModal() {
                             unoptimized
                             className="object-cover"
                         />
-                        {product.tryon_asset_ref && (
-                            <Badge className="absolute top-4 left-4 bg-white/90 text-amber-700 backdrop-blur">
-                                <Sparkles className="h-3 w-3 mr-1" /> Try-On Available
-                            </Badge>
-                        )}
                     </div>
 
                     {/* Content Section */}
