@@ -8,3 +8,4 @@ DROP TABLE IF EXISTS public.user_style_profiles CASCADE;
 
 -- 2. Drop AI vector columns from profiles if they exist
 ALTER TABLE public.profiles DROP COLUMN IF EXISTS style_vector;
+
