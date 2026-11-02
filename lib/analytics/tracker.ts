@@ -1,6 +1,6 @@
 import { createClient } from '@/lib/supabase/client'
 
-export type AnalyticsEventType = 'view_item' | 'add_to_cart' | 'purchase' | 'ai_chat' | 'quick_view'
+export type AnalyticsEventType = 'view_item' | 'add_to_cart' | 'purchase' | 'quick_view'
 
 interface TrackEventParams {
     eventType: AnalyticsEventType
@@ -30,19 +30,7 @@ export async function trackEvent({ eventType, offerId, sellerId, productId, meta
                 if (error) console.error("Analytics Error:", error.message, error)
             })
 
-        if ((eventType === 'view_item' || eventType === 'purchase') && productId && metadata?.category) {
-            fetch('/api/personalization/track', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    type: eventType === 'view_item' ? 'view' : 'purchase',
-                    productId,
-                    category: metadata.category,
-                    price: metadata.price,
-                    color: metadata.color
-                })
-            }).catch(err => console.error("Personalization Signal Failed", err))
-        }
+        
     } catch (e) {
         console.error("Failed to track event", e)
     }

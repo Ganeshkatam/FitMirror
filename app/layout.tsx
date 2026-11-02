@@ -6,13 +6,9 @@ import { ThemeProvider } from '@/components/theme-provider'
 import { Toaster } from 'sonner'
 import { QuickViewModal } from '@/components/product/quick-view-modal'
 import { OnboardingTour } from '@/components/onboarding-tour'
-import { AssistantProvider } from '@/components/assistant/assistant-context'
-import { AssistantFab } from '@/components/assistant/assistant-fab'
-import { AssistantChat } from '@/components/assistant/chat-interface'
 
 import { UserPreferencesProvider } from '@/components/providers/user-preferences-provider'
 import { ErrorSuppressor } from '@/components/error-suppressor'
-import { GenieProvider } from '@/components/global-genie'
 import { ErrorObserver } from '@/components/providers/error-observer'
 import { AnalyticsProvider } from '@/components/providers/analytics-provider'
 import { PostHogProvider } from '@/lib/analytics/posthog'
@@ -21,17 +17,17 @@ import { MobileShell } from '@/components/mobile/mobile-shell'
 export const metadata: Metadata = {
   metadataBase: new URL('https://fitmirror.in'), // Fixes social image resolution
   title: {
-    default: 'FitMirror | AI Fashion & Personal Styling',
+    default: 'FitMirror | Modern Fashion & Curated Wardrobe',
     template: '%s | FitMirror'
   },
-  description: 'Experience the perfect fit with AI-guided fashion styling. Shop tops, dresses, jeans and curated collections with confidence.',
+  description: 'Shop curated fashion collections with confidence. Discover tops, dresses, jeans, and wardrobe essentials tailored to your style.',
   keywords: ['fashion', 'online shopping', 'personal styling', 'curated wardrobe', 'women fashion', 'fit mirror', 'clothing'],
   authors: [{ name: 'FitMirror' }],
   alternates: {
     canonical: '/',
   },
   openGraph: {
-    title: 'FitMirror | AI Fashion & Personal Styling',
+    title: 'FitMirror | Modern Fashion & Curated Wardrobe',
     description: 'Experience the perfect fit with AI-guided fashion styling for the modern wardrobe.',
     url: 'https://fitmirror.in',
     siteName: 'FitMirror',
@@ -131,23 +127,17 @@ export default function RootLayout({
           />
           <PostHogProvider>
             <ErrorSuppressor />
-            <GenieProvider>
-              <ErrorObserver />
+                          <ErrorObserver />
               <UserPreferencesProvider>
                 <AnalyticsProvider>
-                  <AssistantProvider>
-                    <OnboardingTour />
+                                      <OnboardingTour />
                     {children}
                     <QuickViewModal />
-                    <AssistantFab />
-                    <AssistantChat />
                     <MobileShell />
                     <Toaster position="top-center" richColors />
-                  </AssistantProvider>
-                </AnalyticsProvider>
+                                  </AnalyticsProvider>
               </UserPreferencesProvider>
-            </GenieProvider>
-          </PostHogProvider>
+                      </PostHogProvider>
         </ThemeProvider>
       </body>
     </html>

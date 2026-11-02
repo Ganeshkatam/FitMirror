@@ -24,9 +24,8 @@ interface TabbedRecommendationsProps {
 }
 
 const TABS = [
-    { id: 'similar', label: 'Similar' },
+    { id: 'similar', label: 'Similar Products' },
     { id: 'complete', label: 'Complete Look' },
-    { id: 'ai', label: 'AI Picks' },
 ] as const
 
 type TabId = typeof TABS[number]['id']
@@ -42,22 +41,13 @@ export function TabbedRecommendations({
     const filtered = products.filter(p => p.id !== currentProductId)
     const ctlFiltered = completeTheLookProducts.filter(p => p.id !== currentProductId)
 
-    // AI picks = shuffle of products (simulated until real AI endpoint exists)
-    const aiPicks = React.useMemo(() => {
-        const shuffled = [...filtered]
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
-        }
-        return shuffled.slice(0, 8)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentProductId])
+    
 
     const activeProducts = activeTab === 'similar'
         ? filtered.slice(0, 12)
         : activeTab === 'complete'
             ? ctlFiltered.length > 0 ? ctlFiltered : filtered.slice(0, 8)
-            : aiPicks
+            : filtered.slice(0, 8)
 
     if (filtered.length === 0) return null
 

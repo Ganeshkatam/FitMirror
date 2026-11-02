@@ -4,7 +4,6 @@ import Image from 'next/image'
 import { ProductCard } from '@/components/product/product-card'
 import { Store, MapPin, Calendar, Star } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import { ChatWidget } from '@/components/chat/chat-widget'
 
 export const dynamic = 'force-dynamic'
 
@@ -111,7 +110,6 @@ export default async function StorePage({ params }: Props) {
 
                         {/* Actions */}
                         <div className="flex gap-3 mb-2">
-                            <ChatWidget sellerId={seller.id} userId={user?.id} />
                             <button
                                 className="px-6 py-2 rounded-full font-medium text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
                                 style={{ backgroundColor: seller.brand_color || '#000000' }}

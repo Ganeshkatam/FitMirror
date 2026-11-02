@@ -99,25 +99,7 @@ export async function POST(req: NextRequest) {
         // Note: Inventory was already atomically decremented during `create_order_snapshot`
         // We do not decrement stock here to prevent double-deduction.
 
-        // Track purchase for personalization
-        const { data: orderItems } = await supabase
-            .from('order_items')
-            .select('product_id, products(category, color, price)')
-            .eq('order_id', dbOrderId)
-
-        if (orderItems && orderItems.length > 0) {
-            const { PersonalizationService } = await import('@/lib/service/personalization')
-            const itemsToTrack = orderItems.map((item: any) => ({
-                productId: item.product_id,
-                category: item.products?.category,
-                color: item.products?.color,
-                price: item.products?.price
-            }))
-            await PersonalizationService.trackPurchase(order.user_id, itemsToTrack).catch(err =>
-                console.error('Failed to track purchase', err)
-            )
-        }
-
+        
         return NextResponse.json({ status: 'success', paymentId: razorpay_payment_id })
 
     } catch (error: any) {

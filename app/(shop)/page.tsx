@@ -11,7 +11,6 @@ import { CouponBanner } from '@/components/home/coupon-banner'
 import { TrendingStrip } from '@/components/home/trending-strip'
 import { StatsSection } from '@/components/home/stats-section'
 import { StorefrontService } from '@/lib/service/storefront'
-import { ForYouGrid } from '@/components/personalization'
 import dynamic from 'next/dynamic'
 
 // Lazy Load Heavy Components
@@ -75,9 +74,9 @@ export default async function HomePage() {
         StorefrontService.getFeaturedProducts(),
         StorefrontService.getTrendingProducts(),
         StorefrontService.getCollections(),
-        user ? import('@/lib/service/personalization').then(m => m.PersonalizationService.getPersonalizedCategories(user.id)) : StorefrontService.getAllCategories(),
+        StorefrontService.getAllCategories(),
         StorefrontService.getHomeStats(),
-        user ? import('@/lib/service/personalization').then(m => m.PersonalizationService.getContinueShopping(user.id)) : Promise.resolve([]),
+        Promise.resolve([]),
         StorefrontService.getFeaturedReviews(),
         StorefrontService.getRecommendedProducts()
     ])
@@ -105,7 +104,7 @@ export default async function HomePage() {
 
             {/* 2.5 Story Swiper — Mobile-Only Discovery (md:hidden internally) */}
             {trendingProducts && trendingProducts.length > 0 && (
-                <StorySwiper products={trendingProducts} title="Trending Now 🔥" />
+                <StorySwiper products={trendingProducts} title="Trending Now" />
             )}
 
             {/* 3. Category Orbit (Mobile-first quick access) */}
@@ -199,13 +198,7 @@ export default async function HomePage() {
             </section>
 
 
-            {/* 12. Personalized Picks (For You) */}
-            <section className="w-full py-8 md:py-16 bg-gradient-to-b from-amber-50/50 to-white">
-                <div className="w-full max-w-[1800px] mx-auto px-4 md:px-6">
-                    <ForYouGrid title="Picked For You" limit={8} />
-                </div>
-            </section>
-
+            
             {/* 13. Brand Spotlight (CMS) */}
             {collectionsData && collectionsData.length > 0 && (
                 <BrandSpotlight collections={collectionsData} />

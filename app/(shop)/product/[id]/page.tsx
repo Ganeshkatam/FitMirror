@@ -10,7 +10,6 @@ import { TabbedRecommendations } from '@/components/product/tabbed-recommendatio
 import { getProductReviews } from '@/lib/actions/reviews'
 import { ProductDetailsClient } from './product-details-client'
 import { CompleteTheLook } from '@/components/product/complete-the-look'
-import { TrackProductView, BecauseYouViewed } from '@/components/personalization'
 import { ProductInfo } from '@/components/product/product-info'
 
 // --- 1. Data Fetching ---
@@ -248,14 +247,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
             {/* Analytics Tracker */}
             <ProductViewTracker product={product} />
 
-            {/* Personalization Tracker */}
-            <TrackProductView
-                productId={product.id}
-                category={product.category || 'other'}
-                color={product.color}
-                price={product.price}
-            />
-
+            
             {/* Breadcrumbs */}
             <div className="border-b bg-white">
                 <div className="max-w-[1920px] mx-auto px-4 md:px-8 py-3">
@@ -315,11 +307,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
                     <CompleteTheLook productId={product.id} />
                 </section>
 
-                {/* Personalized: Because You Viewed */}
-                <section className="mt-16 md:mt-24">
-                    <BecauseYouViewed productId={product.id} />
-                </section>
-
+                
                 {/* Tabbed Recommendations (Similar / Complete Look / AI Picks) */}
                 {relatedProducts.length > 0 && (
                     <section className="mt-12 md:mt-20">

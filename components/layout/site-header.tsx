@@ -7,7 +7,6 @@ import { GlobalSearch } from '@/components/global-search'
 import { ClientNotificationCenter as NotificationCenter } from '@/components/client-notification-center'
 import { CartInitializer } from '@/components/cart/cart-initializer'
 import { CartButton } from '@/components/cart/cart-button'
-import { GenieNavButton } from '@/components/global-genie'
 import { ShopMegaMenu } from '@/components/shop-mega-menu'
 import { MobileNav } from '@/components/mobile-nav'
 import { WishlistButton } from '@/components/wishlist-button'
@@ -107,7 +106,6 @@ export async function SiteHeader() {
 
 
                         {/* Desktop Only Icons */}
-                        <GenieNavButton />
                         <LocationSelector addresses={addresses} className="hidden lg:flex" />
                         <NotificationCenter />
                         <AuthDropdown user={currentUser} profile={profileData} />

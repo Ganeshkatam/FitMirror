@@ -14,8 +14,8 @@ const stats = [
 const features = [
     {
         icon: Zap,
-        title: 'AI-Powered Styling',
-        description: 'Our intelligent algorithms curate the perfect outfits tailored to your unique taste, sizing, and occasions.',
+        title: 'Curated Fashion',
+        description: 'Our hand-curated collections bring together the finest fabrics, timeless silhouettes, and effortless style for every occasion.',
         gradient: 'from-amber-500 to-orange-500',
         bgGlow: 'bg-amber-500/20',
     },
@@ -75,7 +75,7 @@ export default function AboutPage() {
                         </h1>
 
                         <p className="text-base md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 md:mb-10 leading-relaxed animate-fade-in" style={{ animationDelay: '0.2s' }}>
-                            FitMirror uses AI-powered styling and precision fit guidance to eliminate the guesswork from online shopping.
+                            FitMirror delivers curated contemporary fashion with precision sizing and effortless shopping.
                             No more returns. No more disappointment. Just confidence.
                         </p>
 

@@ -12,7 +12,6 @@ import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { VoiceSearchButton } from './search/voice-search-button'
-import { VisualSearchButton } from './search/visual-search-button'
 
 interface Product {
     id: string
@@ -38,11 +37,11 @@ const TRENDING_SEARCHES: Suggestion[] = [
 ]
 
 const QUICK_CATEGORIES = [
-    { name: 'Dresses', icon: '👗', gradient: 'from-pink-500 to-rose-500' },
-    { name: 'Tops', icon: '👚', gradient: 'from-purple-500 to-indigo-500' },
-    { name: 'Bottoms', icon: '👖', gradient: 'from-blue-500 to-cyan-500' },
-    { name: 'Ethnic', icon: '🥻', gradient: 'from-orange-500 to-amber-500' },
-    { name: 'Accessories', icon: '👜', gradient: 'from-emerald-500 to-teal-500' },
+    { name: 'Dresses', icon: '', gradient: 'from-pink-500 to-rose-500' },
+    { name: 'Tops', icon: '', gradient: 'from-purple-500 to-indigo-500' },
+    { name: 'Bottoms', icon: '', gradient: 'from-blue-500 to-cyan-500' },
+    { name: 'Ethnic', icon: '', gradient: 'from-orange-500 to-amber-500' },
+    { name: 'Accessories', icon: '', gradient: 'from-emerald-500 to-teal-500' },
 ]
 
 export function GlobalSearch() {
@@ -265,10 +264,6 @@ export function GlobalSearch() {
                             <VoiceSearchButton onResult={(text) => {
                                 setQuery(text)
                                 // Trigger search immediately after voice transcription
-                                setTimeout(() => handleSearch(text), 100)
-                            }} />
-                            <VisualSearchButton onResult={(text) => {
-                                setQuery(text)
                                 setTimeout(() => handleSearch(text), 100)
                             }} />
                         </div>

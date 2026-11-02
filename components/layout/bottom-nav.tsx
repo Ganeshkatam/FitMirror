@@ -8,11 +8,8 @@ import { cn } from '@/lib/utils'
 import { useCart } from '@/lib/store/cart'
 import { useWishlist } from '@/lib/store/use-wishlist'
 
-interface BottomNavProps {
-    onAIClick?: () => void
-}
 
-export function BottomNav({ onAIClick }: BottomNavProps) {
+export function BottomNav() {
     const pathname = usePathname()
     const cartItems = useCart(s => s.items)
     const wishlistItems = useWishlist(s => s.items)
@@ -38,22 +35,7 @@ export function BottomNav({ onAIClick }: BottomNavProps) {
                 {/* Explore/Shop */}
                 <NavItem href="/shop" icon={Compass} label="Explore" active={isActive('/shop')} badge={0} />
 
-                {/* Center AI Button — elevated */}
-                <div className="relative flex flex-col items-center -mt-4">
-                    <button
-                        onClick={onAIClick}
-                        className={cn(
-                            "h-12 w-12 rounded-full flex items-center justify-center",
-                            "bg-gradient-to-br from-amber-400 via-amber-500 to-orange-600",
-                            "shadow-lg shadow-amber-500/30",
-                            "active:scale-90 transition-transform duration-150",
-                            "ring-4 ring-white dark:ring-gray-950"
-                        )}
-                    >
-                        <Sparkles className="h-5 w-5 text-white" />
-                    </button>
-                    <span className="text-[10px] font-medium text-amber-600 mt-0.5">Style AI</span>
-                </div>
+                
 
                 {/* Wishlist */}
                 <NavItem href="/account/wishlist" icon={Heart} label="Wishlist" active={isActive('/account/wishlist')} badge={wishlistCount} fillOnActive />

@@ -1,12 +1,12 @@
 # FitMirror
 
-FitMirror is a modern, high-performance eCommerce platform engineered to provide a seamless, next-generation shopping experience. It features multi-tenant architectural support (Customers, Sellers, and Admins), intelligent styling and personalization, and a highly optimized modern web stack.
+FitMirror is a modern, high-performance eCommerce platform engineered to provide a seamless, next-generation shopping experience. It features multi-tenant architectural support (Customers, Sellers, and Admins), curated catalog discovery, and a highly optimized modern web stack.
 
 ## Key Features
 
 - **3D Hero Previews:** Immersive visual experience powered by `Three.js` and React Three Fiber.
 - **Multi-Tenant Foundation:** Role-based access control and distinct workflows for Customers, Sellers, and Platform Admins.
-- **AI-Powered Personalization:** Intelligent product recommendations and AI shopping assistant.
+- **Curated Catalog:** Rich product discovery, multi-category navigation, and responsive cart and checkout.
 - **High Performance:** Built on Next.js 16 with Turbopack and React 19 for instantaneous page loads.
 - **Real-Time Data:** Cart, inventory, and order status synchronized instantly via Supabase.
 - **Reliable Transactions:** Secure payment processing with Razorpay and robust email notifications powered by Brevo.

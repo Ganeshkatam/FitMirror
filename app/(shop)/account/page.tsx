@@ -44,19 +44,7 @@ export default async function AccountDashboardPage() {
     const points = Math.floor(totalSpent)
 
     // Calculate Style Score
-    try {
-        // Dynamically import to avoid build issues if service is server-only
-        const { PersonalizationService } = await import('@/lib/service/personalization')
-        const styleProfile = await PersonalizationService.getStyleProfile(user.id)
-
-        if (styleProfile) {
-            if (Object.keys(styleProfile.styleVector || {}).length > 0) styleScore += 40
-            if (styleProfile.preferredCategories?.length > 0) styleScore += 25
-            if (styleProfile.preferredColors?.length > 0) styleScore += 25
-        }
-    } catch (e) {
-        console.error('Failed to fetch style profile', e)
-    }
+    
 
     // Fetch Recent Order
     let recentOrder = null

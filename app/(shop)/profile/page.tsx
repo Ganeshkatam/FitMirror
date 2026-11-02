@@ -11,7 +11,6 @@ import { AvatarUpload } from '@/components/account/avatar-upload'
 import { OrderList } from '@/components/account/order-list'
 import { StatsSection } from '@/components/account/stats-section'
 import { BodyProfileCard } from '@/components/account/body-profile-card'
-import { FashionDNA } from '@/components/profile/fashion-dna'
 import { VirtualWardrobe } from '@/components/profile/virtual-wardrobe'
 import { SignOutButton } from './sign-out-button'
 import * as motion from 'framer-motion/client'
@@ -77,19 +76,24 @@ export default async function ProfilePage() {
     // Date formatting
     const timeOfDay = new Date().getHours() < 12 ? 'Good morning' : new Date().getHours() < 18 ? 'Good afternoon' : 'Good evening'
 
-    // Fetch Personalization Data
-    let styleProfile = null
+    // Fetch Wardrobe Data
     let wardrobeItems: any[] = []
-
     try {
-        const { PersonalizationService } = await import('@/lib/service/personalization')
-        const [sp, wi] = await Promise.all([
-            PersonalizationService.getStyleProfile(user.id),
-            PersonalizationService.getWardrobeItems(user.id)
-        ])
-        styleProfile = sp
-        wardrobeItems = wi
-    } catch (e) { console.error(e) }
+        const { data: wishlist } = await supabase
+            .from('wishlists')
+            .select('product_id, created_at, products(*, product_media(*))')
+            .eq('user_id', user.id)
+            .order('created_at', { ascending: false })
+            .limit(10)
+        wardrobeItems = wishlist?.map((i: any) => ({
+            id: i.products?.id,
+            name: i.products?.name,
+            price: i.products?.price,
+            category: i.products?.category,
+            image_url: i.products?.product_media?.[0]?.url || i.products?.image_url,
+            status: 'saved'
+        })).filter((i: any) => i.id) || []
+    } catch (e) { /* ignore */ }
 
     return (
         <div className="min-h-screen bg-slate-50/50">
@@ -203,14 +207,9 @@ export default async function ProfilePage() {
                             styleScore={0}
                         />
 
-                        {/* 1.5 GAMIFICATION SECTION */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            <div className="md:col-span-1 h-[300px]">
-                                <FashionDNA profile={styleProfile} />
-                            </div>
-                            <div className="md:col-span-2 h-[300px]">
-                                <VirtualWardrobe items={wardrobeItems} />
-                            </div>
+                        {/* 1.5 WARDROBE SECTION */}
+                        <div className="h-[300px]">
+                            <VirtualWardrobe items={wardrobeItems} />
                         </div>
 
                         {/* 2. BODY PROFILE & OUTFIT BUILDER */}

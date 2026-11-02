@@ -10,7 +10,7 @@ export default function PricingPage() {
                     Unlock Your Style Potential
                 </h1>
                 <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                    Choose the plan that fits your fashion journey. Upgrade to Pro for advanced wardrobe management and personalized AI styling.
+                    Choose the plan that fits your fashion journey. Upgrade to Pro for priority fulfillment and exclusive designer access.
                 </p>
             </div>
 
@@ -49,8 +49,8 @@ export default function PricingPage() {
                     <p className="mt-6 text-violet-800">Everything you need to redefine your style.</p>
                     <ul role="list" className="mt-6 space-y-4">
                         {[
-                            'Unlimited AI Wardrobe Styling',
-                            'AI Personal Stylist (24/7)',
+                            'Unlimited Wardrobe Collections',
+                            'Priority Customer Support (24/7)',
                             'Priority Shipping',
                             'Early Access to New Collections',
                             'Exclusive Member Discounts'
