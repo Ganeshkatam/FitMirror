@@ -636,7 +636,7 @@ create table public.cart_items (
   size text not null,
   quantity integer not null default 1,
   created_at timestamp with time zone null default now(),
-  variant_id uuid not null,
+  variant_id uuid null,
   constraint cart_items_pkey primary key (id),
   constraint cart_items_cart_id_fkey foreign KEY (cart_id) references carts (id) on delete CASCADE,
   constraint cart_items_product_id_fkey foreign KEY (product_id) references products (id) on delete CASCADE,
@@ -651,7 +651,7 @@ create index IF not exists idx_cart_items_cart_id on public.cart_items using btr
 
 create table public.carts (
   id uuid not null default gen_random_uuid (),
-  user_id uuid not null,
+  user_id uuid null,
   session_id text null,
   created_at timestamp with time zone null default now(),
   updated_at timestamp with time zone null default now(),
@@ -2122,7 +2122,7 @@ create table public.reviews (
   content text null,
   images text[] null,
   verified_purchase boolean null default false,
-  is_approved boolean null default true,
+  is_approved boolean null default false,
   created_at timestamp with time zone null default now(),
   updated_at timestamp with time zone null default now(),
   seller_reply text null,
