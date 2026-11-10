@@ -110,16 +110,18 @@ export async function finalizeOrder(razorpayOrderId: string) {
 
     if (error || !payment) throw new Error("Payment record not found")
 
-    const { data: cart, error: cartError } = await supabase
-        .from('carts')
-        .select('id')
-        .eq('user_id', user.id)
-        .maybeSingle()
+    if (user) {
+        const { data: cart, error: cartError } = await supabase
+            .from('carts')
+            .select('id')
+            .eq('user_id', user.id)
+            .maybeSingle()
 
-    if (cartError) throw cartError
-    if (cart) {
-        const { error: clearError } = await supabase.from('cart_items').delete().eq('cart_id', cart.id)
-        if (clearError) throw clearError
+        if (cartError) throw cartError
+        if (cart) {
+            const { error: clearError } = await supabase.from('cart_items').delete().eq('cart_id', cart.id)
+            if (clearError) throw clearError
+        }
     }
 
     const orderIds = payment.related_orders && payment.related_orders.length > 0
