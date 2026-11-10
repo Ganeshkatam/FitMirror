@@ -63,7 +63,7 @@ CREATE POLICY "Authenticated users access own cart items"
         )
     );
 
-REVOKE ALL ON TABLE public.carts, public.cart_items FROM anon;
+REVOKE ALL ON TABLE public.carts, public.cart_items FROM PUBLIC, anon;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.carts, public.cart_items TO authenticated;
 GRANT ALL ON TABLE public.carts, public.cart_items TO service_role;
 
@@ -76,6 +76,18 @@ CREATE POLICY "Public can read active products"
     USING (is_active IS TRUE AND is_deleted IS FALSE);
 
 DROP POLICY IF EXISTS "Admins can view all products" ON public.products;
+CREATE POLICY "Sellers can view their own products"
+    ON public.products FOR SELECT TO authenticated
+    USING (
+        EXISTS (
+            SELECT 1
+            FROM public.product_offers po
+            JOIN public.sellers s ON s.id = po.seller_id
+            WHERE po.product_id = products.id
+              AND s.profile_id = (SELECT auth.uid())
+        )
+    );
+
 CREATE POLICY "Admins can view all products"
     ON public.products FOR SELECT TO authenticated
     USING (
@@ -87,6 +99,9 @@ CREATE POLICY "Admins can view all products"
     );
 
 -- Review moderation is enforced at the database boundary. Users cannot approve their own reviews.
+ALTER TABLE public.reviews ALTER COLUMN is_approved SET DEFAULT false;
+REVOKE INSERT, UPDATE, DELETE ON TABLE public.reviews FROM PUBLIC, anon, authenticated;
+GRANT SELECT ON TABLE public.reviews TO anon, authenticated;
 DROP POLICY IF EXISTS "Reviews are viewable by everyone" ON public.reviews;
 DROP POLICY IF EXISTS "Users can create reviews" ON public.reviews;
 DROP POLICY IF EXISTS "Users can update own reviews" ON public.reviews;
@@ -98,9 +113,7 @@ CREATE POLICY "Public can read approved reviews"
     USING (is_approved IS TRUE);
 
 DROP POLICY IF EXISTS "Authenticated users can insert reviews" ON public.reviews;
-CREATE POLICY "Authenticated users can insert own reviews"
-    ON public.reviews FOR INSERT TO authenticated
-    WITH CHECK (user_id = (SELECT auth.uid()));
+DROP POLICY IF EXISTS "Authenticated users can insert own reviews" ON public.reviews;
 
 -- Category administration requires a real active admin row, not merely an authenticated session.
 DROP POLICY IF EXISTS "Staff can manage categories" ON public.categories;
@@ -124,6 +137,7 @@ CREATE POLICY "Admins manage categories"
     );
 
 -- Digital wardrobe remains a supported customer feature; remove the mistakenly public service-role policy.
+REVOKE ALL ON TABLE public.user_closet_items FROM PUBLIC, anon;
 DROP POLICY IF EXISTS "Service role manages closet" ON public.user_closet_items;
 DROP POLICY IF EXISTS "Users can manage own closet" ON public.user_closet_items;
 CREATE POLICY "Users can manage own closet"
@@ -136,7 +150,7 @@ DROP POLICY IF EXISTS "Enable delete for authenticated" ON public.system_errors;
 DROP POLICY IF EXISTS "Enable insert for all" ON public.system_errors;
 DROP POLICY IF EXISTS "Enable read for authenticated" ON public.system_errors;
 DROP POLICY IF EXISTS "Enable update for authenticated" ON public.system_errors;
-REVOKE ALL ON TABLE public.system_errors FROM anon, authenticated;
+REVOKE ALL ON TABLE public.system_errors FROM PUBLIC, anon, authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.system_errors TO service_role;
 
 -- SECURITY DEFINER functions are not public RPC endpoints by default.
