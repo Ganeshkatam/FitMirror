@@ -16,7 +16,7 @@ interface ErrorContext {
 function redactDiagnostic(value: string, maxLength: number): string {
     return value
         .replace(/Bearer\s+[A-Za-z0-9._~+/-]+=*/gi, 'Bearer [REDACTED]')
-        .replace(/(?:password|token|secret|api[_-]?key)\s*[:=]\s*[^\s,;]+/gi, '$1=[REDACTED]')
+        .replace(/(password|token|secret|api[_-]?key)\s*[:=]\s*[^\s,;]+/gi, '$1=[REDACTED]')
         .slice(0, maxLength)
 }
 
