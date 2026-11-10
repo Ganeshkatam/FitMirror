@@ -43,15 +43,47 @@ BEGIN
 END $$;
 
 -- 4. Rebuild search_index materialized view without is_tryon_enabled or physics_profile
--- Drop dependent functions first in explicit order to prevent dependency locks
-DROP FUNCTION IF EXISTS public.universal_search;
-DROP FUNCTION IF EXISTS public.get_search_suggestions;
+-- Drop dependent triggers and functions first to prevent dependency deadlocks
 DROP TRIGGER IF EXISTS refresh_search_index_on_product_change ON public.products;
 DROP FUNCTION IF EXISTS public.refresh_search_index();
 
-DROP TABLE IF EXISTS public.search_index;
-DROP MATERIALIZED VIEW IF EXISTS public.search_index;
-DROP VIEW IF EXISTS public.search_index;
+-- Explicit signature drops for known search functions
+DROP FUNCTION IF EXISTS public.universal_search(text, text[], text, text[], text[], text[], text[], text[], text[], text[], text[], text[], text[], numeric, boolean, text[], numeric, numeric, text, integer, integer);
+DROP FUNCTION IF EXISTS public.get_search_suggestions(text, integer);
+
+-- Catalog-aware dynamic cleanup for any legacy overloads
+DO $$
+DECLARE
+    r RECORD;
+BEGIN
+    FOR r IN (
+        SELECT p.oid::regprocedure AS func_sig
+        FROM pg_proc p
+        JOIN pg_namespace n ON n.oid = p.pronamespace
+        WHERE n.nspname = 'public'
+          AND p.proname IN ('universal_search', 'get_search_suggestions')
+    ) LOOP
+        EXECUTE 'DROP FUNCTION ' || r.func_sig;
+    END LOOP;
+END $$;
+
+-- Catalog-aware object drop for search_index (handles materialized view, view, or table without type mismatch)
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM pg_matviews WHERE schemaname = 'public' AND matviewname = 'search_index'
+    ) THEN
+        DROP MATERIALIZED VIEW public.search_index;
+    ELSIF EXISTS (
+        SELECT 1 FROM pg_views WHERE schemaname = 'public' AND viewname = 'search_index'
+    ) THEN
+        DROP VIEW public.search_index;
+    ELSIF EXISTS (
+        SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'search_index'
+    ) THEN
+        DROP TABLE public.search_index;
+    END IF;
+END $$;
 
 CREATE MATERIALIZED VIEW public.search_index AS
 SELECT
@@ -261,9 +293,6 @@ RETURNS TRIGGER
 SECURITY DEFINER
 AS $$
 BEGIN
-    REFRESH MATERIALIZED VIEW CONCURRENTLY public.search_index;
-    RETURN NULL;
-EXCEPTION WHEN OTHERS THEN
     REFRESH MATERIALIZED VIEW public.search_index;
     RETURN NULL;
 END;
