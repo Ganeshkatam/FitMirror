@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { logError } from '@/lib/logger'
+import { logError } from '@/lib/logger/client'
 
 export function ErrorObserver() {
     useEffect(() => {

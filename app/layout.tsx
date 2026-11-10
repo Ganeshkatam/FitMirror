@@ -28,7 +28,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'FitMirror | Modern Fashion & Curated Wardrobe',
-    description: 'Experience the perfect fit with AI-guided fashion styling for the modern wardrobe.',
+    description: 'Experience the perfect fit with curated fashion for the modern wardrobe.',
     url: 'https://fitmirror.in',
     siteName: 'FitMirror',
     locale: 'en_IN',
@@ -36,8 +36,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'FitMirror | AI Fashion & Personal Styling',
-    description: 'Experience the perfect fit with AI-guided fashion styling for the modern wardrobe.',
+    title: 'FitMirror | Fashion & Personal Styling',
+    description: 'Experience the perfect fit with curated fashion for the modern wardrobe.',
   },
   robots: {
     index: true,

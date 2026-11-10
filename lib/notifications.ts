@@ -1,4 +1,4 @@
-import { brevoClient } from '@/lib/brevo'
+import { brevoClient } from '@/lib/email/client'
 
 export async function sendEmail({ to, subject, html }: { to: string, subject: string, html: string }) {
     if (!process.env.BREVO_API_KEY) {

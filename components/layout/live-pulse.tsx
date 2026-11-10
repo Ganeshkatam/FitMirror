@@ -40,7 +40,7 @@ export function LivePulse() {
         const mockActivities = [
             "Someone in Mumbai just bought a Red Velvet Dress",
             "3 people are looking at Denim Jackets",
-            "Someone in Delhi just styled an outfit with the AI Assistant",
+            "Someone in Delhi just discovered a new outfit",
             "A customer in Bangalore just rated a product 5 stars",
             "Limited stock alert: specific sizes running low"
         ]

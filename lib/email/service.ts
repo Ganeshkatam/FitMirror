@@ -1,5 +1,5 @@
 import React from 'react'
-import { brevoClient } from '@/lib/brevo'
+import { brevoClient } from './client'
 import { render } from '@react-email/components'
 import { WelcomeEmail } from './templates/welcome'
 import { AbandonedCartEmail } from './templates/abandoned-cart'

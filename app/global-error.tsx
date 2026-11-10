@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { RefreshCw, Home } from 'lucide-react'
 // import * as Sentry from '@sentry/nextjs'
-import { logError } from '@/lib/logger'
+import { logError } from '@/lib/logger/client'
 
 export default function GlobalError({
     error,
@@ -23,10 +23,10 @@ export default function GlobalError({
         console.error('Global Error:', error)
 
         // Log to database
-        logError(error.message, {
+        logError(error, {
             stack: error.stack,
             severity: 'critical'
-        } as any)
+        })
     }, [error])
 
     // Don't render error UI for AbortError

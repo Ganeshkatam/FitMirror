@@ -2,6 +2,8 @@
 
 # dependencies
 /node_modules
+migration_manifest_dry_run.json
+migration_reconciliation.json
 /.pnp
 .pnp.js
 node_modules_broken/

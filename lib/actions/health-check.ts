@@ -1,6 +1,6 @@
 'use server'
 
-import { logError } from '@/lib/logger'
+import { logError } from '@/lib/logger/server'
 import { createClient } from '@/lib/supabase/server'
 
 interface HealthResult {
