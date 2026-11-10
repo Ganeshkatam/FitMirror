@@ -94,7 +94,6 @@ SELECT
     p.description,
     p.slug,
     p.image,
-    p.images,
     mc.name AS category,
     mc.slug AS category_slug,
     p.gender,
@@ -105,7 +104,7 @@ SELECT
     p.tags,
     COALESCE((
         SELECT SUM(pi.stock) 
-        FROM product_inventory pi 
+        FROM public.product_inventory pi 
         WHERE pi.product_id = p.id
     ), 0) > 0 AS is_in_stock,
     p.rating_avg AS rating,
@@ -117,7 +116,6 @@ SELECT
     p.fit,
     p.material,
     p.age_group,
-    p.store_id,
     p.created_at,
     (
         (CASE WHEN p.created_at > now() - interval '30 days' THEN 10 ELSE 0 END) +
@@ -128,8 +126,8 @@ SELECT
     setweight(to_tsvector('english', COALESCE(p.description, '')), 'C') ||
     setweight(to_tsvector('english', COALESCE(mc.name, '')), 'C')
     AS search_vector
-FROM products p
-LEFT JOIN main_categories mc ON mc.slug = p.category
+FROM public.products p
+LEFT JOIN public.main_categories mc ON mc.slug = p.category
 WHERE p.is_active = true AND p.is_deleted = false;
 
 CREATE UNIQUE INDEX idx_search_index_id ON public.search_index(product_id);
@@ -200,13 +198,16 @@ BEGIN
         si.description,
         si.slug,
         si.image,
-        si.images,
+        CASE
+            WHEN si.image IS NOT NULL AND si.image != '' THEN ARRAY[si.image]::TEXT[]
+            ELSE ARRAY[]::TEXT[]
+        END AS images,
         si.category,
         si.category_slug,
         si.gender,
         si.color,
         si.brand,
-        si.price,
+        si.price::NUMERIC,
         si.sizes,
         si.tags,
         si.is_in_stock,
@@ -219,7 +220,7 @@ BEGIN
         si.fit,
         si.material,
         si.age_group,
-        si.store_id,
+        NULL::UUID AS store_id,
         si.created_at,
         CASE
             WHEN search_query IS NOT NULL AND search_query != '' THEN
