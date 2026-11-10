@@ -1,18 +1,22 @@
 -- Migration: Finalize VTryOn and AI Retirement
 -- Description: Completely removes remaining tryon/AI tables, columns, constraints, and rebuilds search_index without is_tryon_enabled.
 -- Idempotent across fresh installs and existing environments.
+-- Wrapped in an atomic transaction with explicit dependency ordering (RESTRICT semantics).
+
+BEGIN;
 
 -- 1. Drop all retired VTryOn and AI tables
-DROP TABLE IF EXISTS public.copilot_messages CASCADE;
-DROP TABLE IF EXISTS public.copilot_sessions CASCADE;
-DROP TABLE IF EXISTS public.user_style_profiles CASCADE;
-DROP TABLE IF EXISTS public.tryon_audit_logs CASCADE;
-DROP TABLE IF EXISTS public.tryon_events CASCADE;
-DROP TABLE IF EXISTS public.tryon_results CASCADE;
-DROP TABLE IF EXISTS public.tryon_sessions CASCADE;
-DROP TABLE IF EXISTS public.garment_assets CASCADE;
-DROP TABLE IF EXISTS public.generations CASCADE;
-DROP TABLE IF EXISTS public.user_avatars CASCADE;
+-- Drop child tables before parent tables to respect foreign key constraints without cascading to unintended external objects.
+DROP TABLE IF EXISTS public.copilot_messages;
+DROP TABLE IF EXISTS public.copilot_sessions;
+DROP TABLE IF EXISTS public.user_style_profiles;
+DROP TABLE IF EXISTS public.tryon_audit_logs;
+DROP TABLE IF EXISTS public.tryon_events;
+DROP TABLE IF EXISTS public.tryon_results;
+DROP TABLE IF EXISTS public.tryon_sessions;
+DROP TABLE IF EXISTS public.garment_assets;
+DROP TABLE IF EXISTS public.generations;
+DROP TABLE IF EXISTS public.user_avatars;
 
 -- 2. Drop all retired VTryOn and AI columns
 ALTER TABLE IF EXISTS public.categories DROP COLUMN IF EXISTS tryon_enabled;
@@ -39,15 +43,15 @@ BEGIN
 END $$;
 
 -- 4. Rebuild search_index materialized view without is_tryon_enabled or physics_profile
--- Drop dependent functions first to prevent dependency deadlocks
+-- Drop dependent functions first in explicit order to prevent dependency locks
 DROP FUNCTION IF EXISTS public.universal_search;
 DROP FUNCTION IF EXISTS public.get_search_suggestions;
 DROP TRIGGER IF EXISTS refresh_search_index_on_product_change ON public.products;
 DROP FUNCTION IF EXISTS public.refresh_search_index();
 
-DROP TABLE IF EXISTS public.search_index CASCADE;
-DROP MATERIALIZED VIEW IF EXISTS public.search_index CASCADE;
-DROP VIEW IF EXISTS public.search_index CASCADE;
+DROP TABLE IF EXISTS public.search_index;
+DROP MATERIALIZED VIEW IF EXISTS public.search_index;
+DROP VIEW IF EXISTS public.search_index;
 
 CREATE MATERIALIZED VIEW public.search_index AS
 SELECT
@@ -269,3 +273,6 @@ CREATE TRIGGER refresh_search_index_on_product_change
 AFTER INSERT OR UPDATE OR DELETE ON public.products
 FOR EACH STATEMENT
 EXECUTE FUNCTION public.refresh_search_index();
+
+COMMIT;
+
