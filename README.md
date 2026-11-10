@@ -70,7 +70,7 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) to view the application.
 
-## 🧪 Testing
+## Testing
 
 The project maintains a rigorous test suite using Vitest for unit/integration testing and Playwright for E2E testing.
 
@@ -82,13 +82,13 @@ npm run test
 npm run test:e2e
 ```
 
-## 🏗️ Architecture Notes
+## Architecture Notes
 
 FitMirror was recently migrated to a streamlined **Phase 6 Platform Architecture**:
 - The Next.js application strictly acts as the **Customer Storefront** (`FitMirror Official Store`).
 - The database foundation natively supports **Admins** and **Sellers**, allowing future expansion into seller portals and admin dashboards without bloating the customer-facing frontend.
 - Unused monolithic legacy components and dependencies have been purged for maximum performance and maintainability.
 
-## 📄 License
+## License
 
 This project is proprietary and confidential.
