@@ -101,7 +101,6 @@ export async function placeOrder(formData: FormData) {
 export async function finalizeOrder(razorpayOrderId: string) {
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
-    if (!user) throw new Error('Unauthorized')
 
     const { data: payment, error } = await supabase
         .from('payments')
