@@ -67,6 +67,9 @@ REVOKE ALL ON TABLE public.carts, public.cart_items FROM PUBLIC, anon;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.carts, public.cart_items TO authenticated;
 GRANT ALL ON TABLE public.carts, public.cart_items TO service_role;
 
+REVOKE INSERT, UPDATE, DELETE ON TABLE public.products FROM anon;
+REVOKE INSERT, UPDATE, DELETE ON TABLE public.categories FROM anon;
+
 -- Public catalog reads must never expose drafts or soft-deleted products.
 DROP POLICY IF EXISTS "products_public_read" ON public.products;
 DROP POLICY IF EXISTS "public_view_all_products" ON public.products;
@@ -154,7 +157,9 @@ REVOKE ALL ON TABLE public.system_errors FROM PUBLIC, anon, authenticated;
 GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.system_errors TO service_role;
 
 -- SECURITY DEFINER functions are not public RPC endpoints by default.
+-- Revoke both inherited PUBLIC access and explicit legacy anon grants.
 REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA public FROM PUBLIC;
+REVOKE EXECUTE ON ALL FUNCTIONS IN SCHEMA public FROM anon;
 GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO authenticated;
 GRANT EXECUTE ON FUNCTION public.universal_search(text, text[], text, text[], text[], text[], text[], text[], text[], text[], text[], text[], text[], numeric, boolean, text[], numeric, numeric, text, integer, integer) TO anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.get_search_suggestions(text, integer) TO anon, authenticated;
@@ -256,5 +261,7 @@ GRANT EXECUTE ON FUNCTION public.redeem_loyalty_points(uuid, integer) TO authent
 
 ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
     REVOKE EXECUTE ON FUNCTIONS FROM PUBLIC;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
+    REVOKE EXECUTE ON FUNCTIONS FROM anon, authenticated;
 
 COMMIT;
