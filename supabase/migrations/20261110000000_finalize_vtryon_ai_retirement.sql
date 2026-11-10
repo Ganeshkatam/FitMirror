@@ -293,14 +293,14 @@ END;
 $$;
 
 -- 7. Controlled search_index refresh utility function (decoupled from transactional table triggers)
-CREATE OR REPLACE FUNCTION public.refresh_search_index(concurrently BOOLEAN DEFAULT true)
+CREATE OR REPLACE FUNCTION public.refresh_search_index(use_concurrently BOOLEAN DEFAULT true)
 RETURNS void
 LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = pg_catalog, public
 AS $$
 BEGIN
-    IF concurrently THEN
+    IF use_concurrently THEN
         REFRESH MATERIALIZED VIEW CONCURRENTLY public.search_index;
     ELSE
         REFRESH MATERIALIZED VIEW public.search_index;
