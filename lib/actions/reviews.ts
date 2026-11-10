@@ -1,6 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { createServiceRoleClient } from '@/lib/supabase/service-role'
 import { revalidatePath } from 'next/cache'
 
 export type ReviewData = {
@@ -30,7 +31,8 @@ export async function submitReview(data: ReviewData) {
     const sizePurchased = purchaseData?.[0]?.size || null
 
     // 2. Insert Review
-    const { error: insertError } = await supabase
+    const trustedDb = createServiceRoleClient()
+    const { error: insertError } = await trustedDb
         .from('reviews')
         .insert({
             user_id: user.id,
@@ -41,7 +43,8 @@ export async function submitReview(data: ReviewData) {
             images: data.images || [],
             fit_rating: data.fitRating,
             size_purchased: sizePurchased,
-            verified_purchase: isVerified
+            verified_purchase: isVerified,
+            is_approved: false
         })
 
     if (insertError) {

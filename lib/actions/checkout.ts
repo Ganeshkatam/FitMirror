@@ -15,31 +15,27 @@ export async function placeOrder(formData: FormData) {
         throw new Error("Must be logged in to checkout")
     }
 
-    // 1. Get Cart
     const cart = await getCart()
     if (!cart || !cart.items || cart.items.length === 0) {
         throw new Error("Cart is empty")
     }
 
-    // 4. Parse Address (Moved up for validation)
     const addressData: Address = {
         fullName: formData.get('full_name') as string,
         line1: formData.get('address') as string,
         city: formData.get('city') as string,
         postalCode: formData.get('zip') as string,
-        state: 'N/A', // Form data missing state, default or add field
+        state: 'N/A',
         country: 'India',
         phone: formData.get('phone') as string,
         type: 'home'
     }
 
-    // Validate Address
     const addressValidation = validateAddress(addressData)
     if (!addressValidation.valid) {
         throw new Error("Invalid Address: " + addressValidation.errors.join(', '))
     }
 
-    // 2. Prepare Checkout Session for Validation
     const cartItems = cart.items.map((item: any) => ({
         productId: item.product_id,
         productName: item.product.name,
@@ -48,10 +44,9 @@ export async function placeOrder(formData: FormData) {
         size: item.size,
         quantity: item.quantity,
         offerId: item.offer_id,
-        variantId: item.variant_id // Added variantId
+        variantId: item.variant_id
     }))
 
-    // Calculate Summary using Engine
     const { calculateCartSummary } = await import('@/lib/commerce/cart/calculations')
     const cartSummary = calculateCartSummary(cartItems)
 
@@ -67,8 +62,6 @@ export async function placeOrder(formData: FormData) {
         updatedAt: new Date()
     }
 
-    // 3.1 Construct Calculation Payload for RPC
-    // We pass ONLY the intent data that the RPC requires
     const linesPayload = cartItems.map((item: any) => ({
         productId: item.productId,
         offerId: item.offerId,
@@ -76,13 +69,10 @@ export async function placeOrder(formData: FormData) {
         quantity: item.quantity
     }))
 
-    const idempotencyKey = session.id
-
-    // 4. Create Order via RPC (Handles stock lock, pricing, invariants, and snapshotting)
     const { data: orderId, error } = await supabase.rpc('create_order_snapshot', {
-        p_idempotency_key: idempotencyKey,
+        p_idempotency_key: session.id,
         p_user_id: user.id,
-        p_coupon_id: null, // Future: Handle coupon application
+        p_coupon_id: null,
         p_shipping_method_id: null,
         p_address_id: null,
         p_shipping_address: addressData,
@@ -95,10 +85,9 @@ export async function placeOrder(formData: FormData) {
         throw new Error("Checkout failed during processing. " + error.message)
     }
 
-    // 6. Clear Cart
-    await supabase.from('cart_items').delete().eq('cart_id', cart.id)
+    const { error: clearError } = await supabase.from('cart_items').delete().eq('cart_id', cart.id)
+    if (clearError) throw clearError
 
-    // Analytics
     await analytics.track('Order Completed', {
         orderId,
         total: cartSummary.total,
@@ -106,41 +95,38 @@ export async function placeOrder(formData: FormData) {
         itemCount: cartItems.length
     }, user.id)
 
-    // 7. Redirect
     redirect(`/order-confirmation?orders=${orderId}`)
 }
 
 export async function finalizeOrder(razorpayOrderId: string) {
     const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
 
-    // 1. Get Order Item to find user/validation
     const { data: payment, error } = await supabase
         .from('payments')
         .select('order_id, id, related_orders')
         .eq('gateway_order_id', razorpayOrderId)
         .single()
 
-    if (error || !payment) {
-        throw new Error("Payment record not found")
-    }
+    if (error || !payment) throw new Error("Payment record not found")
 
-    // 2. Clear Cart
-    const { data: { user } } = await supabase.auth.getUser()
     if (user) {
-        // We can find the cart by user_id
-        await supabase.from('cart_items').delete().eq('user_id', user.id)
+        const { data: cart, error: cartError } = await supabase
+            .from('carts')
+            .select('id')
+            .eq('user_id', user.id)
+            .maybeSingle()
 
-        // Ensure cart is fully cleared (redundancy)
-        const { data: cart } = await supabase.from('carts').select('id').eq('user_id', user.id).single()
+        if (cartError) throw cartError
         if (cart) {
-            await supabase.from('cart_items').delete().eq('cart_id', cart.id)
+            const { error: clearError } = await supabase.from('cart_items').delete().eq('cart_id', cart.id)
+            if (clearError) throw clearError
         }
     }
 
-    // 3. Redirect
     const orderIds = payment.related_orders && payment.related_orders.length > 0
         ? payment.related_orders.join(',')
         : payment.order_id
 
-    redirect(`/order-confirmation?orders=${orderIds}`)
+    redirect(`/order-confirmation?orders=${encodeURIComponent(orderIds)}`)
 }
