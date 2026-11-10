@@ -2,13 +2,9 @@
   {
     "id": "24cf7994-7817-4a0a-9d61-98ff54840986",
     "name": "Wide Leg Trousers",
-    "price": 4299,
+    "price": 429900,
     "compare_price": 5999,
     "image": "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=800&auto=format",
-      "https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=800&auto=format"
-    ],
     "category": "woman",
     "description": "High-waisted wide-leg trousers with pressed front creases. The cotton-linen blend keeps you cool while the structured silhouette looks polished. Features side pockets and a hidden zip closure.",
     "sizes": [
@@ -26,7 +22,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "a1728eca-ce06-4f65-9e48-4f19b06355fd",
     "rating_avg": 0,
@@ -36,7 +31,7 @@
     "slug": "wide-leg-trousers",
     "sku": "FM-W-PNT-001",
     "base_price": 5999,
-    "sale_price": 4299,
+    "sale_price": 429900,
     "is_deleted": false,
     "color": "Beige",
     "brand": "Chic",
@@ -79,19 +74,16 @@
       "workwear",
       "high waist"
     ],
-    "image_url": "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=800&auto=format",
     "age_group": "Adult",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "749ed570-44dd-4813-b03e-c65738693b26",
     "name": "Classic Polo",
-    "price": 1799,
+    "price": 179900,
     "compare_price": 2499,
     "image": "https://images.unsplash.com/photo-1626557981101-aae6f84aa6ff?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1626557981101-aae6f84aa6ff?w=800&auto=format"
-    ],
     "category": "man",
     "description": "A refined piqué polo with a ribbed collar and two-button placket. The breathable cotton piqué keeps you cool. Features an embroidered logo, side vents, and a curved hem.",
     "sizes": [
@@ -109,7 +101,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "0181720e-9e49-48c4-845f-c478d563e796",
     "rating_avg": 0,
@@ -119,7 +110,7 @@
     "slug": "classic-pique-polo",
     "sku": "FM-M-TSH-003",
     "base_price": 2499,
-    "sale_price": 1799,
+    "sale_price": 179900,
     "is_deleted": false,
     "color": "Navy",
     "brand": "Essentials",
@@ -162,20 +153,16 @@
       "smart casual",
       "golf"
     ],
-    "image_url": "https://images.unsplash.com/photo-1626557981101-aae6f84aa6ff?w=800&auto=format",
     "age_group": "Adult",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "a3155fbc-0d54-4e4c-a4a8-e746c07afc4e",
     "name": "Slim Fit Jeans",
-    "price": 2999,
+    "price": 299900,
     "compare_price": 4299,
     "image": "https://images.unsplash.com/photo-1604176354204-9268737828e4?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1604176354204-9268737828e4?w=800&auto=format",
-      "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=800&auto=format"
-    ],
     "category": "man",
     "description": "Classic slim-fit jeans crafted from premium stretch denim. The mid-rise sits comfortably at the natural waist. Features a five-pocket design, brass hardware, and slight whiskering for a lived-in look.",
     "sizes": [
@@ -193,7 +180,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "0181720e-9e49-48c4-845f-c478d563e796",
     "rating_avg": 0,
@@ -203,7 +189,7 @@
     "slug": "slim-fit-jeans",
     "sku": "FM-M-PNT-001",
     "base_price": 4299,
-    "sale_price": 2999,
+    "sale_price": 299900,
     "is_deleted": false,
     "color": "Blue",
     "brand": "DenimCo",
@@ -246,19 +232,16 @@
       "slim fit",
       "everyday"
     ],
-    "image_url": "https://images.unsplash.com/photo-1604176354204-9268737828e4?w=800&auto=format",
     "age_group": "Adult",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "83dfd98a-62fd-42e6-bdee-36cba8b25993",
     "name": "Cute Bunny Hoodie",
-    "price": 1799,
+    "price": 179900,
     "compare_price": 2499,
     "image": "https://images.unsplash.com/photo-1519238806101-3dae78963e06?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=800&auto=format"
-    ],
     "category": "kids",
     "description": "The cutest hoodie ever — features 3D bunny ears on the hood, kangaroo pocket, and soft organic cotton fleece lining. Ribbed cuffs and hem for a snug fit.",
     "sizes": [
@@ -276,7 +259,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "24ce9e29-c4dd-4b75-8b59-faa3741fe1ef",
     "rating_avg": 0,
@@ -286,7 +268,7 @@
     "slug": "bunny-ear-hoodie",
     "sku": "FM-K-CLT-002",
     "base_price": 2499,
-    "sale_price": 1799,
+    "sale_price": 179900,
     "is_deleted": false,
     "color": "Pink",
     "brand": "Mini",
@@ -330,19 +312,16 @@
       "cute",
       "organic"
     ],
-    "image_url": "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=800&auto=format",
     "age_group": "Kids (2-8)",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "08f5a231-6826-4fcb-80de-e0f29f0dfcd7",
     "name": "Kids Denim Overalls",
-    "price": 2199,
+    "price": 219900,
     "compare_price": 2999,
     "image": "https://images.unsplash.com/photo-1519457431-44ccd64a579b?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1519457431-44ccd64a579b?w=800&auto=format"
-    ],
     "category": "kids",
     "description": "Adorable denim overalls with adjustable shoulder straps and brass hardware. Features a front bib pocket, side buttons for easy dressing, and rolled-up hems for a playful look.",
     "sizes": [
@@ -360,7 +339,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "24ce9e29-c4dd-4b75-8b59-faa3741fe1ef",
     "rating_avg": 0,
@@ -370,7 +348,7 @@
     "slug": "kids-denim-overalls",
     "sku": "FM-K-CLT-001",
     "base_price": 2999,
-    "sale_price": 2199,
+    "sale_price": 219900,
     "is_deleted": false,
     "color": "Blue",
     "brand": "Mini",
@@ -413,20 +391,16 @@
       "overalls",
       "play wear"
     ],
-    "image_url": "https://images.unsplash.com/photo-1519457431-44ccd64a579b?w=800&auto=format",
     "age_group": "Kids (2-8)",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "cc4fb184-7fa2-4159-8777-501871e3aa81",
     "name": "Bomber Jacket",
-    "price": 4999,
+    "price": 499900,
     "compare_price": 6999,
     "image": "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&auto=format",
-      "https://images.unsplash.com/photo-1559551409-dadc959f76b8?w=800&auto=format"
-    ],
     "category": "man",
     "description": "A modern take on the classic MA-1 bomber. Features ribbed collar, cuffs and hem, a front zip closure, and two side pockets. Lightweight polyester fill provides warmth without bulk.",
     "sizes": [
@@ -444,7 +418,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "0181720e-9e49-48c4-845f-c478d563e796",
     "rating_avg": 0,
@@ -454,7 +427,7 @@
     "slug": "nylon-bomber-jacket",
     "sku": "FM-M-JKT-002",
     "base_price": 6999,
-    "sale_price": 4999,
+    "sale_price": 499900,
     "is_deleted": false,
     "color": "Olive",
     "brand": "Urban",
@@ -497,20 +470,16 @@
       "streetwear",
       "military"
     ],
-    "image_url": "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=800&auto=format",
     "age_group": "Adult",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "724e41bf-fc4d-4de9-b641-745220c43ca8",
     "name": "Silk Slip Dress",
-    "price": 10999,
+    "price": 1099900,
     "compare_price": 14999,
     "image": "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&auto=format",
-      "https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=800&auto=format"
-    ],
     "category": "woman",
     "description": "An elegantly draped silk slip dress with a cowl neckline and adjustable straps. The bias-cut silhouette skims the body for a flattering, fluid look. Perfect for evening events or intimate dinners.",
     "sizes": [
@@ -528,7 +497,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "a1728eca-ce06-4f65-9e48-4f19b06355fd",
     "rating_avg": 0,
@@ -538,7 +506,7 @@
     "slug": "silk-slip-dress",
     "sku": "FM-W-DRS-001",
     "base_price": 14999,
-    "sale_price": 10999,
+    "sale_price": 1099900,
     "is_deleted": false,
     "color": "Cream",
     "brand": "Luxe",
@@ -581,20 +549,16 @@
       "luxury",
       "slip dress"
     ],
-    "image_url": "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&auto=format",
     "age_group": "Adult",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "7e77fa53-1db4-4340-8d74-c19370c01ffb",
     "name": "Heavy Cotton Tee",
-    "price": 1299,
+    "price": 129900,
     "compare_price": 1999,
     "image": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&auto=format",
-      "https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=800&auto=format"
-    ],
     "category": "man",
     "description": "A premium heavyweight tee built to last. The 220 GSM combed cotton holds its shape wash after wash. Features a reinforced crew neck, double-stitched hems, and a relaxed drop shoulder.",
     "sizes": [
@@ -612,7 +576,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "0181720e-9e49-48c4-845f-c478d563e796",
     "rating_avg": 0,
@@ -622,7 +585,7 @@
     "slug": "heavy-cotton-tee",
     "sku": "FM-M-TSH-001",
     "base_price": 1999,
-    "sale_price": 1299,
+    "sale_price": 129900,
     "is_deleted": false,
     "color": "Black",
     "brand": "Urban",
@@ -665,23 +628,16 @@
       "basics",
       "streetwear"
     ],
-    "image_url": "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=800&auto=format",
     "age_group": "Adult",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "2c914fc1-1007-4b8b-abd4-a02f194d9f0e",
     "name": "Denim Jacket",
-    "price": 3499,
+    "price": 349900,
     "compare_price": 4999,
     "image": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRetY6-MdIP_cSDb07mxyjyBUJ1CkXBmk61VriRb8-nJKU2DwSJ362ebU6faiB2QAWuuPB-oNbwMjeuRcOrMgV-G4XkzlyeJ25Xp8SljPUo19tveW9-pYZLXw",
-    "images": [
-      "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRetY6-MdIP_cSDb07mxyjyBUJ1CkXBmk61VriRb8-nJKU2DwSJ362ebU6faiB2QAWuuPB-oNbwMjeuRcOrMgV-G4XkzlyeJ25Xp8SljPUo19tveW9-pYZLXw",
-      "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcTUfvnjI0Drwj3YJwQP5dXgmGUlOj_go82eB8wD4J06k-Z1o-dDJ5DnAOkNKzzpfrhVjuXmJf_jAuihSJxFxouXRajiX34Z8fFBVRuUQCLdB4iOGDW35tTFDZY",
-      "https://encrypted-tbn3.gstatic.com/shopping?q=tbn:ANd9GcQB-mZ53f_S2FOW4JGcNz7PLQVKXVss5JxSCneLP1utQKEfpLoakMJ-Kl56nr_d7rplGbHyE_MOfuTovXbNS5nZObpfqgSAc1nh2eM67pfF6HUqj8_t7hlk",
-      "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcR7ko-JDfQYYWsxAxUBMKtWOny7-MBO-woIk4YWsWQ18D-JOR5abwASVP6EYP0a_pIRSHpzseTEHcS7Gw5zoNTM9hSHBn2Cpi2TJv3Qz2GkU7PNgVZxCBtw",
-      "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcQRqbm_vwTE-bkytGebxskuFbWnUepxfXJP2cvx4hXlVZlZNdqHF7EN4XjG2OL7SiYnvpfB6-qrWa_nzGv74oM9fAGEAUvm4vm4h4yJA6gF"
-    ],
     "category": "woman",
     "description": "A timeless denim jacket with a classic trucker silhouette. Features antique brass buttons, chest pockets, and adjustable waist tabs. The mid-weight denim softens with every wear.",
     "sizes": [
@@ -699,7 +655,6 @@
     "created_at": "2026-02-17T01:15:17.38074+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "a1728eca-ce06-4f65-9e48-4f19b06355fd",
     "rating_avg": 0,
@@ -709,7 +664,7 @@
     "slug": "womens-denim-jacket-black",
     "sku": "FM-W-JKT-001-BLACK",
     "base_price": 4999,
-    "sale_price": 3499,
+    "sale_price": 349900,
     "is_deleted": false,
     "color": "Black",
     "brand": "Urban",
@@ -752,22 +707,16 @@
       "streetwear",
       "classic"
     ],
-    "image_url": "https://encrypted-tbn2.gstatic.com/shopping?q=tbn:ANd9GcRetY6-MdIP_cSDb07mxyjyBUJ1CkXBmk61VriRb8-nJKU2DwSJ362ebU6faiB2QAWuuPB-oNbwMjeuRcOrMgV-G4XkzlyeJ25Xp8SljPUo19tveW9-pYZLXw",
     "age_group": "Adult",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "d035e7b7-b9f3-4109-90c4-698e2c2b2c07",
     "name": "Denim Jacket",
-    "price": 3499,
+    "price": 349900,
     "compare_price": 4999,
     "image": "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRlWY2o-W63yGP67nL_5Lak69ImLiI9dzYzsskWJlaAVBqxGnYzkf69-BXh8Xg86hN4FIZOWdP7PzKDc-tAppx92LZenimlXMWsvlykSnc3FPFm9-uh3hXzs48",
-    "images": [
-      "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcQ-MrUNZUEveXmwk0rEAEugpdQHmog3cR2arbDX_aKIPvu7M80J_LPkqrlx9SIPtB4piPV7Mgpk5P59pRHAXPwxTKRg17Q4CYwxAVguyxBh",
-      "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcRP0boEcBEd_JfBL5ZvtMJVDTdK9oomke_qekjDos3bn0THRqf8pVNCFPaLzUYaIF1hmK1-ZHmYSl4pzAkzGLkxVVyVixboRpJQRzDdcR95aTqDakcj9oGl9w",
-      "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcQ78IPIeW3w8OpSTwONlFUqun9kvW2zyUyKAOYcSBNI0w1ImttfaEEYi9E4ERvmtJGjNnA-mtKEAiZiMN9tqzD6fL661OHZdNdjs9kwKq6LeKalHKaLfs_JSA",
-      "https://encrypted-tbn0.gstatic.com/shopping?q=tbn:ANd9GcQwOtDjhEhVa4DgnCIiVtAQ5IAzlIbvGRozK3PrMXB-Q1S9y29ZF6rpL23H4hwEWrNw5fG6wZ2KtL0xmSkcE9j0Kmd9kCE8"
-    ],
     "category": "woman",
     "description": "A timeless denim jacket with a classic trucker silhouette. Features antique brass buttons, chest pockets, and adjustable waist tabs. The mid-weight denim softens with every wear.",
     "sizes": [
@@ -785,7 +734,6 @@
     "created_at": "2026-02-17T01:15:17.03865+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "a1728eca-ce06-4f65-9e48-4f19b06355fd",
     "rating_avg": 0,
@@ -795,7 +743,7 @@
     "slug": "womens-denim-jacket-light-blue",
     "sku": "FM-W-JKT-001-LIGHT BLUE",
     "base_price": 4999,
-    "sale_price": 3499,
+    "sale_price": 349900,
     "is_deleted": false,
     "color": "Light Blue",
     "brand": "Urban",
@@ -838,20 +786,16 @@
       "streetwear",
       "classic"
     ],
-    "image_url": "https://encrypted-tbn1.gstatic.com/shopping?q=tbn:ANd9GcQ-MrUNZUEveXmwk0rEAEugpdQHmog3cR2arbDX_aKIPvu7M80J_LPkqrlx9SIPtB4piPV7Mgpk5P59pRHAXPwxTKRg17Q4CYwxAVguyxBh",
     "age_group": "Adult",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "ebd68acb-bb34-436b-b0d5-a45fa4e00cea",
     "name": "Leather Biker Jacket",
-    "price": 16999,
+    "price": 1699900,
     "compare_price": 22999,
     "image": "https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=800&auto=format",
-      "https://images.unsplash.com/photo-1520975954732-35dd22299614?w=800&auto=format"
-    ],
     "category": "man",
     "description": "An iconic biker jacket crafted from butter-soft lambskin leather. Features asymmetric zip closure, quilted shoulder panels, snap-down lapels, and zippered cuffs. Satin-lined interior.",
     "sizes": [
@@ -869,7 +813,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "0181720e-9e49-48c4-845f-c478d563e796",
     "rating_avg": 0,
@@ -879,7 +822,7 @@
     "slug": "leather-biker-jacket",
     "sku": "FM-M-JKT-001",
     "base_price": 22999,
-    "sale_price": 16999,
+    "sale_price": 1699900,
     "is_deleted": false,
     "color": "Black",
     "brand": "Rebel",
@@ -923,20 +866,16 @@
       "luxury",
       "Winter"
     ],
-    "image_url": "https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?w=800&auto=format",
     "age_group": "Adult",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "ceeac54c-baa4-4ba4-9d07-caff614da233",
     "name": "Classic Linen Shirt",
-    "price": 2799,
+    "price": 279900,
     "compare_price": 3999,
     "image": "https://images.unsplash.com/photo-1598532163257-ae3c6b2524b6?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1598532163257-ae3c6b2524b6?w=800&auto=format",
-      "https://images.unsplash.com/photo-1604575396930-a63e93c46a92?w=800&auto=format"
-    ],
     "category": "woman",
     "description": "Breathable pure linen shirt with a relaxed cut. Features mother-of-pearl buttons, a classic collar, and rolled-up sleeve tabs. The perfect warm-weather staple.",
     "sizes": [
@@ -954,7 +893,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "a1728eca-ce06-4f65-9e48-4f19b06355fd",
     "rating_avg": 0,
@@ -964,7 +902,7 @@
     "slug": "classic-linen-shirt",
     "sku": "FM-W-TOP-001",
     "base_price": 3999,
-    "sale_price": 2799,
+    "sale_price": 279900,
     "is_deleted": false,
     "color": "White",
     "brand": "Essentials",
@@ -1007,20 +945,16 @@
       "breathable",
       "casual"
     ],
-    "image_url": "https://images.unsplash.com/photo-1598532163257-ae3c6b2524b6?w=800&auto=format",
     "age_group": "Adult",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "50dc08a7-e5b7-44a5-8310-0503a40a55f3",
     "name": "Floral Summer Dress",
-    "price": 3999,
+    "price": 399900,
     "compare_price": 5499,
     "image": "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=800&auto=format",
-      "https://images.unsplash.com/photo-1572804013427-4d7ca7268217?w=800&auto=format"
-    ],
     "category": "woman",
     "description": "A cheerful floral midi dress with tiered ruffle detailing. Features a smocked bodice for comfort and a flattering A-line silhouette. Pairs beautifully with sandals or wedges.",
     "sizes": [
@@ -1038,7 +972,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "a1728eca-ce06-4f65-9e48-4f19b06355fd",
     "rating_avg": 0,
@@ -1048,7 +981,7 @@
     "slug": "floral-summer-dress",
     "sku": "FM-W-DRS-002",
     "base_price": 5499,
-    "sale_price": 3999,
+    "sale_price": 399900,
     "is_deleted": false,
     "color": "Pink",
     "brand": "Bloom",
@@ -1091,20 +1024,16 @@
       "midi",
       "vacation wear"
     ],
-    "image_url": "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?w=800&auto=format",
     "age_group": "Adult",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "38ccaa97-a9eb-45b4-b909-ac4a91b6cee2",
     "name": "Suit Jacket",
-    "price": 12999,
+    "price": 1299900,
     "compare_price": 17999,
     "image": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&auto=format",
-      "https://images.unsplash.com/photo-1593030761757-71fae45fa0e7?w=800&auto=format"
-    ],
     "category": "man",
     "description": "A precision-tailored suit jacket with a notched lapel and two-button closure. Half-canvassed construction for natural drape. Features working cuff buttons and a ticket pocket.",
     "sizes": [
@@ -1122,7 +1051,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "0181720e-9e49-48c4-845f-c478d563e796",
     "rating_avg": 0,
@@ -1132,7 +1060,7 @@
     "slug": "tailored-suit-jacket",
     "sku": "FM-M-JKT-004",
     "base_price": 17999,
-    "sale_price": 12999,
+    "sale_price": 1299900,
     "is_deleted": false,
     "color": "Navy",
     "brand": "Formal",
@@ -1175,20 +1103,16 @@
       "wedding",
       "business"
     ],
-    "image_url": "https://images.unsplash.com/photo-1507679799987-c73779587ccf?w=800&auto=format",
     "age_group": "Adult",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "a30d05a8-b54e-4a4e-9e13-45f0ea06c6d1",
     "name": "Velvet Evening Gown",
-    "price": 13999,
+    "price": 1399900,
     "compare_price": 18999,
     "image": "https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=800&auto=format",
-      "https://images.unsplash.com/photo-1518609878373-06d740f60d8b?w=800&auto=format"
-    ],
     "category": "woman",
     "description": "A showstopping velvet gown with a plunging neckline and thigh-high slit. The stretch velvet fabric hugs every curve while the floor-length hemline adds drama. Built-in boning for structure.",
     "sizes": [
@@ -1206,7 +1130,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "a1728eca-ce06-4f65-9e48-4f19b06355fd",
     "rating_avg": 0,
@@ -1216,7 +1139,7 @@
     "slug": "velvet-evening-gown",
     "sku": "FM-W-DRS-003",
     "base_price": 18999,
-    "sale_price": 13999,
+    "sale_price": 1399900,
     "is_deleted": false,
     "color": "Maroon",
     "brand": "Luxe",
@@ -1260,20 +1183,16 @@
       "luxury",
       "party"
     ],
-    "image_url": "https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=800&auto=format",
     "age_group": "Adult",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "103497bf-b8bb-4c31-a4d7-8e8e640d06c7",
     "name": "Denim Jacket",
-    "price": 3499,
+    "price": 349900,
     "compare_price": 4999,
     "image": "https://images.unsplash.com/photo-1594223515925-4710ac191a14?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&auto=format",
-      "https://images.unsplash.com/photo-1578932750294-f5075e85f44a?w=800&auto=format"
-    ],
     "category": "woman",
     "description": "A timeless denim jacket with a classic trucker silhouette. Features antique brass buttons, chest pockets, and adjustable waist tabs. The mid-weight denim softens with every wear.",
     "sizes": [
@@ -1291,7 +1210,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "a1728eca-ce06-4f65-9e48-4f19b06355fd",
     "rating_avg": 0,
@@ -1301,7 +1219,7 @@
     "slug": "womens-denim-jacket",
     "sku": "FM-W-JKT-001",
     "base_price": 4999,
-    "sale_price": 3499,
+    "sale_price": 349900,
     "is_deleted": false,
     "color": "Blue",
     "brand": "Urban",
@@ -1344,19 +1262,16 @@
       "streetwear",
       "classic"
     ],
-    "image_url": "https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&auto=format",
     "age_group": "Adult",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "959b7a25-3c19-4db0-9f6f-12fc5d06a32a",
     "name": "Kids Joggers",
-    "price": 1299,
+    "price": 129900,
     "compare_price": 1799,
     "image": "https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?w=800&auto=format"
-    ],
     "category": "kids",
     "description": "Cozy fleece joggers with an elastic waistband and drawstring. Features side pockets, ribbed cuffs, and a soft brushed interior. Perfect for school, play, and everything in between.",
     "sizes": [
@@ -1374,7 +1289,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "24ce9e29-c4dd-4b75-8b59-faa3741fe1ef",
     "rating_avg": 0,
@@ -1384,7 +1298,7 @@
     "slug": "kids-fleece-joggers",
     "sku": "FM-K-CLT-004",
     "base_price": 1799,
-    "sale_price": 1299,
+    "sale_price": 129900,
     "is_deleted": false,
     "color": "Grey",
     "brand": "Mini",
@@ -1427,19 +1341,16 @@
       "fleece",
       "comfort"
     ],
-    "image_url": "https://images.unsplash.com/photo-1503944583220-79d8926ad5e2?w=800&auto=format",
     "age_group": "Kids (2-8)",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "d7867a18-9f28-4977-a3c9-fe8815a98dd9",
     "name": "Kids Party Dress",
-    "price": 2499,
+    "price": 249900,
     "compare_price": 3499,
     "image": "https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?w=800&auto=format"
-    ],
     "category": "kids",
     "description": "A magical party dress with a satin bodice, tulle overlay skirt, and sparkly sequin waistband. Hidden back zip for easy dressing. Includes attached petticoat for extra volume.",
     "sizes": [
@@ -1457,7 +1368,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "24ce9e29-c4dd-4b75-8b59-faa3741fe1ef",
     "rating_avg": 0,
@@ -1467,7 +1377,7 @@
     "slug": "kids-party-dress",
     "sku": "FM-K-CLT-005",
     "base_price": 3499,
-    "sale_price": 2499,
+    "sale_price": 249900,
     "is_deleted": false,
     "color": "Red",
     "brand": "Mini",
@@ -1510,19 +1420,16 @@
       "girls",
       "festival"
     ],
-    "image_url": "https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?w=800&auto=format",
     "age_group": "Kids (2-8)",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "50301633-8dad-466a-9707-0ed6031287c1",
     "name": "Leather Pants",
-    "price": 7999,
+    "price": 799900,
     "compare_price": 10999,
     "image": "https://images.unsplash.com/photo-1551489186-cf8726f514f8?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1551489186-cf8726f514f8?w=800&auto=format"
-    ],
     "category": "woman",
     "description": "High-waisted faux leather pants with a sleek straight-leg cut. Buttery soft PU coating feels like real leather. Features a hidden zip fly, belt loops, and stretch for comfort.",
     "sizes": [
@@ -1540,7 +1447,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "a1728eca-ce06-4f65-9e48-4f19b06355fd",
     "rating_avg": 0,
@@ -1550,7 +1456,7 @@
     "slug": "womens-leather-pants",
     "sku": "FM-W-PNT-002",
     "base_price": 10999,
-    "sale_price": 7999,
+    "sale_price": 799900,
     "is_deleted": false,
     "color": "Black",
     "brand": "Rebel",
@@ -1593,20 +1499,16 @@
       "party wear",
       "slim fit"
     ],
-    "image_url": "https://images.unsplash.com/photo-1551489186-cf8726f514f8?w=800&auto=format",
     "age_group": "Adult",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "afe56913-9e3c-43d3-b452-a9a89858e3d6",
     "name": "Oversized Blazer",
-    "price": 5999,
+    "price": 599900,
     "compare_price": 7999,
     "image": "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&auto=format",
-      "https://images.unsplash.com/photo-1594938298603-c8148c4dae35?w=800&auto=format"
-    ],
     "category": "woman",
     "description": "A power dressing essential. This oversized single-breasted blazer features padded shoulders, a notched lapel, and flap pockets. Fully lined for comfort.",
     "sizes": [
@@ -1624,7 +1526,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "a1728eca-ce06-4f65-9e48-4f19b06355fd",
     "rating_avg": 0,
@@ -1634,7 +1535,7 @@
     "slug": "oversized-blazer",
     "sku": "FM-W-JKT-002",
     "base_price": 7999,
-    "sale_price": 5999,
+    "sale_price": 599900,
     "is_deleted": false,
     "color": "Black",
     "brand": "Essentials",
@@ -1677,19 +1578,16 @@
       "workwear",
       "oversized"
     ],
-    "image_url": "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&auto=format",
     "age_group": "Adult",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "80a1f218-062d-4034-a38b-576ac5a0c75e",
     "name": "Knitted Sweater",
-    "price": 3699,
+    "price": 369900,
     "compare_price": 4999,
     "image": "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&auto=format"
-    ],
     "category": "woman",
     "description": "A chunky cable-knit sweater crafted from ultra-soft merino wool. Features a crew neck, ribbed cuffs and hem, and a relaxed fit. The perfect companion for cold evenings.",
     "sizes": [
@@ -1707,7 +1605,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "a1728eca-ce06-4f65-9e48-4f19b06355fd",
     "rating_avg": 0,
@@ -1717,7 +1614,7 @@
     "slug": "cable-knit-sweater",
     "sku": "FM-W-TOP-002",
     "base_price": 4999,
-    "sale_price": 3699,
+    "sale_price": 369900,
     "is_deleted": false,
     "color": "Cream",
     "brand": "Cozy",
@@ -1761,19 +1658,16 @@
       "merino wool",
       "cozy"
     ],
-    "image_url": "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=800&auto=format",
     "age_group": "Adult",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "e07ede19-2ec3-4e8c-9ee0-3995b8befa70",
     "name": "Crop Top",
-    "price": 1299,
+    "price": 129900,
     "compare_price": 1999,
     "image": "https://images.unsplash.com/photo-1564186763535-ebb21ef5277f?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1564186763535-ebb21ef5277f?w=800&auto=format"
-    ],
     "category": "woman",
     "description": "A ribbed crop top with a square neckline and slim-fit silhouette. The soft cotton-stretch blend moves with you. Perfect for layering or wearing solo.",
     "sizes": [
@@ -1791,7 +1685,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "a1728eca-ce06-4f65-9e48-4f19b06355fd",
     "rating_avg": 0,
@@ -1801,7 +1694,7 @@
     "slug": "ribbed-crop-top",
     "sku": "FM-W-TOP-003",
     "base_price": 1999,
-    "sale_price": 1299,
+    "sale_price": 129900,
     "is_deleted": false,
     "color": "White",
     "brand": "Urban",
@@ -1844,19 +1737,16 @@
       "layering",
       "basics"
     ],
-    "image_url": "https://images.unsplash.com/photo-1564186763535-ebb21ef5277f?w=800&auto=format",
     "age_group": "Adult",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "15b1396b-a793-40cb-9d78-29306c085e7c",
     "name": "Flannel Shirt",
-    "price": 2599,
+    "price": 259900,
     "compare_price": 3499,
     "image": "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800&auto=format"
-    ],
     "category": "man",
     "description": "A warm brushed cotton flannel in a classic buffalo check pattern. Double-brushed for extra softness. Features chest pockets, button-down collar, and adjustable button cuffs.",
     "sizes": [
@@ -1874,7 +1764,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "0181720e-9e49-48c4-845f-c478d563e796",
     "rating_avg": 0,
@@ -1884,7 +1773,7 @@
     "slug": "flannel-check-shirt",
     "sku": "FM-M-TSH-002",
     "base_price": 3499,
-    "sale_price": 2599,
+    "sale_price": 259900,
     "is_deleted": false,
     "color": "Red",
     "brand": "Essentials",
@@ -1927,19 +1816,16 @@
       "winter",
       "casual"
     ],
-    "image_url": "https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=800&auto=format",
     "age_group": "Adult",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "ee714f6f-7de9-41f5-b6f9-4c073ddec0bd",
     "name": "Chino Pants",
-    "price": 2599,
+    "price": 259900,
     "compare_price": 3499,
     "image": "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&auto=format"
-    ],
     "category": "man",
     "description": "Versatile stretch chinos with a tapered leg. The twill weave provides structure while the elastane adds comfort. Features a zip fly, on-seam pockets, and a clean flat-front design.",
     "sizes": [
@@ -1957,7 +1843,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "0181720e-9e49-48c4-845f-c478d563e796",
     "rating_avg": 0,
@@ -1967,7 +1852,7 @@
     "slug": "stretch-chino-pants",
     "sku": "FM-M-PNT-002",
     "base_price": 3499,
-    "sale_price": 2599,
+    "sale_price": 259900,
     "is_deleted": false,
     "color": "Beige",
     "brand": "Essentials",
@@ -2010,19 +1895,16 @@
       "workwear",
       "tapered"
     ],
-    "image_url": "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=800&auto=format",
     "age_group": "Adult",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "7d300df9-a2ff-40f8-b43a-f52b176d28d9",
     "name": "Trench Coat",
-    "price": 8999,
+    "price": 899900,
     "compare_price": 12999,
     "image": "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&auto=format"
-    ],
     "category": "man",
     "description": "A heritage-inspired trench coat in water-repellent gabardine. Double-breasted with storm flap, gun patch, and belted waist. Check lining adds a refined touch.",
     "sizes": [
@@ -2040,7 +1922,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "0181720e-9e49-48c4-845f-c478d563e796",
     "rating_avg": 0,
@@ -2050,7 +1931,7 @@
     "slug": "classic-trench-coat",
     "sku": "FM-M-JKT-003",
     "base_price": 12999,
-    "sale_price": 8999,
+    "sale_price": 899900,
     "is_deleted": false,
     "color": "Beige",
     "brand": "Classic",
@@ -2094,19 +1975,16 @@
       "heritage",
       "rain"
     ],
-    "image_url": "https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=800&auto=format",
     "age_group": "Adult",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "6603f5de-0a04-4953-a211-b43742062beb",
     "name": "Graphic Tee",
-    "price": 1099,
+    "price": 109900,
     "compare_price": 1599,
     "image": "https://images.unsplash.com/photo-1503341504253-dff4f94032ef?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1503341504253-dff4f94032ef?w=800&auto=format"
-    ],
     "category": "man",
     "description": "An artistic graphic tee featuring a bold abstract print. Made from soft ringspun cotton with a modern relaxed fit. Water-based print that feels smooth against the skin.",
     "sizes": [
@@ -2124,7 +2002,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "0181720e-9e49-48c4-845f-c478d563e796",
     "rating_avg": 0,
@@ -2134,7 +2011,7 @@
     "slug": "abstract-graphic-tee",
     "sku": "FM-M-TSH-004",
     "base_price": 1599,
-    "sale_price": 1099,
+    "sale_price": 109900,
     "is_deleted": false,
     "color": "White",
     "brand": "Art",
@@ -2177,19 +2054,16 @@
       "streetwear",
       "casual"
     ],
-    "image_url": "https://images.unsplash.com/photo-1503341504253-dff4f94032ef?w=800&auto=format",
     "age_group": "Adult",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
   },
   {
     "id": "df4ae86b-e587-402b-9f7d-b8c14b3fecac",
     "name": "Striped Tee",
-    "price": 799,
+    "price": 79900,
     "compare_price": 1199,
     "image": "https://images.unsplash.com/photo-1519241047957-be31d7379a5d?w=800&auto=format",
-    "images": [
-      "https://images.unsplash.com/photo-1519241047957-be31d7379a5d?w=800&auto=format"
-    ],
     "category": "kids",
     "description": "A classic Breton-stripe tee in soft BCI (Better Cotton Initiative) certified cotton. Boat neckline with elbow-length sleeves. Machine washable and built for playground adventures.",
     "sizes": [
@@ -2207,7 +2081,6 @@
     "created_at": "2026-02-16T22:46:08.341631+00:00",
     "updated_at": "2026-08-24T22:09:55.835697+00:00",
     "is_active": true,
-    "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
     "category_id": "24ce9e29-c4dd-4b75-8b59-faa3741fe1ef",
     "rating_avg": 0,
@@ -2217,7 +2090,7 @@
     "slug": "kids-striped-tee",
     "sku": "FM-K-CLT-003",
     "base_price": 1199,
-    "sale_price": 799,
+    "sale_price": 79900,
     "is_deleted": false,
     "color": "Blue",
     "brand": "Basics",
@@ -2260,8 +2133,124 @@
       "basics",
       "BCI cotton"
     ],
-    "image_url": "https://images.unsplash.com/photo-1519241047957-be31d7379a5d?w=800&auto=format",
     "age_group": "Kids (2-8)",
-    "is_featured": false
+    "is_featured": false,
+    "tax_rule_id": null
+  },
+  {
+    "id": "f902df15-c00b-4979-b550-2f64dcf4e83f",
+    "name": "Test Cotton Shirt",
+    "price": 999,
+    "compare_price": 1299,
+    "image": "https://example.com/shirt.jpg",
+    "category": "casual",
+    "description": null,
+    "sizes": [
+      "M",
+      "L"
+    ],
+    "material": "Cotton",
+    "care_instructions": null,
+    "rating": 0,
+    "review_count": 0,
+    "created_at": "2026-08-26T20:34:34.510467+00:00",
+    "updated_at": "2026-08-26T20:34:34.510467+00:00",
+    "is_active": true,
+    "videos": [],
+    "category_id": null,
+    "rating_avg": 0,
+    "rating_count": 0,
+    "sub_category_id": null,
+    "gender": "unisex",
+    "slug": null,
+    "sku": null,
+    "base_price": null,
+    "sale_price": null,
+    "is_deleted": false,
+    "color": null,
+    "brand": null,
+    "pattern": null,
+    "occasion": null,
+    "sleeve_length": null,
+    "neck_type": null,
+    "fit": null,
+    "hsn_code": null,
+    "tax_rate": 0,
+    "country_of_origin": null,
+    "manufacturer_details": null,
+    "packer_details": null,
+    "importer_details": null,
+    "weight_kg": null,
+    "dimensions": null,
+    "warranty_period": null,
+    "warranty_summary": null,
+    "is_returnable": true,
+    "return_period_days": 7,
+    "is_cod_allowed": true,
+    "owner_type": "seller",
+    "seo_title": null,
+    "seo_description": null,
+    "tags": [],
+    "age_group": null,
+    "is_featured": false,
+    "tax_rule_id": null
+  },
+  {
+    "id": "8056d5af-e163-4aa8-a29c-2aeb27e507db",
+    "name": "Authenticated Test Shirt",
+    "price": 999,
+    "compare_price": 1299,
+    "image": "https://example.com/shirt.jpg",
+    "category": "casual",
+    "description": null,
+    "sizes": [
+      "M",
+      "L"
+    ],
+    "material": "Cotton",
+    "care_instructions": null,
+    "rating": 0,
+    "review_count": 0,
+    "created_at": "2026-08-26T20:35:06.303031+00:00",
+    "updated_at": "2026-08-26T20:35:06.303031+00:00",
+    "is_active": true,
+    "videos": [],
+    "category_id": null,
+    "rating_avg": 0,
+    "rating_count": 0,
+    "sub_category_id": null,
+    "gender": "unisex",
+    "slug": null,
+    "sku": null,
+    "base_price": null,
+    "sale_price": null,
+    "is_deleted": false,
+    "color": null,
+    "brand": null,
+    "pattern": null,
+    "occasion": null,
+    "sleeve_length": null,
+    "neck_type": null,
+    "fit": null,
+    "hsn_code": null,
+    "tax_rate": 0,
+    "country_of_origin": null,
+    "manufacturer_details": null,
+    "packer_details": null,
+    "importer_details": null,
+    "weight_kg": null,
+    "dimensions": null,
+    "warranty_period": null,
+    "warranty_summary": null,
+    "is_returnable": true,
+    "return_period_days": 7,
+    "is_cod_allowed": true,
+    "owner_type": "seller",
+    "seo_title": null,
+    "seo_description": null,
+    "tags": [],
+    "age_group": null,
+    "is_featured": false,
+    "tax_rule_id": null
   }
 ]
