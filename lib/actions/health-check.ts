@@ -15,9 +15,7 @@ interface HealthResult {
 }
 
 export async function runHealthCheck(): Promise<HealthResult> {
-    const start = performance.now()
     const supabase = await createClient()
-
     const result: HealthResult = {
         status: 'ok',
         checks: {
@@ -29,50 +27,48 @@ export async function runHealthCheck(): Promise<HealthResult> {
         timestamp: new Date().toISOString()
     }
 
-    // 1. Database Connectivity & Latency
     try {
         const dbStart = performance.now()
-        const { error } = await supabase.from('system_errors').select('count', { count: 'exact', head: true })
+        const { error } = await supabase.from('products').select('id').limit(1)
         if (error) throw error
         result.checks.database = { status: 'ok', latency: Math.round(performance.now() - dbStart) }
-    } catch (e: any) {
-        result.checks.database = { status: 'error', message: e.message }
+    } catch (e) {
+        const message = e instanceof Error ? e.message : 'Database connectivity check failed'
+        result.checks.database = { status: 'error', message }
         result.status = 'error'
-        await logError(`Health Check Failed: Database - ${e.message}`, { severity: 'critical', path: 'Health Check' })
+        await logError(`Health Check Failed: Database - ${message}`, { severity: 'critical', path: 'Health Check' })
     }
 
-    // 2. Content Table Check
     try {
         const { error } = await supabase.from('collections').select('id').limit(1)
         if (error) throw error
         result.checks.content = { status: 'ok' }
-    } catch (e: any) {
-        result.checks.content = { status: 'error', message: e.message }
+    } catch (e) {
+        const message = e instanceof Error ? e.message : 'Content check failed'
+        result.checks.content = { status: 'error', message }
         result.status = 'error'
-        await logError(`Health Check Failed: Content - ${e.message}`, { severity: 'error', path: 'Health Check' })
+        await logError(`Health Check Failed: Content - ${message}`, { severity: 'error', path: 'Health Check' })
     }
 
-    // 3. Products Check
     try {
         const { error } = await supabase.from('products').select('id').limit(1)
         if (error) throw error
         result.checks.products = { status: 'ok' }
-    } catch (e: any) {
-        result.checks.products = { status: 'error', message: e.message }
-        // Don't fail overall health if products table acts up, just section
-        // result.status = 'error' 
-        await logError(`Health Check Failed: Products - ${e.message}`, { severity: 'warning', path: 'Health Check' })
+    } catch (e) {
+        const message = e instanceof Error ? e.message : 'Product check failed'
+        result.checks.products = { status: 'error', message }
+        await logError(`Health Check Failed: Products - ${message}`, { severity: 'warning', path: 'Health Check' })
     }
 
-    // 4. Auth Service Check (dummy call)
     try {
         const { error } = await supabase.auth.getSession()
         if (error) throw error
         result.checks.auth = { status: 'ok' }
-    } catch (e: any) {
-        result.checks.auth = { status: 'error', message: e.message }
+    } catch (e) {
+        const message = e instanceof Error ? e.message : 'Auth check failed'
+        result.checks.auth = { status: 'error', message }
         result.status = 'error'
-        await logError(`Health Check Failed: Auth - ${e.message}`, { severity: 'critical', path: 'Health Check' })
+        await logError(`Health Check Failed: Auth - ${message}`, { severity: 'critical', path: 'Health Check' })
     }
 
     return result
