@@ -43,9 +43,11 @@ BEGIN
 END $$;
 
 -- 4. Rebuild search_index materialized view without is_tryon_enabled or physics_profile
--- Drop dependent triggers and functions first to prevent dependency deadlocks
+-- Drop legacy triggers and functions to prevent dependency deadlocks and remove synchronous write bottlenecks
 DROP TRIGGER IF EXISTS refresh_search_index_on_product_change ON public.products;
+DROP TRIGGER IF EXISTS refresh_search_index_on_product_click ON public.products;
 DROP FUNCTION IF EXISTS public.refresh_search_index();
+DROP FUNCTION IF EXISTS public.refresh_search_index(boolean);
 
 -- Explicit signature drops for known search functions
 DROP FUNCTION IF EXISTS public.universal_search(text, text[], text, text[], text[], text[], text[], text[], text[], text[], text[], text[], text[], numeric, boolean, text[], numeric, numeric, text, integer, integer);
@@ -61,7 +63,7 @@ BEGIN
         FROM pg_proc p
         JOIN pg_namespace n ON n.oid = p.pronamespace
         WHERE n.nspname = 'public'
-          AND p.proname IN ('universal_search', 'get_search_suggestions')
+          AND p.proname IN ('universal_search', 'get_search_suggestions', 'refresh_search_index')
     ) LOOP
         EXECUTE 'DROP FUNCTION ' || r.func_sig;
     END LOOP;
@@ -188,6 +190,7 @@ RETURNS TABLE (
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = pg_catalog, public
 AS $$
 BEGIN
     RETURN QUERY
@@ -223,7 +226,7 @@ BEGIN
                 ts_rank(si.search_vector, plainto_tsquery('english', search_query))
             ELSE 0
         END::REAL AS rank
-    FROM search_index si
+    FROM public.search_index si
     WHERE
         (search_query IS NULL OR search_query = '' OR si.search_vector @@ plainto_tsquery('english', search_query))
         AND (filter_categories IS NULL OR si.category_slug = ANY(filter_categories))
@@ -271,6 +274,7 @@ RETURNS TABLE (
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = pg_catalog, public
 AS $$
 BEGIN
     RETURN QUERY
@@ -278,7 +282,7 @@ BEGIN
         si.title AS suggestion,
         si.category,
         1::BIGINT AS product_count
-    FROM search_index si
+    FROM public.search_index si
     WHERE
         si.search_vector @@ plainto_tsquery('english', search_query)
         OR si.title ILIKE '%' || search_query || '%'
@@ -287,21 +291,21 @@ BEGIN
 END;
 $$;
 
--- 7. Recreate refresh_search_index function and trigger
-CREATE OR REPLACE FUNCTION public.refresh_search_index()
-RETURNS TRIGGER 
+-- 7. Controlled search_index refresh utility function (decoupled from transactional table triggers)
+CREATE OR REPLACE FUNCTION public.refresh_search_index(concurrently BOOLEAN DEFAULT true)
+RETURNS void
+LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = pg_catalog, public
 AS $$
 BEGIN
-    REFRESH MATERIALIZED VIEW public.search_index;
-    RETURN NULL;
+    IF concurrently THEN
+        REFRESH MATERIALIZED VIEW CONCURRENTLY public.search_index;
+    ELSE
+        REFRESH MATERIALIZED VIEW public.search_index;
+    END IF;
 END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER refresh_search_index_on_product_change
-AFTER INSERT OR UPDATE OR DELETE ON public.products
-FOR EACH STATEMENT
-EXECUTE FUNCTION public.refresh_search_index();
+$$;
 
 COMMIT;
 
