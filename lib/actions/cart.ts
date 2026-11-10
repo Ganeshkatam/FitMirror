@@ -1,270 +1,255 @@
 'use server'
 
+import 'server-only'
+
 import { createClient } from '@/lib/supabase/server'
+import { createServiceRoleClient } from '@/lib/supabase/service-role'
 import { cookies } from 'next/headers'
-import { Database } from '@/lib/database.types'
 import { analytics } from '@/lib/analytics/server'
 
-
-
 const CART_SESSION_COOKIE = 'fitmirror_cart_session'
+const CART_SESSION_TTL_SECONDS = 60 * 60 * 24 * 30
+const MAX_CART_QUANTITY = 99
+const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
 
-// Helper: Get or Create Session ID
+type CartOwner = { userId: string; sessionId: null } | { userId: null; sessionId: string }
+
 async function getCartSessionId(): Promise<string> {
     const cookieStore = await cookies()
-    let sessionId = cookieStore.get(CART_SESSION_COOKIE)?.value
+    const existing = cookieStore.get(CART_SESSION_COOKIE)?.value
+    if (existing && UUID_PATTERN.test(existing)) return existing
 
-    if (!sessionId) {
-        sessionId = crypto.randomUUID()
-        cookieStore.set(CART_SESSION_COOKIE, sessionId, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
-            path: '/',
-            maxAge: 60 * 60 * 24 * 30 // 30 days
-        })
-    }
+    const sessionId = crypto.randomUUID()
+    cookieStore.set(CART_SESSION_COOKIE, sessionId, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+        maxAge: CART_SESSION_TTL_SECONDS
+    })
     return sessionId
 }
 
-// Fetch Cart (Guest or User)
-export async function getCart() {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+async function getCartOwner(): Promise<CartOwner> {
+    const authClient = await createClient()
+    const { data: { user }, error } = await authClient.auth.getUser()
+    if (error) throw error
 
-    let query = supabase.from('carts').select('*, items:cart_items(*, product:products(*), variant:product_variants(*))')
-
-    if (user) {
-        query = query.eq('user_id', user.id)
-    } else {
-        const sessionId = await getCartSessionId()
-        query = query.eq('session_id', sessionId)
-    }
-
-    const { data: carts } = await query.single()
-    return carts
+    if (user) return { userId: user.id, sessionId: null }
+    return { userId: null, sessionId: await getCartSessionId() }
 }
 
-// Ensure Cart Exists
+function assertUuid(value: string, label: string): void {
+    if (!UUID_PATTERN.test(value)) throw new Error(`Invalid ${label}`)
+}
+
+function assertQuantity(quantity: number): void {
+    if (!Number.isSafeInteger(quantity) || quantity < 1 || quantity > MAX_CART_QUANTITY) {
+        throw new Error(`Quantity must be an integer between 1 and ${MAX_CART_QUANTITY}`)
+    }
+}
+
+async function findCartId(db: ReturnType<typeof createServiceRoleClient>, owner: CartOwner): Promise<string | null> {
+    let query = db.from('carts').select('id').limit(1)
+    query = owner.userId ? query.eq('user_id', owner.userId) : query.eq('session_id', owner.sessionId)
+    const { data, error } = await query.maybeSingle()
+    if (error) throw error
+    return data?.id ?? null
+}
+
 async function getOrCreateCartId(): Promise<string> {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const db = createServiceRoleClient()
+    const owner = await getCartOwner()
+    const existing = await findCartId(db, owner)
+    if (existing) return existing
 
-    let cartId: string | undefined
+    const insert = owner.userId ? { user_id: owner.userId } : { session_id: owner.sessionId }
+    const { data, error } = await db.from('carts').insert(insert).select('id').single()
+    if (!error && data) return data.id
 
-    // 1. Try to find existing cart
-    if (user) {
-        const { data } = await supabase.from('carts').select('id').eq('user_id', user.id).single()
-        cartId = data?.id
-    } else {
-        const sessionId = await getCartSessionId()
-        const { data } = await supabase.from('carts').select('id').eq('session_id', sessionId).single()
-        cartId = data?.id
+    // A concurrent request may have created the same owner cart first.
+    if (error?.code === '23505') {
+        const raced = await findCartId(db, owner)
+        if (raced) return raced
     }
-
-    // 2. Create if not exists
-    if (!cartId) {
-        if (user) {
-            const { data, error } = await supabase.from('carts').insert({ user_id: user.id }).select('id').single()
-            if (error) throw error
-            cartId = data.id
-        } else {
-            const sessionId = await getCartSessionId()
-            const { data, error } = await supabase.from('carts').insert({ session_id: sessionId }).select('id').single()
-            if (error) throw error
-            cartId = data.id
-        }
-    }
-
-    if (!cartId) throw new Error('Failed to retrieve or create cart ID')
-
-    return cartId
+    throw error ?? new Error('Failed to create cart')
 }
 
-// Add Item
-export async function addToCart(productId: string, offerId: string, size: string, quantity: number = 1, variantId?: string) {
-    const supabase = await createClient()
-    const cartId = await getOrCreateCartId()
+export async function getCart() {
+    const db = createServiceRoleClient()
+    const owner = await getCartOwner()
+    let query = db
+        .from('carts')
+        .select('*, items:cart_items(*, product:products(*), variant:product_variants(*))')
+        .limit(1)
 
-    // Check if item exists (Now considering variantId if present)
-    let query = supabase
+    query = owner.userId ? query.eq('user_id', owner.userId) : query.eq('session_id', owner.sessionId)
+    const { data, error } = await query.maybeSingle()
+    if (error) throw error
+    return data
+}
+
+export async function addToCart(
+    productId: string,
+    offerId: string,
+    size: string,
+    quantity = 1,
+    variantId?: string
+) {
+    assertUuid(productId, 'product ID')
+    assertUuid(offerId, 'offer ID')
+    if (variantId) assertUuid(variantId, 'variant ID')
+    if (typeof size !== 'string' || size.trim().length === 0 || size.length > 32) {
+        throw new Error('Invalid size')
+    }
+    assertQuantity(quantity)
+
+    const db = createServiceRoleClient()
+    const cartId = await getOrCreateCartId()
+    let query = db
         .from('cart_items')
-        .select('*')
+        .select('id, quantity')
         .eq('cart_id', cartId)
         .eq('product_id', productId)
-        .eq('size', size)
+        .eq('offer_id', offerId)
+        .eq('size', size.trim())
 
-    if (variantId) {
-        query = query.eq('variant_id', variantId)
-    }
-
-    const { data: existingItem } = await query.single()
+    query = variantId ? query.eq('variant_id', variantId) : query.is('variant_id', null)
+    const { data: existingItem, error: lookupError } = await query.maybeSingle()
+    if (lookupError) throw lookupError
 
     if (existingItem) {
-        const { error } = await supabase
-            .from('cart_items')
-            .update({ quantity: existingItem.quantity + quantity })
-            .eq('id', existingItem.id)
+        const nextQuantity = existingItem.quantity + quantity
+        assertQuantity(nextQuantity)
+        const { error } = await db.from('cart_items').update({ quantity: nextQuantity }).eq('id', existingItem.id)
         if (error) throw error
     } else {
-        const { error } = await supabase
-            .from('cart_items')
-            .insert({
-                cart_id: cartId,
-                product_id: productId,
-                offer_id: offerId,
-                size,
-                quantity,
-                variant_id: variantId || null
-            })
+        const { error } = await db.from('cart_items').insert({
+            cart_id: cartId,
+            product_id: productId,
+            offer_id: offerId,
+            size: size.trim(),
+            quantity,
+            variant_id: variantId ?? null
+        })
         if (error) throw error
     }
 
-    // Analytics
-    const { data: { user } } = await supabase.auth.getUser()
-    const sessionId = (await cookies()).get(CART_SESSION_COOKIE)?.value
+    const owner = await getCartOwner()
+    const { data: product, error: productError } = await db
+        .from('products')
+        .select('name, price, category')
+        .eq('id', productId)
+        .maybeSingle()
 
-    // Fetch product details for analytics
-    const { data: product } = await supabase.from('products').select('name, price, category').eq('id', productId).single()
-
+    if (productError) throw productError
     if (product) {
-        await analytics.track('Item Added to Cart', {
-            productId,
-            name: product.name,
-            price: product.price,
-            category: product.category,
-            size,
-            quantity,
-            variantId
-        }, user?.id || sessionId)
+        await analytics.track(
+            'Item Added to Cart',
+            { productId, name: product.name, price: product.price, category: product.category, size, quantity, variantId },
+            owner.userId ?? owner.sessionId
+        )
     }
 
-    // Return updated cart
     return getCart()
 }
 
-// Update Quantity
 export async function updateCartItemQuantity(productId: string, size: string, quantity: number) {
-    const supabase = await createClient()
-    const cartId = await getOrCreateCartId()
-
-    if (quantity <= 0) {
-        return removeFromCart(productId, size)
+    assertUuid(productId, 'product ID')
+    if (!Number.isSafeInteger(quantity) || quantity < 0 || quantity > MAX_CART_QUANTITY) {
+        throw new Error(`Quantity must be an integer between 0 and ${MAX_CART_QUANTITY}`)
     }
+    if (quantity === 0) return removeFromCart(productId, size)
 
-    const { error } = await supabase
+    const db = createServiceRoleClient()
+    const cartId = await getOrCreateCartId()
+    const { error } = await db
         .from('cart_items')
         .update({ quantity })
         .eq('cart_id', cartId)
         .eq('product_id', productId)
         .eq('size', size)
-
     if (error) throw error
     return getCart()
 }
 
-// Remove Item
 export async function removeFromCart(productId: string, size: string) {
-    const supabase = await createClient()
+    assertUuid(productId, 'product ID')
+    const db = createServiceRoleClient()
     const cartId = await getOrCreateCartId()
-
-    const { error } = await supabase
+    const { error } = await db
         .from('cart_items')
         .delete()
         .eq('cart_id', cartId)
         .eq('product_id', productId)
         .eq('size', size)
-
     if (error) throw error
     return getCart()
 }
 
-// Clear Cart
 export async function clearCart() {
-    const supabase = await createClient()
+    const db = createServiceRoleClient()
     const cartId = await getOrCreateCartId()
-
-    const { error } = await supabase
-        .from('cart_items')
-        .delete()
-        .eq('cart_id', cartId)
-
+    const { error } = await db.from('cart_items').delete().eq('cart_id', cartId)
     if (error) throw error
     return getCart()
 }
 
-// Merge Guest Cart to User Cart (Call on Login)
 export async function mergeAnonymousCart() {
     const cookieStore = await cookies()
     const sessionId = cookieStore.get(CART_SESSION_COOKIE)?.value
+    if (!sessionId || !UUID_PATTERN.test(sessionId)) return
 
-    if (!sessionId) return
-
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const authClient = await createClient()
+    const { data: { user }, error: authError } = await authClient.auth.getUser()
+    if (authError) throw authError
     if (!user) return
 
-    // Find guest cart
-    const { data: guestCart } = await supabase
+    const db = createServiceRoleClient()
+    const { data: guestCart, error: guestError } = await db
         .from('carts')
         .select('id, items:cart_items(*)')
         .eq('session_id', sessionId)
-        .single()
+        .maybeSingle()
 
-    if (!guestCart) return
-
-    // Find or Create User Cart
-    let userCartId: string
-    const { data: userCart } = await supabase
-        .from('carts')
-        .select('id')
-        .eq('user_id', user.id)
-        .single()
-
-    if (userCart) {
-        userCartId = userCart.id
-    } else {
-        const { data } = await supabase.from('carts').insert({ user_id: user.id }).select('id').single()
-        if (!data) throw new Error('Failed to create user cart')
-        userCartId = data.id
+    if (guestError) throw guestError
+    if (!guestCart) {
+        cookieStore.delete(CART_SESSION_COOKIE)
+        return
     }
 
-    // Move items
-    if (guestCart.items && guestCart.items.length > 0) {
-        for (const item of guestCart.items) {
-            // Check collision
-            const { data: existingUserItem } = await supabase
-                .from('cart_items')
-                .select('id, quantity')
-                .eq('cart_id', userCartId)
-                .eq('product_id', item.product_id)
-                .eq('size', item.size)
-                .single()
+    const userCartId = await getOrCreateCartId()
+    for (const item of guestCart.items ?? []) {
+        let query = db
+            .from('cart_items')
+            .select('id, quantity')
+            .eq('cart_id', userCartId)
+            .eq('product_id', item.product_id)
+            .eq('offer_id', item.offer_id)
+            .eq('size', item.size)
+        query = item.variant_id ? query.eq('variant_id', item.variant_id) : query.is('variant_id', null)
 
-            if (existingUserItem) {
-                // Update quantity
-                await supabase
-                    .from('cart_items')
-                    .update({ quantity: existingUserItem.quantity + item.quantity })
-                    .eq('id', existingUserItem.id)
-            } else {
-                // Insert
-                await supabase
-                    .from('cart_items')
-                    .insert({
-                        cart_id: userCartId,
-                        product_id: item.product_id,
-                        offer_id: item.offer_id,
-                        size: item.size,
-                        quantity: item.quantity
-                    })
-            }
+        const { data: existing, error: existingError } = await query.maybeSingle()
+        if (existingError) throw existingError
+
+        if (existing) {
+            const mergedQuantity = Math.min(MAX_CART_QUANTITY, existing.quantity + item.quantity)
+            const { error } = await db.from('cart_items').update({ quantity: mergedQuantity }).eq('id', existing.id)
+            if (error) throw error
+        } else {
+            const { error } = await db.from('cart_items').insert({
+                cart_id: userCartId,
+                product_id: item.product_id,
+                offer_id: item.offer_id,
+                size: item.size,
+                quantity: Math.min(MAX_CART_QUANTITY, item.quantity),
+                variant_id: item.variant_id
+            })
+            if (error) throw error
         }
     }
 
-    // Delete guest cart
-    await supabase.from('carts').delete().eq('id', guestCart.id)
-
-    // Clear cookie
+    const { error: deleteError } = await db.from('carts').delete().eq('id', guestCart.id).eq('session_id', sessionId)
+    if (deleteError) throw deleteError
     cookieStore.delete(CART_SESSION_COOKIE)
 }
