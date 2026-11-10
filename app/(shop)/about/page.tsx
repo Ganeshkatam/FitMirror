@@ -36,7 +36,7 @@ const features = [
 ]
 
 const values = [
-    'See clothes on your body before buying',
+    'Accurate size and fit guidance',
     '85% reduction in returns',
     'Free shipping on all orders',
     '30-day hassle-free returns',
@@ -66,11 +66,11 @@ export default function AboutPage() {
                         {/* Main Headline */}
                         <h1 className="text-4xl sm:text-5xl md:text-7xl font-serif font-bold tracking-tight mb-4 md:mb-6 animate-fade-in" style={{ animationDelay: '0.1s' }}>
                             <span className="bg-gradient-to-r from-gray-900 via-gray-700 to-gray-900 dark:from-white dark:via-gray-200 dark:to-white bg-clip-text text-transparent">
-                                See It On You
+                                Fashion That Fits You
                             </span>
                             <br />
                             <span className="bg-gradient-to-r from-amber-600 via-rose-500 to-purple-600 bg-clip-text text-transparent">
-                                Before You Buy
+                                Every Single Time
                             </span>
                         </h1>
 
@@ -186,8 +186,8 @@ export default function AboutPage() {
                                     Returns are a hassle. Time is wasted. Confidence takes a hit.
                                 </p>
                                 <p className="text-sm md:text-base text-muted-foreground leading-relaxed">
-                                    We built FitMirror to end that cycle forever. Using the latest in AI and computer vision,
-                                    we show you exactly how clothes will look on YOUR body—before you buy.
+                                    We built FitMirror to end that cycle forever. With detailed sizing guides, curated collections,
+                                    and precise garment specifications, we help you shop confidently every time.
                                 </p>
                             </div>
 

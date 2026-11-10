@@ -30,10 +30,10 @@ export function BrandSpotlight({ collections }: BrandSpotlightProps) {
             <div className="container px-4">
                 <div className="text-center mb-6 md:mb-10">
                     <h2 className="text-xs md:text-sm font-bold tracking-[0.2em] text-amber-600 uppercase mb-2">
-                        Powered by FitMirror Engine
+                        Powered by FitMirror Catalog
                     </h2>
                     <h3 className="text-2xl md:text-5xl font-serif font-bold text-gray-900">
-                        AI-Curated Collections
+                        Curated Collections
                     </h3>
                 </div>
 
@@ -98,7 +98,7 @@ export function BrandSpotlight({ collections }: BrandSpotlightProps) {
                             </div>
 
                             <div className="absolute top-4 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur border border-indigo-100 px-4 py-1.5 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover-lift rounded-full">
-                                <span className="font-serif font-bold text-xs tracking-widest text-indigo-900">FitMirror AI</span>
+                                <span className="font-serif font-bold text-xs tracking-widest text-indigo-900">FitMirror Edition</span>
                             </div>
 
                             <Link href={col.link_url || '/shop'} className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">

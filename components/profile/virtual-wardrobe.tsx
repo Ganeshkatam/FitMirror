@@ -5,7 +5,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import Image from 'next/image'
 import Link from 'next/link'
-import { ShoppingBag, Eye, Heart, Shirt } from 'lucide-react'
+import { ShoppingBag, Heart, Shirt } from 'lucide-react'
 
 export function VirtualWardrobe({ items = [] }: { items?: any[] }) {
     const WARDROBE_ITEMS = items.length > 0 ? items : []
@@ -27,7 +27,6 @@ export function VirtualWardrobe({ items = [] }: { items?: any[] }) {
                     <TabsList className="bg-gray-100/50">
                         <TabsTrigger value="all">All Items</TabsTrigger>
                         <TabsTrigger value="ordered">Purchased</TabsTrigger>
-                        <TabsTrigger value="tried">Tried On</TabsTrigger>
                         <TabsTrigger value="wishlist">Wishlist</TabsTrigger>
                     </TabsList>
                 </div>
@@ -43,13 +42,6 @@ export function VirtualWardrobe({ items = [] }: { items?: any[] }) {
                     <TabsContent value="ordered" className="mt-0">
                         <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4">
                             {WARDROBE_ITEMS.filter(i => i.status === 'ordered').map(item => (
-                                <WardrobeItem key={item.id} item={item} />
-                            ))}
-                        </div>
-                    </TabsContent>
-                    <TabsContent value="tried" className="mt-0">
-                        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 gap-4">
-                            {WARDROBE_ITEMS.filter(i => i.status === 'tried').map(item => (
                                 <WardrobeItem key={item.id} item={item} />
                             ))}
                         </div>
@@ -79,7 +71,6 @@ function WardrobeItem({ item }: { item: any }) {
             {/* Status Badge */}
             <div className="absolute top-2 left-2">
                 {item.status === 'ordered' && <span className="bg-green-500/90 text-white text-[10px] uppercase font-bold px-2 py-1 rounded-full backdrop-blur-sm flex items-center gap-1"><ShoppingBag className="w-3 h-3" /> Bought</span>}
-                {item.status === 'tried' && <span className="bg-indigo-500/90 text-white text-[10px] uppercase font-bold px-2 py-1 rounded-full backdrop-blur-sm flex items-center gap-1"><Eye className="w-3 h-3" /> Tried</span>}
                 {item.status === 'wishlist' && <span className="bg-pink-500/90 text-white text-[10px] uppercase font-bold px-2 py-1 rounded-full backdrop-blur-sm flex items-center gap-1"><Heart className="w-3 h-3 fill-current" /> Liked</span>}
             </div>
 

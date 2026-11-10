@@ -56,7 +56,7 @@ export function HeroCarousel() {
                             </h2>
                             <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto mb-10 animate-fade-in-up delay-200">
                                 Discover the latest streetwear trends designed for the digital age.
-                                Bold cuts, futuristic fabrics, and AI-optimized fits.
+                                Bold cuts, futuristic fabrics, and tailored precision fits.
                             </p>
                             <Link href="/shop?category=streetwear" className="animate-fade-in-up delay-300 inline-block">
                                 <Button size="lg" className="rounded-full h-14 px-10 text-lg bg-white text-black hover:bg-gray-200 hover:scale-105 transition-all">

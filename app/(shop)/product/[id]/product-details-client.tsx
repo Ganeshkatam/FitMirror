@@ -171,8 +171,8 @@ export function ProductDetailsClient({
 
     // Pricing from Offer (Fallback to legacy during migration)
     const currentPrice = activeOffer ? (activeOffer.sale_price_paise || activeOffer.price_paise) : product.price
-    const originalPrice = activeOffer 
-        ? (activeOffer.sale_price_paise ? activeOffer.price_paise : null) 
+    const originalPrice = activeOffer
+        ? (activeOffer.sale_price_paise ? activeOffer.price_paise : null)
         : (product.original_price || product.mrp || null)
     const discount = originalPrice ? Math.round((1 - currentPrice / originalPrice) * 100) : 0
 
@@ -531,7 +531,7 @@ export function ProductDetailsClient({
                     BUY NOW
                 </Button>
 
-                </div>
+            </div>
 
             {/* Mobile Sticky Buy Bar */}
             <MobileBuyBar
@@ -647,14 +647,9 @@ export function ProductDetailsClient({
                         <span className="text-[10px] md:text-xs font-bold text-gray-900 whitespace-nowrap">Secure Pay</span>
                         <span className="text-[9px] md:text-[10px] text-gray-500 whitespace-nowrap">100% protected</span>
                     </div>
-                    <div className="flex flex-col items-center gap-2 min-w-[100px] snap-center">
-                        <Sparkles className="h-5 w-5 md:h-6 md:w-6 text-amber-500" />
-                        <span className="text-[10px] md:text-xs font-bold text-gray-900 whitespace-nowrap">Try Before Buy</span>
-                        <span className="text-[9px] md:text-[10px] text-gray-500 whitespace-nowrap">Virtual fitting</span>
-                    </div>
                 </div>
             </div>
-            {/* AI Smart Bar */}
+            {/* Sticky Cart Bar */}
             <StickySmartBar
                 product={product}
                 selectedSize={selectedSize}

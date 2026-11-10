@@ -605,7 +605,6 @@ create table public.ar_assets (
       asset_type = any (
         array[
           '3d_model'::text,
-          'tryon_config'::text,
           'texture'::text
         ]
       )
@@ -682,7 +681,6 @@ create table public.categories (
   created_at timestamp with time zone null default now(),
   updated_at timestamp with time zone null default now(),
   commission_rate numeric null default 10.0,
-  tryon_enabled boolean null default true,
   is_restricted boolean null default false,
   sizing_guide text null,
   constraint categories_pkey primary key (id),
@@ -822,38 +820,6 @@ create table public.content_blocks (
   constraint content_blocks_section_key_key unique (section_key)
 ) TABLESPACE pg_default;
 
-create table public.copilot_messages (
-  id uuid not null default gen_random_uuid (),
-  session_id uuid not null,
-  role text not null,
-  content text not null,
-  created_at timestamp with time zone null default now(),
-  constraint copilot_messages_pkey primary key (id),
-  constraint copilot_messages_session_id_fkey foreign KEY (session_id) references copilot_sessions (id) on delete CASCADE,
-  constraint copilot_messages_role_check check (
-    (
-      role = any (array['user'::text, 'assistant'::text])
-    )
-  )
-) TABLESPACE pg_default;
-
-create index IF not exists idx_copilot_messages_session on public.copilot_messages using btree (session_id) TABLESPACE pg_default;
-
-create index IF not exists idx_copilot_messages_created on public.copilot_messages using btree (created_at) TABLESPACE pg_default;
-
-
-create table public.copilot_sessions (
-  id uuid not null default gen_random_uuid (),
-  user_id uuid not null,
-  title text null default 'New Chat'::text,
-  created_at timestamp with time zone null default now(),
-  updated_at timestamp with time zone null default now(),
-  constraint copilot_sessions_pkey primary key (id),
-  constraint copilot_sessions_user_id_fkey foreign KEY (user_id) references profiles (id) on delete CASCADE
-) TABLESPACE pg_default;
-
-create index IF not exists idx_copilot_sessions_user on public.copilot_sessions using btree (user_id) TABLESPACE pg_default;
-
 
 create table public.coupons (
   id uuid not null default gen_random_uuid (),
@@ -924,60 +890,6 @@ create index IF not exists idx_feature_flags_name on public.feature_flags using 
 
 create index IF not exists idx_feature_flags_enabled on public.feature_flags using btree (is_enabled) TABLESPACE pg_default;
 
-
-
-create table public.garment_assets (
-  id uuid not null default gen_random_uuid (),
-  product_id uuid not null,
-  asset_url text not null,
-  asset_type text not null default 'png'::text,
-  layer_index integer not null default 2,
-  config jsonb null default '{}'::jsonb,
-  created_at timestamp with time zone null default now(),
-  category text null,
-  anchor_points jsonb null default '{}'::jsonb,
-  scale_rules jsonb null default '{"L": 1.04, "M": 1.0, "S": 0.96, "XL": 1.08, "XS": 0.92, "XXL": 1.12}'::jsonb,
-  thumbnail_url text null,
-  status text null default 'pending'::text,
-  constraint garment_assets_pkey primary key (id),
-  constraint garment_assets_product_id_fkey foreign KEY (product_id) references products (id) on delete CASCADE,
-  constraint garment_assets_status_check check (
-    (
-      status = any (
-        array[
-          'pending'::text,
-          'approved'::text,
-          'rejected'::text
-        ]
-      )
-    )
-  )
-) TABLESPACE pg_default;
-
-create index IF not exists idx_garment_assets_category on public.garment_assets using btree (category) TABLESPACE pg_default;
-
-create index IF not exists idx_garment_assets_layer on public.garment_assets using btree (layer_index) TABLESPACE pg_default;
-
-create index IF not exists idx_garment_assets_product on public.garment_assets using btree (product_id) TABLESPACE pg_default;
-
-create index IF not exists idx_garment_assets_status on public.garment_assets using btree (status) TABLESPACE pg_default
-where
-  (status = 'approved'::text);
-
-
-  create table public.generations (
-  id uuid not null default gen_random_uuid (),
-  user_id uuid null,
-  product_id uuid null,
-  image_url text null,
-  status text not null default 'completed'::text,
-  model_version text null default 'v2.1'::text,
-  created_at timestamp with time zone null default now(),
-  metadata jsonb null default '{}'::jsonb,
-  constraint generations_pkey primary key (id),
-  constraint generations_product_id_fkey foreign KEY (product_id) references products (id) on delete set null,
-  constraint generations_user_id_fkey foreign KEY (user_id) references auth.users (id) on delete set null
-) TABLESPACE pg_default;
 
 
 create table public.inventory (
@@ -1884,8 +1796,6 @@ create table public.products (
   is_active boolean not null default true,
   store_id uuid not null,
   videos text[] null default '{}'::text[],
-  tryon_asset_ref uuid null,
-  physics_profile jsonb null default '{"friction": 0.3, "stiffness": 0.5, "stretch_factor": 0.1, "fabric_weight_gsm": 200}'::jsonb,
   category_id uuid null,
   rating_avg numeric(3, 2) null default 0,
   rating_count integer null default 0,
@@ -1927,7 +1837,6 @@ create table public.products (
   constraint products_pkey primary key (id),
   constraint products_sku_key unique (sku),
   constraint products_id_key unique (id),
-  constraint products_tryon_asset_ref_fkey foreign KEY (tryon_asset_ref) references garment_assets (id),
   constraint products_owner_id_fkey foreign KEY (owner_id) references sellers (id),
   constraint products_seller_id_fkey foreign KEY (seller_id) references sellers (id) on delete set null,
   constraint products_category_id_fkey foreign KEY (category_id) references categories (id) on delete set null,
@@ -2260,7 +2169,6 @@ create table public.search_index (
   price numeric null,
   sizes text[] null,
   is_in_stock boolean null default true,
-  is_tryon_enabled boolean null default false,
   boost_score integer null default 0,
   search_vector tsvector null,
   created_at timestamp with time zone null default now(),
@@ -2839,7 +2747,7 @@ create table public.store_settings (
   created_at timestamp with time zone null default now(),
   updated_at timestamp with time zone null default now(),
   navigation jsonb null default '[{"url": "/shop", "label": "Shop"}, {"url": "/about", "label": "Our Story"}]'::jsonb,
-  footer_content jsonb null default '{"about_text": "Experience the future of fashion with our virtual try-on technology. Shop confidently and find your perfect fit.", "shop_links": [{"url": "/shop", "label": "All Products"}, {"url": "/shop?sort=newest", "label": "New Arrivals"}, {"url": "/shop?sort=best_selling", "label": "Best Sellers"}], "legal_links": [{"url": "/privacy", "label": "Privacy Policy"}, {"url": "/terms", "label": "Terms of Service"}, {"url": "/cookies", "label": "Cookie Policy"}], "social_links": {"twitter": "#", "facebook": "#", "linkedin": "#", "instagram": "#"}, "support_links": [{"url": "/contact", "label": "Contact Us"}, {"url": "/faq", "label": "FAQs"}, {"url": "/shipping", "label": "Shipping & Returns"}, {"url": "/track-order", "label": "Track Order"}]}'::jsonb,
+  footer_content jsonb null default '{"about_text": "Experience the future of fashion with personalized styling and smart fit recommendations. Shop confidently and find your perfect fit.", "shop_links": [{"url": "/shop", "label": "All Products"}, {"url": "/shop?sort=newest", "label": "New Arrivals"}, {"url": "/shop?sort=best_selling", "label": "Best Sellers"}], "legal_links": [{"url": "/privacy", "label": "Privacy Policy"}, {"url": "/terms", "label": "Terms of Service"}, {"url": "/cookies", "label": "Cookie Policy"}], "social_links": {"twitter": "#", "facebook": "#", "linkedin": "#", "instagram": "#"}, "support_links": [{"url": "/contact", "label": "Contact Us"}, {"url": "/faq", "label": "FAQs"}, {"url": "/shipping", "label": "Shipping & Returns"}, {"url": "/track-order", "label": "Track Order"}]}'::jsonb,
   store_id uuid null,
   constraint store_settings_pkey primary key (id),
   constraint store_settings_store_id_key unique (store_id),
@@ -3010,57 +2918,6 @@ create table public.team_invitations (
 
 
 
-create table public.tryon_audit_logs (
-  id uuid not null default gen_random_uuid (),
-  session_id uuid null,
-  action_type text not null,
-  payload jsonb null,
-  recorded_at timestamp with time zone null default now(),
-  constraint tryon_audit_logs_pkey primary key (id),
-  constraint tryon_audit_logs_session_id_fkey foreign KEY (session_id) references tryon_sessions (id)
-) TABLESPACE pg_default;
-
-
-create table public.tryon_events (
-  id uuid not null default gen_random_uuid (),
-  store_id uuid not null,
-  product_id uuid null,
-  device_type text null,
-  garment_layer integer null,
-  created_at timestamp with time zone null default now(),
-  constraint tryon_events_pkey primary key (id),
-  constraint tryon_events_product_id_fkey foreign KEY (product_id) references products (id) on delete CASCADE
-) TABLESPACE pg_default;
-
-
-
-create table public.tryon_sessions (
-  id uuid not null default gen_random_uuid (),
-  user_id uuid null,
-  session_device_id text null,
-  avatar_config jsonb not null default '{}'::jsonb,
-  selected_items jsonb not null default '{}'::jsonb,
-  last_active_at timestamp with time zone null default now(),
-  created_at timestamp with time zone null default now(),
-  updated_at timestamp with time zone null default now(),
-  constraint tryon_sessions_pkey primary key (id),
-  constraint tryon_sessions_user_id_fkey foreign KEY (user_id) references auth.users (id) on delete CASCADE
-) TABLESPACE pg_default;
-
-
-create table public.user_avatars (
-  id uuid not null default gen_random_uuid (),
-  user_id uuid null,
-  name text null default 'My Avatar'::text,
-  body_data jsonb not null default '{}'::jsonb,
-  is_active boolean null default true,
-  created_at timestamp with time zone null default now(),
-  updated_at timestamp with time zone null default now(),
-  constraint user_avatars_pkey primary key (id),
-  constraint user_avatars_user_id_fkey foreign KEY (user_id) references auth.users (id) on delete CASCADE
-) TABLESPACE pg_default;
-
-
 create table public.user_closet_items (
   id uuid not null default gen_random_uuid (),
   user_id uuid null,
@@ -3114,25 +2971,6 @@ create table public.user_settings (
   constraint user_settings_user_id_fkey foreign KEY (user_id) references profiles (id) on delete CASCADE
 ) TABLESPACE pg_default;
 
-
-create table public.user_style_profiles (
-  user_id uuid not null,
-  preferred_categories text[] null default '{}'::text[],
-  preferred_colors text[] null default '{}'::text[],
-  preferred_fit text null default 'regular'::text,
-  preferred_style text null default 'casual'::text,
-  avg_price_range numrange null default '[500,3000]'::numrange,
-  body_type text null,
-  style_vector jsonb null default '{}'::jsonb,
-  total_views integer null default 0,
-  total_purchases integer null default 0,
-  last_updated timestamp with time zone null default now(),
-  created_at timestamp with time zone null default now(),
-  constraint user_style_profiles_pkey primary key (user_id),
-  constraint user_style_profiles_user_id_fkey foreign KEY (user_id) references auth.users (id) on delete CASCADE
-) TABLESPACE pg_default;
-
-create index IF not exists idx_user_style_profiles_last_updated on public.user_style_profiles using btree (last_updated desc) TABLESPACE pg_default;
 
 create table public.wallet_holds (
   id uuid not null default gen_random_uuid (),
@@ -3244,7 +3082,6 @@ create table analytics.product_performance (
   carts integer null default 0,
   orders integer null default 0,
   revenue numeric(12, 2) null default 0,
-  tryon_count integer null default 0,
   created_at timestamp with time zone null default CURRENT_TIMESTAMP,
   constraint product_performance_pkey primary key (id),
   constraint product_performance_product_id_fkey foreign KEY (product_id) references products (id),

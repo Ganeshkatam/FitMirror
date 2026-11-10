@@ -28,13 +28,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.3,
-      "stiffness": 0.5,
-      "stretch_factor": 0.1,
-      "fabric_weight_gsm": 200
-    },
     "category_id": "a1728eca-ce06-4f65-9e48-4f19b06355fd",
     "rating_avg": 0,
     "rating_count": 0,
@@ -118,13 +111,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.3,
-      "stiffness": 0.5,
-      "stretch_factor": 0.1,
-      "fabric_weight_gsm": 110
-    },
     "category_id": "0181720e-9e49-48c4-845f-c478d563e796",
     "rating_avg": 0,
     "rating_count": 0,
@@ -209,13 +195,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.3,
-      "stiffness": 0.7,
-      "stretch_factor": 0.3,
-      "fabric_weight_gsm": 350
-    },
     "category_id": "0181720e-9e49-48c4-845f-c478d563e796",
     "rating_avg": 0,
     "rating_count": 0,
@@ -299,13 +278,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.3,
-      "stiffness": 0.5,
-      "stretch_factor": 0.1,
-      "fabric_weight_gsm": 125
-    },
     "category_id": "24ce9e29-c4dd-4b75-8b59-faa3741fe1ef",
     "rating_avg": 0,
     "rating_count": 0,
@@ -390,13 +362,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.3,
-      "stiffness": 0.7,
-      "stretch_factor": 0.1,
-      "fabric_weight_gsm": 150
-    },
     "category_id": "24ce9e29-c4dd-4b75-8b59-faa3741fe1ef",
     "rating_avg": 0,
     "rating_count": 0,
@@ -481,13 +446,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.3,
-      "stiffness": 0.5,
-      "stretch_factor": 0.1,
-      "fabric_weight_gsm": 300
-    },
     "category_id": "0181720e-9e49-48c4-845f-c478d563e796",
     "rating_avg": 0,
     "rating_count": 0,
@@ -572,13 +530,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.15,
-      "stiffness": 0.2,
-      "stretch_factor": 0.1,
-      "fabric_weight_gsm": 175
-    },
     "category_id": "a1728eca-ce06-4f65-9e48-4f19b06355fd",
     "rating_avg": 0,
     "rating_count": 0,
@@ -663,13 +614,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.3,
-      "stiffness": 0.5,
-      "stretch_factor": 0.1,
-      "fabric_weight_gsm": 140
-    },
     "category_id": "0181720e-9e49-48c4-845f-c478d563e796",
     "rating_avg": 0,
     "rating_count": 0,
@@ -757,13 +701,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.3,
-      "stiffness": 0.7,
-      "stretch_factor": 0.1,
-      "fabric_weight_gsm": 375
-    },
     "category_id": "a1728eca-ce06-4f65-9e48-4f19b06355fd",
     "rating_avg": 0,
     "rating_count": 0,
@@ -850,13 +787,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.3,
-      "stiffness": 0.7,
-      "stretch_factor": 0.1,
-      "fabric_weight_gsm": 375
-    },
     "category_id": "a1728eca-ce06-4f65-9e48-4f19b06355fd",
     "rating_avg": 0,
     "rating_count": 0,
@@ -941,13 +871,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.6,
-      "stiffness": 0.5,
-      "stretch_factor": 0.1,
-      "fabric_weight_gsm": 900
-    },
     "category_id": "0181720e-9e49-48c4-845f-c478d563e796",
     "rating_avg": 0,
     "rating_count": 0,
@@ -1033,13 +956,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.3,
-      "stiffness": 0.5,
-      "stretch_factor": 0.1,
-      "fabric_weight_gsm": 110
-    },
     "category_id": "a1728eca-ce06-4f65-9e48-4f19b06355fd",
     "rating_avg": 0,
     "rating_count": 0,
@@ -1124,13 +1040,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.3,
-      "stiffness": 0.5,
-      "stretch_factor": 0.1,
-      "fabric_weight_gsm": 150
-    },
     "category_id": "a1728eca-ce06-4f65-9e48-4f19b06355fd",
     "rating_avg": 0,
     "rating_count": 0,
@@ -1215,13 +1124,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.3,
-      "stiffness": 0.5,
-      "stretch_factor": 0.1,
-      "fabric_weight_gsm": 450
-    },
     "category_id": "0181720e-9e49-48c4-845f-c478d563e796",
     "rating_avg": 0,
     "rating_count": 0,
@@ -1306,13 +1208,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.3,
-      "stiffness": 0.5,
-      "stretch_factor": 0.3,
-      "fabric_weight_gsm": 300
-    },
     "category_id": "a1728eca-ce06-4f65-9e48-4f19b06355fd",
     "rating_avg": 0,
     "rating_count": 0,
@@ -1398,13 +1293,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.3,
-      "stiffness": 0.7,
-      "stretch_factor": 0.1,
-      "fabric_weight_gsm": 375
-    },
     "category_id": "a1728eca-ce06-4f65-9e48-4f19b06355fd",
     "rating_avg": 0,
     "rating_count": 0,
@@ -1488,13 +1376,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.3,
-      "stiffness": 0.5,
-      "stretch_factor": 0.1,
-      "fabric_weight_gsm": 100
-    },
     "category_id": "24ce9e29-c4dd-4b75-8b59-faa3741fe1ef",
     "rating_avg": 0,
     "rating_count": 0,
@@ -1578,13 +1459,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.3,
-      "stiffness": 0.5,
-      "stretch_factor": 0.1,
-      "fabric_weight_gsm": 140
-    },
     "category_id": "24ce9e29-c4dd-4b75-8b59-faa3741fe1ef",
     "rating_avg": 0,
     "rating_count": 0,
@@ -1668,13 +1542,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.6,
-      "stiffness": 0.5,
-      "stretch_factor": 0.1,
-      "fabric_weight_gsm": 275
-    },
     "category_id": "a1728eca-ce06-4f65-9e48-4f19b06355fd",
     "rating_avg": 0,
     "rating_count": 0,
@@ -1759,13 +1626,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.3,
-      "stiffness": 0.5,
-      "stretch_factor": 0.1,
-      "fabric_weight_gsm": 325
-    },
     "category_id": "a1728eca-ce06-4f65-9e48-4f19b06355fd",
     "rating_avg": 0,
     "rating_count": 0,
@@ -1849,13 +1709,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.3,
-      "stiffness": 0.5,
-      "stretch_factor": 0.1,
-      "fabric_weight_gsm": 225
-    },
     "category_id": "a1728eca-ce06-4f65-9e48-4f19b06355fd",
     "rating_avg": 0,
     "rating_count": 0,
@@ -1940,13 +1793,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.3,
-      "stiffness": 0.5,
-      "stretch_factor": 0.3,
-      "fabric_weight_gsm": 60
-    },
     "category_id": "a1728eca-ce06-4f65-9e48-4f19b06355fd",
     "rating_avg": 0,
     "rating_count": 0,
@@ -2030,13 +1876,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.3,
-      "stiffness": 0.5,
-      "stretch_factor": 0.1,
-      "fabric_weight_gsm": 175
-    },
     "category_id": "0181720e-9e49-48c4-845f-c478d563e796",
     "rating_avg": 0,
     "rating_count": 0,
@@ -2120,13 +1959,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.3,
-      "stiffness": 0.5,
-      "stretch_factor": 0.3,
-      "fabric_weight_gsm": 225
-    },
     "category_id": "0181720e-9e49-48c4-845f-c478d563e796",
     "rating_avg": 0,
     "rating_count": 0,
@@ -2210,13 +2042,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.3,
-      "stiffness": 0.5,
-      "stretch_factor": 0.1,
-      "fabric_weight_gsm": 600
-    },
     "category_id": "0181720e-9e49-48c4-845f-c478d563e796",
     "rating_avg": 0,
     "rating_count": 0,
@@ -2301,13 +2126,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.3,
-      "stiffness": 0.5,
-      "stretch_factor": 0.1,
-      "fabric_weight_gsm": 100
-    },
     "category_id": "0181720e-9e49-48c4-845f-c478d563e796",
     "rating_avg": 0,
     "rating_count": 0,
@@ -2391,13 +2209,6 @@
     "is_active": true,
     "store_id": "05317275-ed64-444d-b86a-7745d60f5aa4",
     "videos": [],
-    "tryon_asset_ref": null,
-    "physics_profile": {
-      "friction": 0.3,
-      "stiffness": 0.5,
-      "stretch_factor": 0.1,
-      "fabric_weight_gsm": 60
-    },
     "category_id": "24ce9e29-c4dd-4b75-8b59-faa3741fe1ef",
     "rating_avg": 0,
     "rating_count": 0,

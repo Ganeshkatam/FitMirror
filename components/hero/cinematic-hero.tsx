@@ -107,7 +107,7 @@ export function CinematicHero({ headline, subheadline, className }: CinematicHer
                     <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/60 backdrop-blur-xl rounded-full border border-white/40 shadow-sm ring-1 ring-slate-900/5">
                         <Sparkles className="h-4 w-4 text-violet-600" />
                         <span className="text-sm font-semibold text-slate-800 uppercase tracking-widest">
-                            AI-Powered Styling
+                            Curated Styling
                         </span>
                     </div>
 
